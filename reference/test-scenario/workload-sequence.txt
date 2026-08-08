@@ -1,0 +1,69 @@
+Login Enterprise Multi-Monitor Preview
+KNOWN-GOOD REPRESENTATIVE TEST-SCENARIO REFERENCE
+
+This is reference configuration evidence. Preserve enabled and disabled alternatives and do not silently change ordering or settings.
+
+1. Run (KW) Prepare for Microsoft Office 365
+   Enabled: Yes
+   Run once: Yes
+   Leave application running: No
+
+2. Run (KW) Microsoft Outlook
+   Enabled: Yes
+   Run once: No
+   Leave application running: Yes
+
+3. Run KW25 Edge Start-4KVideoHeavy
+   Enabled: Yes
+   Run once: Yes
+   Leave application running: Yes
+
+4. Run KW25 Edge Run-4KVideoHeavy
+   Enabled: Yes
+   Run once: No
+   Leave application running: No
+
+5. Run KW25 Edge Start
+   Enabled: No
+   Run once: Yes
+   Leave application running: Yes
+
+6. Run KW25 Edge Run
+   Enabled: No
+   Run once: No
+   Leave application running: No
+
+7. Run (KW) Microsoft Edge (browsing + multimedia)
+   Enabled: No
+   Run once: No
+   Leave application running: No
+
+8. Run (KW) Microsoft Excel
+   Enabled: Yes
+   Run once: No
+   Leave application running: Yes
+
+9. Run (KW) Microsoft PowerPoint
+   Enabled: Yes
+   Run once: No
+   Leave application running: Yes
+
+10. Run (KW) Microsoft Word
+    Enabled: Yes
+    Run once: No
+    Leave application running: Yes
+
+11. Run (KW) Close Microsoft Excel
+    Enabled: Yes
+    Run once: No
+    Leave application running: No
+
+12. Run (KW) Close Microsoft Word
+    Enabled: Yes
+    Run once: No
+    Leave application running: No
+
+13. Run (KW) Close Microsoft PowerPoint
+    Enabled: Yes
+    Run once: No
+    Leave application running: No

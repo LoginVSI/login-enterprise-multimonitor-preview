@@ -1,0 +1,1 @@
+# Baseline not established. Run scripts/Verify-ReferenceHashes.ps1 -Generate after reviewed originals are added.

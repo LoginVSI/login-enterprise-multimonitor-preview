@@ -1,0 +1,4 @@
+interface:
+  display_name: "Login Enterprise Multi-Monitor"
+  short_description: "Adapt workloads for the Multi-Monitor Preview"
+  default_prompt: "Use $login-enterprise-multimonitor to adapt a supplied Login Enterprise workload with the approved Preview implementation without modifying immutable references."

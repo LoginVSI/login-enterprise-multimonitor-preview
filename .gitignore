@@ -1,0 +1,38 @@
+# Local development and test artifacts
+artifacts/*
+!artifacts/.gitkeep
+
+# .NET and build output
+**/bin/
+**/obj/
+TestResults/
+*.cache
+
+# Visual Studio and user state
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code: ignore local state but allow intentional shared recommendations/settings
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# PowerShell, logs, and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.ps1xml
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+
+# Selected Preview files in dist/ may be committed intentionally; do not blanket-ignore it.
