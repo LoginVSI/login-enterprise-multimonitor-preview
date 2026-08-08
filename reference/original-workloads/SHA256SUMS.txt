@@ -1,1 +1,12 @@
-# Baseline not established. Run scripts/Verify-ReferenceHashes.ps1 -Generate after reviewed originals are added.
+# SHA-256 manifest for immutable files in reference/original-workloads/.
+# Generated intentionally with scripts/Verify-ReferenceHashes.ps1 -Generate.
+e5bf0c86b1797a936689d5b971a30d48243becb5b50cd20cff376c4af4e543e4  (KW) Close Microsoft Excel.cs
+59078dde2bef98bd12569e34ca12a0f196d44118a5cc8898bf9c5e47d8aa92f4  (KW) Close Microsoft PowerPoint.cs
+3a610df1d59e83f33643b81f0b8e3614c1c08680a27252d2b18fd68c9dbc89e8  (KW) Close Microsoft Word.cs
+240745a9dbc471ad471353679a02a8b102a9b700886b944b7c9f71bab6417406  (KW) Microsoft Excel.cs
+5a59715f09b1bd3a3fb2c34f0daf8432bd86a7dca5abc9c690eb447145381503  (KW) Microsoft Outlook.cs
+395dd116470d7ee5c0691ef632eeb5c4ca7996247419a095e7a7db9cab9d2b92  (KW) Microsoft PowerPoint.cs
+927f028b0b348d4e7869b0bdd214731fa574f17d40baf47697e5beab4573aa13  (KW) Microsoft Word.cs
+eb072f312b59ae5d8731d2811553853759c938695bf359af74e4cb0fc81b3f4e  (KW) Prepare for Microsoft Office 365.cs
+69d817e390e1f8de5e9c1ef731fd940ac2b8b4de8f55e77089b896c824d5fcf7  KW25 Edge Run-4KVideoHeavy.cs
+d8bf327513a6865626f5b9780de0393c08fe31a26862b898b66712608794b068  KW25 Edge Start-4KVideoHeavy.cs

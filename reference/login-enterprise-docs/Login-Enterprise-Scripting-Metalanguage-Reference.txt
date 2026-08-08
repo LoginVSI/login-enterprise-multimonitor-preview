@@ -1,0 +1,4752 @@
+
+Creating an Application Script
+Overview
+
+This section outlines how to prepare your Application scripts. Application scripting is straightforward, but getting the details right is essential for a smooth experience.
+
+Begin by determining the order of Applications and the specific actions to be performed within each one. Additionally, consider the following factors before you start creating your Application scripts.
+
+Scripting involves automating tasks within Applications, allowing for increased efficiency and consistency. By following best practices, you can ensure your scripts are effective and easy to maintain.
+
+The section discusses the following subjects:
+
+    Creating an Application Priority List: Learn how to identify and rank Applications from most to least important.
+
+    Defining the Workflow: Understand how to outline a workflow for each Application and what it should entail.
+
+    Defining Measurements: Discover what metrics you need to track to gather accurate data.
+
+    Defining Requirements: Determine the needs of Virtual Users to successfully complete the defined steps for each Application.
+
+    Final review: Document everything thoroughly and conduct a manual verification to ensure accuracy.
+
+Step 1. Creating an Application Priority List
+
+The first step is to create an Application priority list. You can classify Applications into 3 categories: Business Critical, Productivity, and Bulk. Prioritize the Applications in the same order as indicated in the image below.
+blobid0.jpg
+
+Business Critical
+
+Business-critical Applications are those that a significant portion of your user base relies on. If these Applications fail to function correctly, it could result in substantial financial losses for the business. As such, they hold the highest priority for development and should undergo thorough measurement to collect critical performance data.
+
+In a typical Virtual Appliance environment, the number of Business Critical Applications usually ranges from 1 to 10. These Applications are often integral to use cases such as Continuous Testing, Load Testing, and Application Testing within the Virtual Appliance.
+
+Productivity
+
+Productivity Applications are widely used but pose minimal risk if they do not perform as intended or become unavailable. For instance, Adobe Reader can be categorized here; while a slowdown may be inconvenient, it is not catastrophic. This category is the second-highest priority for development. Focus may be less intensive, concentrating instead on ensuring that specific, frequently used actions function properly.
+
+These Applications are primarily utilized in Continuous Testing and Load Testing use cases, depending on their impact. However, it is recommended that they always be included in the Application Testing use case.
+
+Bulk (Rest)
+
+Bulk Applications are those that do not fall under the Core or Business Critical categories. Their impact is minimal to nonexistent, making them non-critical for business operations. Examples of such Applications include Notepad, Paint, and Calculator. If these Applications are unavailable for a day or two, it remains a manageable situation. However, it is still important to ensure they function at a basic level.
+
+These Applications are primarily utilized in the Application Testing use cases, where the focus is on verifying that they can launch successfully after any changes have been made to the image.
+
+How to gather this information
+
+There are several ways to compile the lists mentioned above. The most common methods include:
+
+    Management input: Consult management to identify what they consider mission-critical. Understanding their needs and goals will help you generate the appropriate reports.
+
+    Monitoring tools: Utilize monitoring tools that can provide insights into the most frequently used Applications in your environment. This data can assist in classifying Applications as Core or Business Critical.
+
+    Functional Testing teams: Functional Testing teams are responsible for testing Applications before their release. They often maintain a prioritized list of Applications, which can be valuable in your assessment.
+
+    Application owners/teams: Application owners or teams are typically responsible for specific Applications. If an Application has a dedicated team, it likely indicates that it is a Core Application.
+
+    Consulting Key-Users: Key users from various departments can offer valuable insights into which Applications are critical for their roles.
+
+    Support/Service desks: Support or service desks can provide information on the most troublesome Applications based on the volume of support tickets received regarding those applications.
+
+Step 2. Defining the Workflow
+
+Now that you have identified the Applications to measure, it is crucial to determine the actions you will perform, and potentially measure, within each Application. A combination of actions for an Application is referred to as a workflow or click path.
+
+The objective of this step is to create a detailed workflow or click path that accurately mimics real user activity and load. It is essential to be as detailed as possible, as the individual creating this workflow may not be the one developing the Application script.
+
+Important: Steps should be repeatable. Modifying data within any Application workflow could disrupt the actions being performed.
+
+To illustrate, refer to the example below, which demonstrates a less effective approach, followed by an example that illustrates a more effective method. Notice the difference in detail between the two.
+
+Wrong way
+
+    Start Application x
+
+    Login
+
+    Search for DATAXXXX
+
+    Close Application
+
+Right way
+
+    Start Application X
+
+    Wait for the login window to appear
+
+        Type user name 
+
+        Type the user password
+
+        Select environment
+
+        Click on Login
+
+    Wait for the main window to appear
+
+    Click on the search button at the top of the window
+
+        Wait for the search window to appear
+
+        Type DATAXXXX in the search field
+
+        Enable Checkbox Filter
+
+        Click on search
+
+    Wait for the search result to appear
+
+    Click on the top result called DATAXXXX
+
+        Wait for the dataset to load
+
+        Browse through the dataset
+
+        Close the dataset
+
+    Close the Application
+
+The example above primarily applies to Core Applications. As you move lower on the priority list, the level of detail required for the actions decreases. For instance, workflows for Bulk Applications may be as simple as starting and stopping the Application.
+
+How to gather this information
+
+There are several methods to gather the workflows mentioned above. The most common approaches include:
+
+    Consulting key users: Key users from various departments can provide insights into which actions are critical for their roles or identify actions that are most problematic from a performance standpoint.
+
+    Support/service desks: Support or service desks can help identify the most troublesome actions within Applications by reviewing the tickets they receive related to those Applications.
+
+    Involving Functional Testing teams: Functional Testing teams are responsible for testing Applications before release. They typically maintain detailed workflows for the most important Applications, from which you can filter the actions you want to measure.
+
+    Engaging Application owners: Application owners or teams are responsible for specific Applications and should be knowledgeable about the most frequently used actions or those that are most problematic in terms of performance.
+
+Step 3. Defining Measurements
+
+Now that you have identified the Applications and their respective workflows, the next step is to determine which actions need to be measured for performance. While automating the Applications is essential, and Login Enterprise will notify you if an Application fails to complete its actions, measuring performance is where Login Enterprise truly excels.
+
+Challenge your measurements
+
+It is crucial to understand the purpose behind each measurement you add. Ask yourself: Why do you want this action measured? What insights do you hope to gain from this measurement? If the action is not performing as intended, what implications does this have?
+
+Common measurements
+
+The most common actions measured are those that require waiting for results, as these are typically the most affected by performance issues. A useful rule of thumb is that the longer an action takes to complete, the more it is likely to be impacted by performance degradation. Below are some examples:
+
+    Logging in to an Application
+
+    Searching for data
+
+    Clicking on links
+
+    Opening a report/data
+
+    Loading Calendar overview
+
+    Saving a file on a share
+
+We also recommend selecting steps in your process that have dependencies and can impact overall performance. For example, performing a search involves querying a database. Measuring this action can provide valuable insights into the health of your database. Any slowness recorded in the Application script may indicate that the database is not optimized or is reaching its maximum capacity.
+Step 4. Defining Requirements
+
+Each Application and its associated actions within the workflow may have specific requirements that must be met for the successful execution of the Application script. These requirements need to be clearly defined to ensure the script can run smoothly.
+
+Requirements can vary widely and may include providing licenses for test users or specifying datasets to be used within the Application. Below are a few examples:
+
+    Login information: Username and password for accessing the Application.
+
+    Application-specific Logins/Licenses: Any necessary logins or access credentials specific to the Application.
+
+    Licenses: Office 365 licenses or other Application-specific licenses required for operation.
+
+    Files to be opened: Provide necessary files, such as .docx and .pdf documents, that will be used in the workflow.
+
+    Define Save File Locations: Specify where files should be saved during the workflow process.
+
+    Create Test Data in Data-Sensitive Applications/Databases: For example, create a test patient record in a healthcare system to prevent data mutation in live datasets.
+
+Step 5. Final Review
+
+Once all the information mentioned above has been collected, it is advisable to document it in a Word or Excel file. This allows you to describe each step clearly, ensuring that it leads to a functioning Application script.
+Additional Resources
+
+    To learn about Application scripting considerations, see Difficult Applications.
+
+    For information on the Application X-Ray, see Using the Application X-Ray.
+
+    For creating workloads using the Application X-Ray, see Creating Workloads Using the Application X-Ray.
+
+    For more details on the Script Editor, its benefits, use cases, and more, see Using the Script Editor.
+
+    To learn more about the Script Recorder, see Using the Script Recorder.
+
+https://docs.loginvsi.com/login-enterprise/6.8/creating-an-application-script
+
+WinApp Recorder
+Overview
+
+The instructions below describe how to use the WinApp Recorder. For general information on Script Recorder and related use cases, see Using Script Recorder.
+
+Note: In v6.5, Script Recorder moved to a new UI automation backend (FLAUI) and uses a standardized XPath-style locator format. Existing scripts remain supported, but locator generation and robustness have improved. For details on Script Recorder (WinApp) implementation, see Understanding Script Recorder (WinApps) Implementation.
+Getting Started
+
+Download the latest Script Editor package containing the WinApp Recorder v1 from your admin or setup email. For details, see Downloading and installing Script Recorder.
+Creating a New Application
+
+    In the Login Enterprise Script Editor, click Create a new Login Enterprise Application.
+
+Frame 22.png
+
+    Click the three-dot icon to the right of Save as, choose a folder for the script, and enter a file name.
+
+    In Application type, select Desktop application.
+
+    In Target, enter the path to the executable you want to test.
+
+    In Start in, you can specify the working directory for the application script.
+
+    Click Create.
+
+Frame 1625.png
+Starting the Recording: Recording the Script
+
+In the Script Editor top menu, click Record to start the recording. When the recording starts, a player opens where you can perform actions.
+Frame 2299.png
+
+The Recorder uses visual indicators to show the status of detected elements:
+
+    Orange indicates that the Recorder is in the process of locating an element.
+
+    Green indicates that the element is ready and can be interacted with. Actions performed on green-highlighted elements are recorded.
+
+The Recorder supports the following actions:
+
+    Stop the recording of actions
+
+    Start the recording of actions
+
+    Pause or continue the recording
+
+    Remove the last recorded action
+
+    Remove all recorded actions
+
+    Show or hide the list of recorded actions (downward/upward arrow icon)
+
+image 53 (1).png
+Recording without Target Application
+
+You can record a script without specifying a target application (the executable to test) when creating a new application. This way, the recording starts from the Windows desktop instead of launching a specific application. To do this, set the //Target: value in the script to none.
+
+Note: The Recorder does not fully recognize the Windows Start menu. However, you can still interact with it by using keyboard actions such as Tab and Enter to navigate to the item you need.
+Frame 2097.png
+
+After the recording is complete, follow the standard workflow:
+
+    Generate the script, and then copy it to the clipboard.
+
+    Paste the script into the Script field. Make sure to remove the start and stop commands.
+
+    Click Run.
+
+For details, see Running the script.
+Stopping the Recording: ScriptResultWindow
+
+When you stop the recording, the ScriptResultWindow shows an overview of all recorded steps (before generating the script, right after the recording was stopped).
+Frame 2300.png
+
+Note: To prevent exposing sensitive information such as usernames and passwords, the Recorder does not display the actual typed values in the script output.
+
+Instead, typing actions are shown as “Typing…” in the script and in the results.
+
+In the Overview screen, you can adjust settings, export the script as JSON, and generate the script to run it.
+Settings
+General
+
+Note: Changes made in General settings apply to all action settings.
+Enlarges the table by opening it in a full screen dialog
+
+Option
+	
+
+Description
+
+Recording interaction
+	
+
+Determines mouse positioning when interacting with elements.
+
+Click to center (default)
+	
+
+The script will always click in the center of the element.
+
+Use X and Y coordinates
+	
+
+The script will click within the element as it was recorded.
+
+Mouse move
+	
+
+Determines the inclusion or exclusion of mouse movements in the script.
+
+Once you select the checkbox, the actual mouse movements will be included in the script. Note that this might lead to an increased runtime of the script.
+
+Waits
+	
+
+Adds a pause after each recorded step in the script.
+
+CPM (Characters Per Minute)
+	
+
+Adjusts typing speed. If you leave the checkbox unselected, the default value will be used. If you select the checkbox, the CPM value will appear in the script. The default is 300 characters per minute.
+
+Timeout
+	
+
+Specifies how long the Recorder repeatedly attempts to find the target element before the action fails. If the element is not found within the timeout, the action fails. The default is 5 seconds.
+
+Find element by
+	
+
+Defines a strategy for locating UI elements during playback.
+
+
+	
+
+XPath with information fallback (default)
+	
+
+Attempts to locate the element using XPath first. If XPath fails, the Recorder falls back to locating the element based on its identifying information (such as name, automation ID, class name, and other properties).
+
+Provides a balance between performance and reliability and is recommended for most scenarios.
+
+XPath only
+	
+
+Locates the element using only XPath.
+
+Typically faster but more fragile, as changes to the UI structure (such as added or removed containers) can cause the XPath to become invalid.
+
+Information only
+	
+
+Locates the element using identifying properties (such as name, automation ID, and class name) without using XPath.
+
+More resilient to UI structure changes, but may take longer to locate elements.
+
+Search settings
+	
+
+Ancestor metadata
+	
+
+When enabled, XPath includes metadata from parent (ancestor) elements to more precisely identify the target element, which can improve precision but may reduce robustness in applications with dynamic containers or changing window titles.
+
+Split Find Information from Window Search
+	
+
+When enabled, the search first locates the window by XPath (e.g., Calculator), then finds the element within it by Information (e.g., button #8). If disabled, the search starts from the Desktop without narrowing to a specific window first.
+Frame 2072.png
+Action
+
+Note: Changes made in Action settings apply only to the selected action.
+Enlarges the table by opening it in a full screen dialog
+
+Option
+	
+
+Description
+
+Recording interaction
+	
+
+Determines mouse positioning when interacting with elements.
+
+Click to center (default)
+	
+
+The script will always click in the center of the element.
+
+Use X and Y coordinates
+	
+
+The script will click within the element as it was recorded.
+
+Waits
+	
+
+Adds a pause after each recorded step in the script.
+
+Mouse move
+	
+
+Determines the inclusion or exclusion of mouse movements in the script.
+
+Once you select the toggle, the actual mouse movements will be included in the script. Note that this might lead to an increased runtime of the script.
+
+CPM (Characters Per Minute)
+	
+
+Adjusts typing speed. If you leave the toggle unselected, the default value will be used. If you select the toggle, the CPM value will appear in the script. The default is 300 characters per minute.
+
+Timeout
+	
+
+Specifies how long the Recorder repeatedly attempts to find the target element before the action fails. If the element is not found within the timeout, the action fails. The default is 5 seconds.
+
+When using Information only, consider increasing the Timeout, as element searches may take longer and could otherwise fail prematurely.
+
+Continue on error
+	
+
+Available only in Action settings. Disabled by default. When enabled for an individual action, the script doesn’t abort if that action fails and instead continues with the next action.
+
+When you open an action step, the settings are shown automatically. Action steps can use global settings or custom settings:
+
+    Global settings: The action step uses the global settings. The settings are read-only and can't be changed in the action step.
+
+Frame 2246 (1).png
+
+    Custom settings: The action step uses custom settings. Select this option to make the fields available for editing in the action step.
+
+Frame 2248 (1).png
+
+Note: Advanced and Additional parameters are always available for editing as they can't be configured as global settings. Some additional parameters only apply to information-based find methods. To learn more, see Advanced Parameters and Additional Parameters of Use.
+Editing an Action Name
+
+You can change the name of each action to make it more descriptive. The action name is shown in the script as a comment before the corresponding step.
+
+To edit an action name:
+
+    Hover over the action.
+
+    Select the pencil icon.
+
+Frame 2249.png
+
+    Enter a new name.
+
+    Click Submit.
+
+Advanced Parameters
+
+You can use Advanced parameters to fine-tune how UI element locators are generated and tested for a selected action. There are 3 options available:
+Enlarges the table by opening it in a full screen dialog
+
+Option
+	
+
+Description
+
+Find element by
+	
+
+Defines a strategy for locating UI elements during playback.
+
+ 
+	
+
+XPath with information fallback (default)
+	
+
+Attempts to locate the element using XPath first. If XPath fails, the Recorder falls back to locating the element based on its identifying information (such as name, automation ID, class name, and other properties).
+
+Provides a balance between performance and reliability and is recommended for most scenarios.
+
+XPath only
+	
+
+Locates the element using only XPath.
+
+Typically faster but more fragile, as changes to the UI structure (such as added or removed containers) can cause the XPath to become invalid.
+
+Information only
+	
+
+Locates the element using identifying properties (such as name, automation ID, and class name) without using XPath.
+
+More resilient to UI structure changes, but may take longer to locate elements.
+Additional Parameters of Use
+
+Use Additional Parameters of Use to refine which element properties are included when locating the target UI element. Framework ID, Value Pattern, and Text Pattern apply only to information-based find methods and are not used by XPath-only detection.
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+	
+
+Use ClassName
+	
+
+Uses the element’s class name as part of the criteria to locate the target element. The value can be manually adjusted, and wildcards (*) are supported.
+
+Use wildcards when the element’s class name has a consistent prefix or pattern but may include dynamic suffixes. Example: Button*
+
+Use Automation Id
+	
+
+Uses the element’s automation Id to locate the target element. The value can be manually adjusted, and wildcards (*) are supported.
+
+Use wildcards when the automation Id is partially dynamic and only part of the value is stable. Example: loginButton*
+
+Use Name
+	
+
+Uses the element’s name property to locate the target element. The value can be manually adjusted, and wildcards (*) are supported.
+
+Use wildcards when the visible name contains variable text or additional context. Example: *Sign in*
+
+Use Framework Id
+	
+
+The underlying technology used to build the UI element (for example, WPF or Win32).
+
+Note: Only used by find by information methods.
+
+Use Value Pattern
+	
+
+The current value of elements that support the Value pattern (for example, text in a text box or a combo box selection).
+
+Note: Only used by find by information methods.
+
+Use Text Pattern
+	
+
+The full text content of elements that support the Text pattern (for example, rich text or document controls).
+
+Note: Only used by find by information methods.
+
+Use Ancestor Metadata for XPath
+	
+
+XPath includes metadata from parent (ancestor) elements to more precisely identify the target element.
+
+Split Find by Information from Window Search
+	
+
+When enabled, the search first locates the window by XPath (e.g., Calculator), then finds the element within it by Information (e.g., button #8). If disabled, the search starts from the Desktop without narrowing to a specific window first.
+
+XPath preview
+	
+
+Shows the XPath expression generated for the selected action using the current advanced parameters.
+Frame 2245.png
+
+The following options allow you to verify that the target element can be successfully located:
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+	
+
+Test find by XPath
+	
+
+Tests whether the target element can be successfully located using XPath. The application must be open at the element’s location.
+Frame 2070.png
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+	
+
+Test find by Information
+	
+
+Tests whether the target element can be successfully located using information-based identification. The application must be open at the element’s location.
+Frame 2071.png
+Running the Script
+
+    In the ScriptResultWindow, click Generate script. After generating the script, you can go back, change the settings, and generate the script (with new settings) again.
+
+Frame 2281 (1).png
+
+    Copy the generated script to the clipboard:
+
+Frame 2301.png
+
+Note: Script Recorder doesn’t support notifications, such as “Copied to the clipboard.” So, once you copy the script to the clipboard, it's saved; the Recorder is just not letting you know. You can now proceed and paste the script into the Editor.
+
+    Paste the copied script into the Script Editor:
+
+Important: Recorded scripts automatically include start and stop commands.
+
+    When you record a script, the Recorder generates a complete sequence that includes starting the application, performing the recorded actions, and stopping the script. This differs from manually created scripts, which typically use separate start, wait, and stop commands.
+
+    If you are copying recorded actions into an existing script, replace the existing start, wait, and stop commands with the generated start and stop commands to ensure the script runs correctly.
+
+Frame 2303.png
+
+    In the Script Editor top menu, click Run to run the script.
+
+Frame 2284.png
+
+The script should be available under the Debug Output tab:
+Frame 2304.png
+
+For more information on using this part of the Recorder, see Debugging with Script Editor.
+Run and Continue Recording
+
+The Run and Record button in the Script Editor allows you to execute an already created script and then automatically opens the Recorder at the end of the script. This is useful if you need to add new steps to an existing script or make adjustments without re-recording everything from the beginning.
+
+Note: If the script fails during execution, the Recorder automatically opens at the point where the failure occurred. You can use this to continue recording and update the script from that step.
+
+How it works
+
+    Execute the existing script: Click Run and Record. This will first execute the script that is currently open in the Script Editor.
+
+Frame 504.png
+
+    Automatic recording: Once the script has finished running, the Recorder openі automatically, enabling you to continue capturing additional actions or steps without starting from scratch.
+
+Frame 505.png
+
+    Stop the Recorder, click Generate script, and copy the script to the clipboard. Then, paste the script into the Script Editor and click Run.
+
+Note: In this case, the generated script does not include start and stop commands. You can paste the script into an existing script without modifying the surrounding commands.
+Frame 507.png
+Keeping the Application Open after Recording
+
+Applications are not automatically closed when recording stops.
+
+This behavior is controlled by a configuration setting that enables or disables automatic closing of the application. The setting is currently available only in the ScriptEditor.Config file.
+Exporting the Script as JSON
+
+This option provides additional information on script failures, facilitating feedback submission and analysis.
+Frame 155.png
+Importing the Script as JSON
+
+Alternatively, if you already have an existing script recording (JSON file), click Import recording in the Script Editor top menu and proceed with the steps described above.
+Frame 2316.png
+Restrictions and Limitations
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+	
+
+Script compatibility
+	
+
+The script generated by Script Recorder can only be run in Login Enterprise v5.10 or higher.
+
+Supported applications
+	
+
+V1 supports only WinApps. Browser and browser-based apps (e.g., Teams, Spotify) are currently out of scope.
+
+Unsupported actions
+	
+
+Actions that were not previously supported in the Engine remain unsupported, e.g., mouse drag and mouse scroll.
+
+Application types with limited functionality
+	
+
+Applications built with Java, Web components, or those that launch separate windows with new executables do not function properly yet.
+
+Script handling
+	
+
+Script Recorder now only generates the script and does not automatically import it into the editor. You must copy the script to the clipboard and paste it manually into the editor.
+
+Important: The generated script includes start and stop commands. Make sure to replace the default start and stop commands in the Editor with the commands generated by the Recorder.
+
+Recording scope
+	
+
+Only one application per recording can be captured at a time.
+
+Recorder no longer locks to a single application
+	
+
+Previously, the Recorder was locked to the application you selected at the start of recording. Any actions performed outside that application, including actions in other apps or in pop-up windows, were not recorded.
+
+The Recorder no longer locks to a single application. When you start recording, the selected application opens as before, but the Recorder captures actions across all applications. For example, if you start recording in Excel and then switch to Word, your actions in Word are also recorded.
+
+Benefits
+
+    Reduces recording errors caused by pop-ups or applications with multiple windows.
+
+    Improves reliability when workflows span more than one application.
+
+Note: While recording, be mindful to perform only the actions you want to capture. Pause or stop the recording if you need to perform unrelated work.
+Recommendations
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+	
+
+Use one monitor during recording
+	
+
+Using multiple monitors with different scaling settings during recording may cause issues. Specifically, when working across two screens with varying scaling configurations, Script Recorder may not function correctly.
+
+Proceed carefully
+	
+
+Wait for the green box to blink over a button or object before proceeding. This visual cue indicates that you can safely move to the next step.
+Tutorials
+Launching Apps with a START_IN Magic Comment
+
+Script Recorder uses the START_IN magic comment to launch applications, such as OBS Studio, if this comment is present in the script.
+
+The screenshot below shows how the START_IN path appears in the recorded script:
+Frame 536.png
+
+For information on how to use the magic comment, including its formatting, practical examples, and best practices, see Using // TARGET: Comments for CLI Automation.
+CLI Parameters and Arguments
+
+Script Recorder (and the Engine) allows you to write arguments and parameters to scripts. You will write your parameters in the // Target: aka the Target application.
+Frame 716.png
+
+There are a few things to note:
+
+    Script Recorder will allow the use of environment variables, and these will be expanded to the respective values
+
+    It is possible to write in the target application without quotations as per legacy behavior in the Engine.
+
+        While Script Recorder allows the end user to write in the target application without quotations, this goes against standard Windows functionality when starting a process. Windows expects the user to wrap any file paths containing spaces in quotations. This functionality exists due to legacy behavior. See the following example. The second attempt is the standard behavior.
+
+Frame 717.png
+
+    This functionality will only allow the end user to write down a target application without quotations. If the target application has the following file extensions: ".exe", ".bat", ".cmd", ".vbs", ".wsh". This is also part of the legacy behavior in the Engine.
+
+        If you do not provide any of these extensions, the behavior will revert to the original Windows behavior. Thus, the end user should wrap the target application in quotations, or at least, make sure that the provided file path does not contain spaces.
+
+        Arguments provided to Script Recorder expect that any arguments with a file path be wrapped in quotations. Otherwise, you just have to ensure that your file path does not contain any spaces. This is consistent with standard Windows behavior.
+
+Frame 718.png
+Frame 719.png
+
+The previous example attempts to run the following command:
+
+%ProgramFiles%\Microsoft Office\root\Office16\EXCEL.EXE /t %ProgramFiles%\TestExcel.xlsx
+
+This example expands environment variables to:
+C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE /t C:\Program Files\TestExcel.xlsx
+
+    This means that Excel then identifies C:\Program as one parameter and Files\TestExcel.xlsx as another parameter. Therefore, it fails to find the file
+
+    The solution is to wrap the argument in quotations as “%ProgramFiles%\TestExcel.xlsx”
+
+Wildcards for Class Names, Names, Titles, and Automation IDs
+
+Wildcards are useful when dealing with elements that have dynamic properties in an application.
+
+Why use wildcards?
+
+Wildcards allow for flexible matching of elements when their properties are not fixed. For instance, if elements in an application have names or IDs that change dynamically, using wildcards can help you identify and interact with these elements more effectively.
+
+How wildcards work
+
+    A * (asterisk) serves as a wildcard character.
+
+    Placing the * at the end of a string, e.g., classn* will match all elements that start with the given prefix.
+
+    The * can also be placed at the beginning or middle of the string to match elements with varying prefixes or suffixes.
+
+Syntax example
+
+{TagGoesHere} : {ClassNameGoesHere} [{NameGoesHere}][AutomationId : {AutomationIdGoesHere}][Position: {PositionGoesHere}]
+
+In this syntax, wildcards can be used in the following elements:
+
+    {ClassNameGoesHere}
+
+    {NameGoesHere}
+
+    {AutomationIdGoesHere}
+
+Practical example
+
+Imagine you’re writing a script to interact with Microsoft Word. When you open a new document, the Script Recorder might capture the window title as:
+
+var nWindow0 = FindWindowByClassAndName(className: "Window:OpusApp", name: "Document1 - Word");
+
+Here, the title "Document1 - Word" is specific and might not always be the same. If you want your script to work regardless of the specific window title, you can use a wildcard to match any title that ends with " - Word":
+
+var nWindow0 = FindWindowByClassAndName(className: "Window:OpusApp", name: "* - Word");
+
+In this example, the asterisk (*) acts as a wildcard character, allowing the script to successfully find any Microsoft Word window where the title ends with " - Word", even if the part before " - Word" changes.
+https://docs.loginvsi.com/login-enterprise/6.8/winapp-recorder#Creating-a-New-Application
+
+Web Recorder Functions (Playwright)
+Overview
+
+This section provides the commands available in Playwright scripts created with Web Recorder. These functions let you automate and interact with web applications and are grouped into categories to help you find what you need quickly.
+
+In most cases, you do not need to work with these functions directly if the Web Recorder captures and plays back the required actions successfully. This page is intended primarily as an advanced reference for users who need to review, adjust, or extend recorded functions, such as when the recorder does not capture an interaction correctly, when conditional logic needs to be added, or when a recorded step needs to be adjusted:
+
+    Basic Functions: Core actions like opening pages, locating elements, and performing simple operations.
+
+    Mouse and Keyboard Functions: Simulate user interactions, including clicks, typing, scrolling, and dragging.
+
+    Browser Functions: Manage browser contexts, tabs, and sessions.
+
+    Control Flow Functions: Add logic to your automation scripts, including loops, conditions, and waits.
+
+Basic Functions
+StartBrowser
+
+Starts a browser within an application script. We support Microsoft Edge and Chrome; the application uses whichever version of these browsers is installed on the target machine. Note that Firefox is currently not supported.
+
+Syntax
+
+StartBrowser()
+
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+			
+
+(none)
+	
+
+-
+	
+
+-
+	
+
+This command does not require any parameters.
+
+Code example
+
+await StartBrowser();
+
+StopBrowser
+
+Stops a browser within an application script. 
+
+Syntax
+
+StopBrowser()
+
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+			
+
+(none)
+	
+
+-
+	
+
+-
+	
+
+This command does not require any parameters.
+
+Code example
+
+await StopBrowser();
+
+Navigate
+
+Navigates the open browser to a specified URL and automatically measures the time required to complete the navigation.
+
+Syntax
+
+await NavigateAsync(string url, string timerName);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+Url
+	
+
+string
+	
+
+ 
+	
+
+URL to navigate to
+
+timerName
+	
+
+string
+	
+
+ 
+	
+
+Name of the timer
+
+Code example
+
+await NavigateAsync(url: "https://loginvsi.com", timerName: "Website_LoginVSI");
+
+Locator
+
+Identifies a specific element on the page by retrying to locate it until the specified timeout is reached. Use this method as a starting point for actions such as click, hover, type, or get text.
+
+Syntax
+
+Locator(string selector, int timeout);
+
+Note: The locator value is generated by the Web Recorder. Creating locators manually is not supported. Please use the Web Recorder to capture locators.
+
+Code example
+
+Locator("input[autocomplete='username']", timeout: 10);
+
+StartTimer
+
+Creates a custom timer to measure the time one or more actions take within a script. The timers are reported back to the Login Enterprise server as measurements and can be used to trigger a notification if the measurement is over the configured threshold. Measurements are displayed in the Login Enterprise dashboard and charts. StartTimer must be stopped with either CancelTimer or StopTimer.
+
+Syntax
+
+StartTimer(string name);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+name
+	
+
+string
+	
+
+ 
+	
+
+Defines the name of the timer, max of 64 characters
+
+Important: The timer name must only contain alphanumeric characters and underscores.
+
+Code example
+
+StartTimer(name:"Create_New_File");
+StopTimer(name:"Create_New_File");
+
+StopTimer
+
+Stops a timer started by StartTimer. The StopTimer name should be the same as the StartTimer.
+
+Syntax
+
+StopTimer(string name);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+name
+	
+
+string
+	
+
+ 
+	
+
+Defines the name of the timer, max of 64 characters
+
+Important: The timer name must only contain alphanumeric characters and underscores.
+
+Code example
+
+StartTimer(name:"Save_File_To_Network");
+StopTimer(name:"Save_File_To_Network");
+
+CancelTimer
+
+Cancels a timer. The CancelTimer name should be the same as the StartTimer.
+
+Syntax
+
+CancelTimer(string name);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+name
+	
+
+string
+	
+
+ 
+	
+
+Defines the name of the timer, max of 64 characters
+
+Important: The timer name must only contain alphanumeric characters and underscores.
+
+Code example
+
+StartTimer(name:"Create_New_File");
+CancelTimer(name:"Create_New_File");
+
+SetTimer
+
+Helps create your own custom timers. In many cases, you can call an external value for a system resource, such as CPU utilization %, and have it appear in the Login Enterprise reporting.
+
+SetTimer does not require a start and stop function as it collects an integer at the time it is executed.
+
+Syntax
+
+SetTimer("name", value);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+name
+	
+
+string
+	
+
+ 
+	
+
+Defines the name of the timer, max of 64 characters
+
+value
+	
+
+integer
+	
+
+ 
+	
+
+Value collected when the timer is called
+
+Important: The timer name must only contain alphanumeric characters and underscores.
+
+Code example
+
+int myCounter = {some code that gets a Windows performance counter in milliseconds};
+SetTimer(“MyTimer”,myCounter);
+
+Wait
+
+Waits for X seconds before continuing the script.
+
+Syntax
+
+Wait(double seconds);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+
+seconds
+	
+
+double
+	
+
+ -
+
+Code example
+
+Wait(10);
+
+Log
+
+Logs to the console if you are using the Scriptrunner. When using it as part of the Login Enterprise appliance, it logs to %temp%\LoginPI\Logs.
+
+Syntax
+
+Log(string message);
+Log(object component);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameters
+	
+
+Type
+	
+
+Default Value
+
+message
+	
+
+string
+	
+
+ 
+
+component
+	
+
+object
+	
+
+ 
+
+Code example
+
+Log(message:"Log Message");
+Log(component:MainWindow);
+
+Abort
+
+Exits the script and throws an error message. The error will be shown as an 'Application failure' on the Login Enterprise dashboard, under events.
+
+Syntax
+
+ABORT(string error);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+
+error
+	
+
+string
+	
+
+ 
+
+Code example
+
+ABORT(error:"An error occurred");
+
+ShellExecute
+
+Runs a script or application in the Windows Shell. Only the first parameter is required; all remaining parameters are optional.
+
+Syntax
+
+ShellExecute(string commandLine, string workingFolder = "", bool waitForProcessEnd = true, int timeout = 180, bool forceKillOnExit = true);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+commandLine
+	
+
+string
+	
+
+ 
+	
+
+ 
+
+workingFolder
+	
+
+string
+	
+
+ 
+	
+
+ 
+
+waitForProcessEnd
+	
+
+bool
+	
+
+true
+	
+
+Waits for the process to finish before continuing.
+
+timeout
+	
+
+int
+	
+
+180
+	
+
+Defines how long to wait for the process to end before it's killed.
+
+forceKillOnExit
+	
+
+bool
+	
+
+true
+	
+
+Forces the application/process to close or stay open after the command has ended. The default is true.
+
+Code example
+
+ShellExecute("mspaint", waitForProcessEnd: false, timeout: 15, forceKillOnExit: false);
+
+CreateEvent
+
+Generates a custom event on the Appliance, shown in the results page of a Continuous, Load, and Application Test.
+
+Syntax
+
+CreateEvent(title:"", description:"");
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameters
+	
+
+Type
+	
+
+Default Value
+
+Title
+	
+
+string
+	
+
+ -
+
+Description
+	
+
+string
+	
+
+ -
+
+Code example
+
+CreateEvent(title:"Windows Update Available", description:"Update is available on hostname x");
+
+GetEnvironmentVariable 
+
+Retrieves an environment variable. The GetEnvironmentVariable can be stored in a variable to use multiple times in your script. Note that if a continueOnError is not set and if you do not have permission to retrieve the variable, the script will stop.
+
+Syntax
+
+GetEnvironmentVariable(variableName:"", continueOnError:false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameters
+	
+
+Type
+	
+
+Default Value
+
+variableName
+	
+
+string
+	
+
+ 
+
+continueOnError
+	
+
+bool
+	
+
+false
+
+Code example
+
+var TempEnv = GetEnvironmentVariable("temp", continueOnError:true);
+Log ($"The environment path = {TempEnv}");
+Type ($"{TempEnv}");
+
+TakeScreenshot
+
+Creates custom screenshots that are sent to the Login Enterprise appliance as Events. This functionality can be used to verify an application's visual output. You must enable “Custom Screenshots” in the Test configuration to allow this function. This function is not available for Load Tests.
+
+The Event created has a subject of “The script screenshot '{name}' was created”. The description is the {description} field in your function call. The screenshot bitmap is attached to the Event.
+
+Important: The name field cannot handle spaces; these need to be underscored.
+
+Syntax
+
+TakeScreenshot(name:"", description:"");
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameters
+	
+
+Type
+	
+
+Default Value
+
+name
+	
+
+string
+	
+
+ 
+
+description
+	
+
+string
+	
+
+null
+
+Code example
+
+ TakeScreenshot(name:"Notepad",description: "Check if notepad has loaded the correct file");
+
+Mouse and Keyboard Functions
+
+Some functions in this section include a timeout parameter. This parameter specifies how long the script will retry locating the target element before failing.
+
+By default, the Web Recorder sets the timeout to 5 seconds, but you can adjust it either globally or on a per-action basis.
+
+Note: If the timeout is omitted, the script falls back to Playwright’s default timeout of 30 seconds.
+Type
+
+Types text or presses keys.
+
+Syntax
+
+await TypeAsync(input: "text", cpm: 0);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+text
+	
+
+string
+	
+
+ 
+	
+
+Text to type or keys to press
+
+cpm
+	
+
+int
+	
+
+300
+	
+
+Characters per minute
+
+Code example
+
+await TypeAsync(input: "some Text", cpm: 0);
+
+Key Combinations
+
+Key combinations can be performed using the typing function. For example, the Ctrl+V (paste) command appears in the script as:
+
+await TypeAsync(input: "{Control+v}", cpm: 0);
+
+Press
+
+Presses keys, such as Key up/down, tab, etc.
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+			
+
+key
+	
+
+string
+	
+
+
+	
+
+The key to press on the keyboard
+
+Syntax:
+
+PressAsync(key)
+
+Code example:
+
+await PressAsync("Tab");
+
+KeyCodes
+
+Valid keys for PressAsync()
+
+F1
+F2
+F3
+F4
+F5
+F6
+F7
+F8
+F9
+F10
+F11
+F12
+
+Insert
+Cancel
+Help
+Backspace
+Tab
+Clear
+Enter
+Shift
+Control
+Alt
+Delete
+Pause
+Space
+PageUp
+PageDown
+End
+Home
+ArrowLeft
+ArrowUp
+ArrowRight
+ArrowDown
+Escape
+Meta
+
+LeftClick
+
+Performs a left-mouse click on the specified element.
+
+Syntax
+
+Locator(selector).ClickAsync(options)
+
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+	
+
+selector
+	
+
+Selector identifying the element to click.
+
+timeout
+	
+
+How long (in seconds) the script retries locating the element before failing.
+
+Note: The locator value is generated by the Web Recorder. Creating locators manually is not supported. Please use the Web Recorder to capture locators.
+
+Code example
+
+await Locator(selector: "#password-input").ClickAsync(new(){Timeout = 5 });
+
+RightClick
+
+Performs a right-mouse click on the specified element.
+
+Syntax
+
+RightClick(double x, double y, bool continueOnError = false);
+
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+	
+
+selector
+	
+
+Selector identifying the element to click.
+
+timeout
+	
+
+How long (in seconds) the script retries locating the element before failing.
+
+Note: The locator value is generated by the Web Recorder. Creating locators manually is not supported. Please use the Web Recorder to capture locators.
+
+Code example
+
+await Locator(selector: "#password-input").RightClickAsync(new(){Timeout = 5 });
+
+DoubleClick
+
+Performs a double-mouse click on the specified element.
+
+Syntax
+
+Locator(selector).DoubleClickAsync(options)
+
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+	
+
+selector
+	
+
+Selector identifying the element to click.
+
+timeout
+	
+
+How long (in seconds) the script retries locating the element before failing.
+
+Note: The locator value is generated by the Web Recorder. Creating locators manually is not supported. Please use the Web Recorder to capture locators.
+
+Code example
+
+await Locator(selector: "#password-input").DoubleClickAsync(new(){Timeout = 5 });
+
+Mouse Scroll
+
+Scrolls the page relative to the current mouse position by the given number of pixels horizontally (x) and vertically (y).
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+			
+
+x
+	
+
+-
+	
+
+-
+	
+
+Horizontal scroll amount in pixels (negative = left, positive = right)
+
+y
+	
+
+-
+	
+
+-
+	
+
+Vertical scroll amount in pixels (negative = up, positive = down)
+
+Code example
+
+// Horizontal scroll at (0,0)
+await ScrollAsync(x: 0, y: 0);
+
+// Scroll down at (0,659)
+await ScrollAsync(x: 0, y: 659);
+
+// Scroll up at (0,-32)
+await ScrollAsync(x: 0, y: -32);
+
+Hover
+
+Moves the mouse pointer over the specified element. It is used to trigger hover effects like tooltips, dropdowns, or style changes.
+
+Syntax
+
+Locator(selector).HoverAsync()
+
+Note: The locator value is generated by the Web Recorder. Creating locators manually is not supported. Please use the Web Recorder to capture locators.
+
+Code example
+
+await Locator(selector: "#password-input").HoverAsync();
+
+Control Flow Functions
+If Else vs Try Catch
+
+Creates conditional logic in your scripts. If the condition is true, the code within the If block executes. If the condition is false, the code within the Else block executes. Note that the Else statement is not mandatory.
+
+Code example
+
+var Condition = MainWindow.FindControl(title:"Condition");
+if (Condition != null)
+{
+Type("Condition is true");
+}
+else
+{
+Type("Condition is not true");
+}
+
+Challenges:
+
+Finding a control may throw an exception if the control is not found. If "Continue on Error" is not enabled, this will terminate the workflow.
+
+Solution
+
+Reword the script using a Try...Catch statement. This approach can eliminate inconsistent pop-ups and allow the script to continue running even if a control is not found.
+
+Code example:
+
+Try{
+var Condition = MainWindow.FindControl(title:"Condition");
+Condition.Click();
+}
+catch{
+Log("Was unable to find conditional window");
+};
+
+While
+
+Executes a block of code in a loop as long as the specified condition evaluates to true. The condition is evaluated before each iteration of the loop.
+
+Code example:
+
+In the following example, we specify an integer variable that equals zero. While the number is less than 10, we log the number to the console and add +1 to it until it evaluates to false.
+
+int number = 0;
+while(number < 10)
+{
+Log(number);
+number++;
+}
+
+ForEach
+
+Iterates through each item in an array of values.
+
+Code example:
+
+In the following example, we iterate through 3 sample values.
+
+string[] example = {"example 1","example 2","example 3"};
+foreach (string value in example)
+{
+Log(value);
+}
+
+Additional uses
+
+When working with a browser application, collecting all web selectors can be beneficial. You can then use a ForEach loop to find a specific condition or to identify a particular selector from an array of many.
+https://docs.loginvsi.com/login-enterprise/6.8/web-recorder-functions-playwright
+
+Scripting Functions Overview
+Overview
+
+This section provides an introduction to the key functions available for scripting within the Login Enterprise Virtual Appliance. Our scripting framework offers a comprehensive set of tools to enhance automation and control over Windows applications.
+
+    Basic Functions: Essential commands for managing application execution and performance, including launching and closing applications, measuring action durations, and logging key events.
+
+    Windows Functions: Tools for interacting with and controlling windows and their elements, allowing precise manipulation and error handling in your automation scripts.
+
+    Mouse and Keyboard Functions: Functions that simulate user input through typing and mouse actions, enabling you to script user interactions and test application workflows effectively.
+
+    File and Registry Functions: Capabilities for managing file operations and interacting with the Windows registry, ensuring smooth automation of file and registry tasks.
+
+    Browser Functions: Functions designed to control web browsers, navigate URLs, and interact with web elements, streamlining browser automation for web interactions.
+
+    Native Automation Scripting: Advanced capabilities for deeper control over Windows applications using native OS elements, allowing for precise targeting and robust UI automation.
+
+    Control Flow Functions: Conditional logic and iteration tools that enable dynamic scripting, error handling, and adaptable automation workflows.
+
+Login Enterprise also comes with the Script Editor, a tool designed to assist administrators in creating custom application workflows. These workflows can be seamlessly incorporated into various testing scenarios, including Application, Load, and Continuous Tests. By leveraging the Script Editor, administrators can streamline test creation and execution, ensuring comprehensive and efficient testing processes tailored to specific application requirements.
+
+    For more details on the Script Editor, its benefits, use cases, and more, see Using the Script Editor.
+
+    Script Editor includes the Web Recorder for web apps, in addition to Script Recorder v1 for Windows apps. To learn more about the Script Recorder, its use cases, benefits, and more, see Using the Script Recorder.
+
+    For an overview of Playwright functions, the specific commands used to automate and interact with web applications using Web Recorder v1, see the Web Recorder Functions (Playwright).
+
+    To learn about new methods/functions introduced in the WinApp Recorder, see the Inventory of Methods (Generated by Script Recorder).
+
+Basic Functions
+
+Basic functions offer essential tools for managing application execution and performance. Commands such as START and STOP are used to launch and close applications, while StartTimer and StopTimer help measure the duration of actions within your scripts. You can log key events, take screenshots for validation, and capture environment variables. These functions also include error-handling features, providing greater control and visibility over script execution, which ensures smooth automation of your testing processes.
+Start
+
+START executes the associated application and creates the mainWindow variable. The START command will auto-detect the application's title, class, and process name. All parameters are optional.
+
+Syntax
+
+START(string mainWindowTitle = null, string mainWindowClass = null, string processName = null, int timeout = 180, bool continueOnError = false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameters
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+mainWindowTitle
+	
+
+string
+	
+
+ 
+	
+
+Window title. Example: "Untitled - Notepad"
+
+mainWindowClass
+	
+
+string
+	
+
+ 
+	
+
+Window class. Example: "Win32 Window:Notepad"
+
+processName
+	
+
+string
+	
+
+ 
+	
+
+Window process name. Example: "notepad"
+
+timeout
+	
+
+int
+	
+
+180
+	
+
+Timeout in seconds for the window to appear
+
+continueOnError
+	
+
+bool
+	
+
+false
+	
+
+Continue with the script on the error
+
+Code Example
+
+START(mainWindowTitle:"Untitled - Notepad", mainWindowClass:"Win32 Window:Notepad", processName:"notepad", timeout:10);
+
+Stop
+
+The STOP command terminates the associated application. The timeout parameter specifies the maximum number of seconds an application can take to gracefully stop. After the timeout is reached, the application is closed forcefully.
+
+Syntax
+
+STOP(int timeout = 5);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+timeout
+	
+
+int
+	
+
+5
+	
+
+Timeout in seconds to close an application
+
+Code Example
+
+STOP(timeout:5);
+
+StartTimer
+
+The StartTimer function allows you to create a custom timer to measure the time one or more actions take within a script. The timers are reported back to the Login Enterprise server as measurements and can be used to trigger a notification if the measurement is over the configured threshold. Measurements are displayed in the Login Enterprise dashboard and charts. StartTimer must be stopped with either CancelTimer or StopTimer.
+
+Syntax
+
+StartTimer(string name);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+name
+	
+
+string
+	
+
+ 
+	
+
+Defines the name of the timer, max of 64 characters
+
+Important: The timer name must only contain alphanumeric characters and underscores.
+
+Code Example
+
+StartTimer(name:"Create_New_File");
+StopTimer(name:"Create_New_File");
+
+StopTimer
+
+StopTimer is used to stop a timer that's started by StartTimer. The StopTimer name should be the same as the StartTimer.
+
+Syntax
+
+StopTimer(string name);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+name
+	
+
+string
+	
+
+ 
+	
+
+Defines the name of the timer, max of 64 characters
+
+Important: The timer name must only contain alphanumeric characters and underscores.
+
+Code Example
+
+StartTimer(name:"Save_File_To_Network");
+StopTimer(name:"Save_File_To_Network");
+
+CancelTimer
+
+The CancelTimer command is used to cancel a timer. The CancelTimer name should be the same as the StartTimer.
+
+Syntax
+
+CancelTimer(string name);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+name
+	
+
+string
+	
+
+ 
+	
+
+Defines the name of the timer, max of 64 characters
+
+Important: The timer name must only contain alphanumeric characters and underscores.
+
+Code Example
+
+StartTimer(name:"Create_New_File");
+CancelTimer(name:"Create_New_File");
+
+SetTimer
+
+Create your own custom timers with the SetTimer function. In many cases, you could call an external value of a system resource, like CPU % utilization, and have it be visible in the Login Enterprise reporting.
+
+SetTimer does not require a start and stop function as it collects an integer at the time it is executed.
+
+Syntax
+
+SetTimer("name", value);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+name
+	
+
+string
+	
+
+ 
+	
+
+Defines the name of the timer, max of 64 characters
+
+value
+	
+
+integer
+	
+
+ 
+	
+
+Value collected when the timer is called
+
+Important: The timer name must only contain alphanumeric characters and underscores.
+
+Code Example
+
+int myCounter = {some code that gets a Windows performance counter in milliseconds};
+SetTimer(“MyTimer”,myCounter);
+
+Wait
+
+The Wait function will wait for an X amount of time in seconds before continuing with the script.
+
+Syntax
+
+Wait(double seconds);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+
+seconds
+	
+
+double
+	
+
+ 
+
+showOnScreen
+	
+
+boolean
+	
+
+true
+
+onScreenText
+	
+
+string
+	
+
+ 
+
+Code Example
+
+Wait(seconds:10, showOnScreen:true, onScreenText:"Waiting 10 seconds");
+
+Log
+
+The log function will log to the console if you are using the Scriptrunner. When using it as part of the Login Enterprise appliance, it logs to %temp%\LoginPI\Logs.
+
+Syntax
+
+Log(string message);
+Log(object component);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameters
+	
+
+Type
+	
+
+Default Value
+
+message
+	
+
+string
+	
+
+ 
+
+component
+	
+
+object
+	
+
+ 
+
+Code Example
+
+Log(message:"Log Message");
+Log(component:MainWindow);
+
+Abort
+
+Abort is used to gracefully exit the script and throw an error message. The error will be shown as an 'Application failure' on the Login Enterprise dashboard, under events.
+
+Syntax
+
+ABORT(string error);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+
+error
+	
+
+string
+	
+
+ 
+
+Code Example
+
+ABORT(error:"An error occurred");
+
+ShellExecute
+
+Run a script or application in the Windows Shell
+
+Syntax
+
+ShellExecute(string commandLine, string workingFolder = "", bool waitForProcessEnd = true, int timeout = 180, bool forceKillOnExit = true);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+commandLine
+	
+
+string
+	
+
+ 
+	
+
+ 
+
+workingFolder
+	
+
+string
+	
+
+ 
+	
+
+ 
+
+waitForProcessEnd
+	
+
+bool
+	
+
+true
+	
+
+Waits for the process to finish before continuing.
+
+timeout
+	
+
+int
+	
+
+180
+	
+
+Defines how long to wait for the process to end before it's killed.
+
+forceKillOnExit
+	
+
+bool
+	
+
+true
+	
+
+Forces the application/process to close or stay open after the command has ended. The default is true.
+
+Code Example
+
+ShellExecute("mspaint", waitForProcessEnd: false, timeout: 15, forceKillOnExit: false);
+
+Create Event
+
+The CreateEvent function will generate a custom event on the Enterprise appliance, which is shown in the results page of a Continuous, Load, and Application Test.
+
+Syntax
+
+CreateEvent(title:"", description:"");
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameters
+	
+
+Type
+	
+
+Default Value
+
+Title
+	
+
+string
+	
+
+ 
+
+Description
+	
+
+string
+	
+
+ 
+
+Code Example
+
+CreateEvent(title:"Windows Update Available", description:"Update is available on hostname x");
+
+Get Environment 
+
+GetEnvironmentVariable is used, as the name suggests, to retrieve an environment variable. The GetEnvironmentVariable can be stored in a variable to use multiple times in your script. Note that if a continueOnError is not set and if you do not have permission to retrieve the variable, the script will stop.
+
+Syntax
+
+GetEnvironmentVariable(variableName:"", continueOnError:false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameters
+	
+
+Type
+	
+
+Default Value
+
+variableName
+	
+
+string
+	
+
+ 
+
+continueOnError
+	
+
+bool
+	
+
+false
+
+Code Example
+
+var TempEnv = GetEnvironmentVariable("temp", continueOnError:true);
+Log ($"The environment path = {TempEnv}");
+Type ($"{TempEnv}");
+
+Take Screenshot
+
+The TakeScreenshot() command is used to create custom screenshots that are sent to the Login Enterprise appliance as Events. This functionality can be used to verify the visual output of an application. You must enable “Custom Screenshots” in the Test configuration to allow this function.  This function is not available for Load Tests.
+
+The Event created has a subject of “The script screenshot '{name}' was created”. The description is the {description} field in your function call. The screenshot bitmap is attached to the Event.
+
+Important: The name field cannot handle spaces; these need to be underscored.
+
+Syntax
+
+TakeScreenshot(name:"", description:"");
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameters
+	
+
+Type
+	
+
+Default Value
+
+name
+	
+
+string
+	
+
+ 
+
+description
+	
+
+string
+	
+
+null
+
+Code Example
+
+ TakeScreenshot(name:"Notepad",description: "Check if notepad has loaded the correct file");
+
+Windows Functions
+
+Windows functions provide capabilities for interacting with and controlling windows and their elements in a Windows environment. Use FindWindow to detect windows by title, class, or process name. The FindControl and FindControlWithXPath functions enable interaction with specific controls, such as buttons or text fields. You can manipulate windows and controls using Click, Maximize, and GetBounds, allowing for precise actions and automation. Additionally, DumpHierarchy is available for troubleshooting by exporting a control tree to a file. These functions offer granular control over window elements and include conditional error handling.
+FindWindow
+
+FindWindow can be used to detect a new window or a window that is already open. Each window has a set of information: class, title, and process name, which can be searched on. The ApplicationXRay tool can be used to detect the title, class, and process name of a window or control to allow you to find it in code later.
+
+Syntax
+
+FindWindow(string title = null, string className = null, string processName = null, int timeout = 30, bool continueOnError = false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+title
+	
+
+string
+	
+
+ 
+	
+
+Find a window matching the title
+
+className
+	
+
+string
+	
+
+ 
+	
+
+Find a window matching the classname
+
+processName
+	
+
+string
+	
+
+ 
+	
+
+Find a window matching the process name
+
+timeout
+	
+
+int
+	
+
+30
+	
+
+Timeout in seconds to find the window
+
+continueOnError
+	
+
+bool
+	
+
+false
+	
+
+Continue with the script if an error is encountered
+
+Code Example
+
+FindWindow(title:"*Untitled*", timeout: 5);
+
+FindWindows
+
+Find all windows by title, class, and/or process. If you specify multiple parameters, only the windows matching all criteria will be returned. The parameters do accept wildcards (*). This method will return whenever even if zero windows are found. If no window is found within the given timeout, it will return an empty array.
+
+Syntax
+
+var windowList = FindWindows(title:"", classname:"", processname:"", timeout = 30);
+foreach (var myWindow in windowList) {
+    ....
+}
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+title
+	
+
+string
+	
+
+ 
+	
+
+Title of window
+
+className
+	
+
+string
+	
+
+ 
+	
+
+Window class
+
+processName
+	
+
+string
+	
+
+ 
+	
+
+Name of Windows process
+
+timeout
+	
+
+int
+	
+
+30
+	
+
+Timeout value
+
+Code Example
+
+FindWindow(title:"*Untitled*", timeout: 5);
+
+Control Actions
+
+When the engine finds the window or object, it can perform multiple actions on the window/object. Using the above example, the following window control actions are available:
+Enlarges the table by opening it in a full screen dialog
+
+Name
+	
+
+Description
+
+openDialogue.Click();
+	
+
+ 
+
+openDialogue.Close();
+	
+
+ 
+
+openDialogue.DoubleClick();
+	
+
+ 
+
+openDialogue.FindControl();
+	
+
+ 
+
+openDialogue.FindControlWithXPath();
+	
+
+ 
+
+openDialogue.Focus();
+	
+
+ 
+
+openDialogue.GetAllChildControls();
+	
+
+Gets all direct child controls for the window (can also be used on a control)
+
+openDialogue.GetBounds();
+	
+
+Retrieves the window or control boundary coordinates in relation to the screen resolution, returning a WindowsCoordinates structure that includes X and Y coordinates along with additional properties.
+
+Returns a WindowsCoordinates structure containing properties and methods for manipulating and interacting with the retrieved coordinates.
+
+GetBounds() contains the following properties:
+
+    Bottom
+
+    Center
+
+    East
+
+    Height
+
+    Left
+
+    LeftBottom
+
+    LeftTop
+
+    North
+
+    Right
+
+    RightBottom
+
+    RightTop
+
+    South
+
+    West
+
+    Width
+
+    X
+
+    Y
+
+Available methods on coordinate pair properties (Center, LeftBottom, LeftTop, RightBottom, RightTop):
+
+    Click(): Click the left mouse button once.
+
+    DoubleClick(): Double-click the left mouse button.
+
+    MouseMove(): Move the mouse pointer to the specified location.
+
+    Move(dx: int, dy: int): Move the mouse to a location relative to the selected point, specified by pixels.
+
+    MoveDown(dy: int): Move the mouse down by the specified number of pixels.
+
+    MoveLeft(dx: int): Move the mouse left by a specified number of pixels.
+
+    MoveRight(dx: int): Move the mouse right by a specified number of pixels.
+
+    MoveUp(dy: int): Move the mouse up by a specified number of pixels.
+
+    RightClick(): Press and release the right mouse button.
+
+    X: Integer X coordinate of the location.
+
+    Y: Integer Y coordinate of the location.
+
+Chaining example: The methods can be chained together for more complex actions. For instance, the following code snippet retrieves the center of control, moves slightly down and to the left, and then performs a right-click:
+
+javascriptCopy codevar myThing = MainWindow.FindControl(…);
+myThing.GetBounds().Center.Move(dx:-10, dy:10).RightClick();
+
+Note: The GetBounds() method not only retrieves the boundary coordinates but also allows for dynamic interaction through the WindowsCoordinates structure.
+
+openDialogue.GetClass();
+	
+
+Gets the class name for the window or control
+
+openDialogue.GetProcess();
+	
+
+Gets the process name for the window or control
+
+openDialogue.GetTitle();
+	
+
+Gets the title for the window or control
+
+openDialogue.Maximize();
+	
+
+ 
+
+openDialogue.Minimize();
+	
+
+ 
+
+openDialogue.MoveMouseToCenter();
+	
+
+Moves the mouse to the center of the window
+
+openDialogue.Restore();
+	
+
+ 
+
+openDialogue.RightClick();
+	
+
+ 
+
+openDialogue.Type("");
+	
+
+Types directly to the window and keeps the focus
+
+openDialogue.GetText();
+	
+
+Retrieves the value from the object
+
+openDialogue.SwitchTopMostWindow();
+	
+
+Allows a window to stay on top rather than behind a newly opened window. It provides a better defense against pop-ups overlapping your active window while running a workload.
+
+NativeWindowHandle
+	
+
+For details, see the NativeWindowHandle
+
+NativeAutomationElement
+	
+
+For details, see the NativeAutomationElement
+FindControl
+
+Each window has a set of controls (buttons, input fields, text fields, etc). Using FindControl allows you to find and subsequently interact with these controls.
+
+Syntax
+
+FindControl(string className = null, string title = null, int timeout = 5, bool searchRecursively = true, bool continueOnError = false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+className
+	
+
+string
+	
+
+ 
+	
+
+Defines the class name of the control to find
+
+title
+	
+
+string
+	
+
+ 
+	
+
+Defines the title of the control to find
+
+timeout
+	
+
+int
+	
+
+5
+	
+
+Timeout period 
+
+searchRecursively
+	
+
+bool
+	
+
+true
+	
+
+Defines if only the direct children or all indirect children should be searched
+
+continueOnError
+	
+
+bool
+	
+
+false
+	
+
+Continue with the script if control is not found
+
+Code Example
+
+MainWindow.FindControl(className : "Button:Button", title : "&Open").Click();
+
+FindControlWithXPath
+
+Each window has a set of controls (buttons, input fields, text fields, etc). Using FindControlWithXPath allows you to find and subsequently interact with these controls.
+
+Syntax
+
+FindControlWithXPath(string xPath, int timeout = 5, bool continueOnError = false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+xPath
+	
+
+string
+	
+
+ 
+	
+
+(x)Path to the control
+
+timeout
+	
+
+int
+	
+
+5
+	
+
+Timeout period 
+
+continueOnError
+	
+
+bool
+	
+
+false
+	
+
+Continue with the script if control is not found
+
+Code Example
+
+MainWindow.FindControlWithXPath(xPath : "Button:Button").Click();
+
+DumpHierarchy
+
+Every window has a control tree with all classes and names. For troubleshooting purposes, we have a DumpHierarchy method. DumpHierarchy dumps the control tree into a text file.
+
+Syntax
+
+DumpHierarchy(string filePath, bool refreshBeforeDump = false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+filePath
+	
+
+string
+	
+
+ 
+	
+
+Defines where to store the dump
+
+refreshBeforeDump
+	
+
+bool
+	
+
+false
+	
+
+Defines if we should refresh the control tree before the dump
+
+Code Example
+
+var Open = FindWindow(title:"Open");
+Open.DumpHierarchy(filePath:"C:\\dump.txt");
+
+FindAutomationElements
+
+The following are the methods generated by Script Recorder and can be used to find UI elements
+FindAutomationElementByXPath
+
+Finds anAutomationElement that matches the specified XPath expression. The entire element sequence must match for the element to be considered found.
+FindAutomationElementByInformation
+
+Finds an AutomationElement by its properties, without using information about ancestor elements.
+FindAutomationElementByXPathOrInformation
+
+Finds an automation element by using the specified XPath expression. If no match is found, the method attempts to locate the element by matching automation properties such as automation ID, class name, name, and control type.
+
+For detailed information on these methods, see Inventory of Methods (Generated by Script Recorder).
+Mouse and Keyboard Functions
+
+Mouse and keyboard functions automate interactions with Windows applications by simulating user input through typing and mouse actions. The Type command lets you enter text or press keys at a specified speed, supporting key combinations and encrypted application credentials. Mouse functions like Click, RightClick, and DoubleClick provide precise control over application elements based on X-Y coordinates. You can also use MouseMove and MouseMoveBy to reposition the cursor, while KeyDown and KeyUp simulate holding or releasing keys. These functions enable you to script user actions, test application workflows, and ensure that inputs and interactions behave as expected in real-world conditions.
+Type
+
+The Type command is used to type text or press keys.
+
+Syntax
+
+Type(string text, int cpm = 300, hideInLogging:true)
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+text
+	
+
+string
+	
+
+ 
+	
+
+Text to type or keys to press
+
+cpm
+	
+
+int
+	
+
+300
+	
+
+Characters per minute
+
+hideInLogging
+	
+
+Boolean
+	
+
+true
+	
+
+Hides entry from being logged
+
+Variable options: 
+
+    ApplicationPassword: Using this variable, you can enter an encrypted password for a specific application. 
+
+    ApplicationUser: Using this variable, you can enter an encrypted user for a specific application. 
+
+For information on scripting application credentials, see Scripting Secure Application Credentials. To learn about the encryption types and certificates, see Encryption Technology.
+
+Code Example
+
+// use type to type text
+Type("Insert Text Here");
+// use type to press the enter key
+Type("{ENTER}");
+// use type to press the enter key twice
+Type("{ENTER}".Repeat(2));
+// use type to press ctrl + O
+Type("{CTRL+O}");
+// use type to enter a path. backslash is an escape character.
+Type("C:\\Folder\\Folder1\\something.txt");
+// use @ sign to type path
+Type(@"C:\Folder\Folder1\something.txt");
+// type quotes
+// use backslash to escape quote e.g. \"
+Type("\"test\""); // this will type "test"
+// type quotes
+// use @ in front of string and use double quotes
+Type(@"""test"""); // this will type "test"
+// typing to a window variable will keep the focus on that window
+MainWindow.Type("Insert text here");
+KeyDown(KeyCode.SHIFT); // Holds the SHIFT key
+Type("insert non-capital text here"); // This text will be typed in uppercase
+KeyUp(KeyCode.SHIFT); // Releases the SHIFT key
+Type("insert non-capital text here"); // This text will be typed in lowercase
+
+Click
+
+The Click command is used to mouse-click on an X-Y coordinate.
+
+Syntax
+
+Click(double x, double y, bool continueOnError = false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+x
+	
+
+double
+	
+
+ 
+	
+
+Horizontal coordinate
+
+y
+	
+
+double
+	
+
+ 
+	
+
+Vertical coordinate
+
+continueOnError
+	
+
+bool
+	
+
+false
+	
+
+Continue with the script on the error
+
+Code Example
+
+Click(x:10, y:10);
+
+RightClick
+
+The RightClick command is used by right-clicking on an X Y coordinate.
+
+Syntax
+
+RightClick(double x, double y, bool continueOnError = false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+x
+	
+
+double
+	
+
+ 
+	
+
+Horizontal coordinate
+
+y
+	
+
+double
+	
+
+ 
+	
+
+Vertical coordinate
+
+continueOnError
+	
+
+bool
+	
+
+false
+	
+
+Continue with the script on the error
+
+Code Example
+
+RightClick(x:10, y:10);
+
+DoubleClick
+
+The DoubleClick command is used to double-click on an X-Y coordinate.
+
+Syntax
+
+DoubleClick(double x, double y, bool continueOnError = false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+x
+	
+
+double
+	
+
+ 
+	
+
+Horizontal coordinate
+
+y
+	
+
+double
+	
+
+ 
+	
+
+Vertical coordinate
+
+continueOnError
+	
+
+bool
+	
+
+false
+	
+
+Continue with the script on the error
+
+Code Example
+
+DoubleClick(x:10, y:10);
+
+MouseMove
+
+The MouseMove command is used to move the mouse/cursor to a set of X-Y coordinates.
+
+Syntax
+
+MouseMove(double x, double y, bool continueOnError = false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+x
+	
+
+double
+	
+
+ 
+	
+
+Horizontal coordinate
+
+y
+	
+
+double
+	
+
+ 
+	
+
+Vertical coordinate
+
+continueOnError
+	
+
+bool
+	
+
+false
+	
+
+Continue with the script on the error
+
+Code Example
+
+MouseMove(x:10, y:10);
+
+MouseMoveBy
+
+The MouseMoveBy command is used to move the mouse/cursor by a set of pixels relative to the current position.
+
+Syntax
+
+MouseMoveBy(double dx, double dy, bool continueOnError = false);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+dx
+	
+
+double
+	
+
+ 
+	
+
+Horizontal coordinate
+
+dy
+	
+
+double
+	
+
+ 
+	
+
+Vertical coordinate
+
+continueOnError
+	
+
+bool
+	
+
+false
+	
+
+Continue with the script on the error
+
+Code Example
+
+MouseMoveBy(dx:10, dy:10);
+
+MouseDown
+
+The MouseDown command presses the left mouse button without letting go
+
+Code Example
+
+MouseDown();
+
+MouseUp
+
+The MouseUp command lets go of the left mouse button
+
+Code Example
+
+MouseUp();
+
+KeyDown
+
+The KeyDown command holds down a key
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Description
+
+KeyCode
+	
+
+See the KeyCode list
+
+Code Example
+
+KeyDown(KeyCode.SHIFT);
+KeyUp(KeyCode.SHIFT);
+
+KeyUp
+
+The KeyUp command lets go of a key
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Description
+
+KeyCode
+	
+
+See the KeyCode list
+
+Code Example
+
+KeyDown(KeyCode.CTRL);
+KeyUp(KeyCode.CTRL);
+
+KeyCodes
+
+Available KeyCodes
+
+/// Control-break processing
+CANCEL = 0x03,
+BREAK = CANCEL,
+/// BACKSPACE key
+BACK = 0x08,
+BACKSPACE = BACK,
+/// TAB key
+TAB = 0x09,
+/// CLEAR key
+CLEAR = 0x0C,
+/// ENTER key
+RETURN = 0x0D,
+ENTER = RETURN,
+/// SHIFT key
+SHIFT = 0x10,
+/// CTRL key
+CONTROL = 0x11,
+CTRL = CONTROL,
+/// ALT key
+ALT = 0x12,
+/// PAUSE key
+PAUSE = 0x13,
+/// CAPS LOCK key
+CAPITAL = 0x14,
+CAPSLOCK = CAPITAL,
+/// ESC key
+ESCAPE = 0x1B,
+ESC = ESCAPE,
+/// SPACEBAR
+SPACE = 0x20,
+/// PAGE UP key
+PRIOR = 0x21,
+PAGEUP = PRIOR,
+/// PAGE DOWN key
+NEXT = 0x22,
+PAGEDOWN = NEXT,
+/// END key
+END = 0x23,
+/// HOME key
+HOME = 0x24,
+/// LEFT ARROW key
+LEFT = 0x25,
+/// UP ARROW key
+UP = 0x26,
+/// RIGHT ARROW key
+RIGHT = 0x27,
+/// DOWN ARROW key
+DOWN = 0x28,
+/// PRINT SCREEN key
+SNAPSHOT = 0x2C,
+PRINTSCREEN = SNAPSHOT,
+/// INS key
+INSERT = 0x2D,
+INS = INSERT,
+/// DEL key
+DELETE = 0x2E,
+DEL = DELETE,
+/// 0 key
+KEY_0 = 0x30,
+/// 1 key
+KEY_1 = 0x31,
+/// 2 key
+KEY_2 = 0x32,
+/// 3 key
+KEY_3 = 0x33,
+/// 4 key
+KEY_4 = 0x34,
+/// 5 key
+KEY_5 = 0x35,
+/// 6 key
+KEY_6 = 0x36,
+/// 7 key
+KEY_7 = 0x37,
+/// 8 key
+KEY_8 = 0x38,
+/// 9 key
+KEY_9 = 0x39,
+/// A key
+KEY_A = 0x41,
+/// B key
+KEY_B = 0x42,
+/// C key
+KEY_C = 0x43,
+/// D key
+KEY_D = 0x44,
+/// E key
+KEY_E = 0x45,
+/// F key
+KEY_F = 0x46,
+/// G key
+KEY_G = 0x47,
+/// H key
+KEY_H = 0x48,
+/// I key
+KEY_I = 0x49,
+/// J key
+KEY_J = 0x4A,
+/// K key
+KEY_K = 0x4B,
+/// L key
+KEY_L = 0x4C,
+/// M key
+KEY_M = 0x4D,
+/// N key
+KEY_N = 0x4E,
+/// O key
+KEY_O = 0x4F,
+/// P key
+KEY_P = 0x50,
+/// Q key
+KEY_Q = 0x51,
+/// R key
+KEY_R = 0x52,
+/// S key
+KEY_S = 0x53,
+/// T key
+KEY_T = 0x54,
+/// U key
+KEY_U = 0x55,
+/// V key
+KEY_V = 0x56,
+/// W key
+KEY_W = 0x57,
+/// X key
+KEY_X = 0x58,
+/// Y key
+KEY_Y = 0x59,
+/// Z key
+KEY_Z = 0x5A,
+/// Left Windows key (Microsoft Natural keyboard)
+LWIN = 0x5B,
+/// Right Windows key (Natural keyboard)
+RWIN = 0x5C,
+/// Applications key (Natural keyboard)
+APPS = 0x5D,
+MENU = APPS,
+/// Numeric keypad 0 key
+NUMPAD0 = 0x60,
+/// Numeric keypad 1 key
+NUMPAD1 = 0x61,
+/// Numeric keypad 2 key
+NUMPAD2 = 0x62,
+/// Numeric keypad 3 key
+NUMPAD3 = 0x63,
+/// Numeric keypad 4 key
+NUMPAD4 = 0x64,
+/// Numeric keypad 5 key
+NUMPAD5 = 0x65,
+/// Numeric keypad 6 key
+NUMPAD6 = 0x66,
+/// Numeric keypad 7 key
+NUMPAD7 = 0x67,
+/// Numeric keypad 8 key
+NUMPAD8 = 0x68,
+/// Numeric keypad 9 key
+NUMPAD9 = 0x69,
+/// Multiply key
+MULTIPLY = 0x6A,
+NUMPAD_MULTIPLY = MULTIPLY,
+/// Add key
+ADD = 0x6B,
+PLUS = ADD,
+NUMPAD_ADD = ADD,
+/// Subtract key
+SUBTRACT = 0x6D,
+MINUS = SUBTRACT,
+NUMPAD_SUBTRACT = SUBTRACT,
+/// Decimal key
+DECIMAL = 0x6E,
+NUMPAD_DECIMAL = DECIMAL,
+/// Divide key
+DIVIDE = 0x6F,
+NUMPAD_DIVIDE = DIVIDE,
+/// F1 key
+F1 = 0x70,
+/// F2 key
+F2 = 0x71,
+/// F3 key
+F3 = 0x72,
+/// F4 key
+F4 = 0x73,
+/// F5 key
+F5 = 0x74,
+/// F6 key
+F6 = 0x75,
+/// F7 key
+F7 = 0x76,
+/// F8 key
+F8 = 0x77,
+/// F9 key
+F9 = 0x78,
+/// F10 key
+F10 = 0x79,
+/// F11 key
+F11 = 0x7A,
+/// F12 key
+F12 = 0x7B,
+/// NUM LOCK key
+NUMLOCK = 0x90,
+/// SCROLL LOCK key
+SCROLL = 0x91,
+SCROLL_LOCK = SCROLL,
+/// Left SHIFT key
+LSHIFT = 0xA0,
+/// Right SHIFT key
+RSHIFT = 0xA1,
+/// Left CONTROL key
+LCONTROL = 0xA2,
+LCTRL = LCONTROL,
+/// Right CONTROL key
+RCONTROL = 0xA3,
+RCTRL = RCONTROL,
+/// Left MENU key
+LMENU = 0xA4,
+LALT = LMENU,
+/// Right MENU key
+RMENU = 0xA5,
+RALT = RMENU,
+/// Windows 2000/XP: Volume Mute key
+VOLUME_MUTE = 0xAD,
+/// Windows 2000/XP: Volume Down key
+VOLUME_DOWN = 0xAE,
+/// Windows 2000/XP: Volume Up key
+VOLUME_UP = 0xAF,
+
+File and Registry Functions
+
+File and registry functions provide the capability to manage file operations and interact with the Windows registry in your automation scripts. Use CopyFile and CopyFolder to move files or directories, while FileExists and DirectoryExists verify whether the items were successfully copied. Commands such as RemoveFile and RemoveFolder facilitate the cleanup of files and folders as needed. For handling compressed data, UnzipFile extracts contents from ZIP archives. Registry interactions are managed through RegImport, which imports registry settings from a specified file. These functions ensure efficient file management and registry operations.
+CopyFile
+
+The CopyFile command will copy a file from the source to the destination, overwriting the destination path.
+
+Syntax
+
+CopyFile(string sourcepath, string destinationPath, bool continueOnError, bool overwrite);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+sourcepath
+	
+
+string
+	
+
+ 
+	
+
+Copy the file source path
+
+destinationPath
+	
+
+string
+	
+
+ 
+	
+
+Copy the file destination path
+
+continueOnError
+	
+
+boolean
+	
+
+false
+	
+
+Continue if an error occurs 
+
+overwrite
+	
+
+boolean
+	
+
+true
+	
+
+Overwrite the target file if it exists
+
+Code Example
+
+CopyFile(sourcePath:"C:\\somefile.txt",destinationPath:"D:\\somefile.txt",continueOnError:false,overwrite:true)
+
+CopyFile - Download Existing Example Files
+
+You can download known files from the appliance. This is part of the existing CopyFile command. These files can be found on the appliance under "/loginVSI/content/scriptcontent/" when using WINSCP to connect to the appliance.
+
+Syntax
+
+CopyFile(KnownFiles.FileType, string destinationPath, bool continueOnError, bool overwrite);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+KnownFiles.
+	
+
+filetype
+	
+
+ 
+	
+
+KnownFiles.PdfFile
+
+    PdfFile. Downloads a LoginVSI PDF file
+
+    Excel sheet. Downloads a LoginVSI xlsx file
+
+    OutlookConfiguration. Downloads a LoginVSI PRF file
+
+    OutlookData. Downloads a LoginVSI PST file
+
+    PowerPoint Presentation. Downloads a LoginVSI PPTX file
+
+    RichTextFile. Downloads a LoginVSI RTF file
+
+    WordDocument. Downloads a LoginVSI. txt file
+
+destinationPath
+	
+
+string
+	
+
+ 
+	
+
+Copy the file destination path
+
+continueOnError
+	
+
+boolean
+	
+
+false
+	
+
+Continue if an error occurs 
+
+overwrite
+	
+
+boolean
+	
+
+true
+	
+
+Overwrite the target file if it exists
+
+Code Example
+
+CopyFile(KnownFiles.PdfFile, "C:\\Temp\\loginvsi.pdf",continueOnError:false,overwrite:true);
+
+CopyFolder
+
+The CopyFolder command will copy a folder from the source to the destination, overwriting the destination path.
+
+Syntax
+
+CopyFolder(string sourcepath, string destinationPath);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+sourcepath
+	
+
+string
+	
+
+ 
+	
+
+Copy the folder source path
+
+destinathPath
+	
+
+string
+	
+
+ 
+	
+
+Copy the folder destination path
+
+Code Example
+
+CopyFolder(@"c:\testfolder", @"c:\temp\testfolder");
+CopyFolder(string sourcepath, string destinationPath);
+
+FileExists
+
+Check if a file exists, which can be used as a verification to check if the file was successfully copied
+
+Syntax
+
+FileExists(string path);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+path
+	
+
+string
+	
+
+ 
+	
+
+Path of the file to verify
+
+Code Example
+
+FileExists("C:\\Temp\\loginvsi.pdf");
+
+RemoveFile
+
+The RemoveFile command will remove/delete the specified file. 
+
+Syntax
+
+RemoveFile(string path);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+path
+	
+
+string
+	
+
+ 
+	
+
+Path of the file to delete
+
+Code Example
+
+# literal string path
+RemoveFile(path: "c:\\testfolder\\some file.txt");
+# verbatim string path
+RemoveFile(@"c:\testfolder\some file.txt");
+
+RemoveFolder
+
+The RemoveFolder command will remove/delete the specified folder.
+
+Syntax
+
+RemoveFolder(string path);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+path
+	
+
+string
+	
+
+ 
+	
+
+Path of the folder to remove
+
+Code Example
+
+# literal string path
+RemoveFolder(path: "c:\\temp\\testfolder");
+# verbatim string path
+RemoveFolder(@"c:\temp\testfolder");
+
+DirectoryExists
+
+The DirectoryExists function checks if a specified folder exists. Can be used after you create a folder, or if you wish to verify if the folder exists before executing an action
+
+Syntax
+
+DirectoryExists(string path);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+pathOfDirectory
+	
+
+string
+	
+
+ 
+	
+
+Path of the directory to verify
+
+Code Example
+
+DirectoryExists("C:\\Temp");
+
+UnzipFile 
+
+The DirectoryExists function checks if a specified folder exists. Can be used after you create a folder, or if you wish to verify if the folder exists before executing an action
+
+Syntax
+
+UnzipFile(string SourcePath, destinationFolder, continueOnError, overWrite);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+sourcePath
+	
+
+string
+	
+
+ 
+	
+
+Path of the .zip file
+
+destinationFolder
+	
+
+string
+	
+
+ 
+	
+
+Path of the folder to unzip the contents into
+
+continueOnError
+	
+
+boolean
+	
+
+false
+	
+
+Continue if an error occurs
+
+overWrite
+	
+
+boolean
+	
+
+true
+	
+
+Overwrite if the file(s) exist
+
+Code Example
+
+UnzipFile(sourcePath:"C:\\Temp\\loginvsi.zip", destinationFolder:"C:\\temp\\loginvsiwebsite",continueOnError:false,overWrite:false); 
+
+RegImport
+
+The RegImport command will import a registry file into the system registry.
+
+Syntax
+
+RegImport(string registryFile);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+registryFile
+	
+
+string
+	
+
+ 
+	
+
+Path of the registry file to import
+
+Code Example
+
+# literal string path
+RegImport(registryFile: "C:\\temp\\regfile.reg");
+# verbatim string path
+RegImport(@"C:\temp\regfile.reg");
+
+Browser Functions
+
+Browser functions provide the capability to control web browsers in your application scripts. Use StopBrowser to close a previously opened browser. The Navigate function directs the browser to a specified URL and tracks the time it takes to load the page, which is useful for performance monitoring. FindWebComponentBySelector and FindAllWebComponentsBySelector allow you to locate and interact with web elements using CSS selectors, enabling actions such as clicking or typing directly into the identified components. These functions streamline browser automation, allowing you to script web interactions and measure performance within your application workflows.
+StartBrowser
+
+The StartBrowser command allows you to start a browser within an application script. Right now, we only support Chrome 80 and Edge 42/44.
+
+Syntax
+
+StartBrowser(useInPrivateBrowsing, expectedURL, timeout, continueOnError);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+useInPrivateBrowsing
+	
+
+boolean
+	
+
+false
+	
+
+Define if the browser starts in private mode
+
+expectedURL
+	
+
+string
+	
+
+ 
+	
+
+Defines the URL that you want to wait for
+
+timeout
+	
+
+int
+	
+
+60
+	
+
+Waits for # seconds before timing out if not found
+
+continueOnError
+	
+
+boolean
+	
+
+false
+	
+
+Continues the process if an error occurs
+
+Code Example
+
+StartBrowser(useInPrivateBrowsing:false,expectedUrl:"https://www.loginvsi.com",timeout:30,continueOnError:true);
+
+StopBrowser
+
+The StopBrowser command allows you to stop a browser within an application script. 
+
+Syntax / Code Example
+
+StopBrowser();
+
+Navigate
+
+The navigate command will tell the open browser to browse to a specific URL. It automatically measures the time it takes to browse to the page.
+
+Syntax
+
+Navigate(string url, string timerName);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+Url
+	
+
+string
+	
+
+ 
+	
+
+URL to browse too
+
+timerName
+	
+
+string
+	
+
+ 
+	
+
+Name of the timer
+
+Code Example
+
+Navigate(url: "https://loginvsi.com", timerName: "Website_LoginVSI");
+
+FindWebComponentBySelector
+
+The findWebComponentBySelector finds a web element based on the given CSS selector. You can attach existing control actions. For more details, see the Control Actions. You can also move your mouse to the component or search for your component by text.
+
+Note: Make the search field as small as possible to eliminate long searches.
+
+Syntax
+
+FindWebComponentBySelector(string selector, int timeout, bool continueOnError);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+selector
+	
+
+string
+	
+
+ 
+	
+
+CSS Selector on the page
+
+timeout
+	
+
+int
+	
+
+30
+	
+
+Timeout in seconds
+
+continueOnError
+	
+
+boolean
+	
+
+false
+	
+
+Continue if an error occurs
+
+Code Example
+
+FindWebComponentBySelector(selector:"",timeout:30,continueOnError:false);
+// It's also possible to type to the web element via
+FindWebComponentBySelector(selector:"",timeout:30,continueOnError:false).Type("Example text");
+// You can also send a Click to the found web element
+FindWebComponentBySelector(selector:"",timeout:30,continueOnError:false).Click();
+Browser.FindWebComponentBySelector("button[id='logonbutton']",timeout:30,continueOnError:false).Click();
+
+FindAllWebComponentsBySelector
+
+Sometimes the CSS selector appears multiple times within the webpage, which makes it hard to find the one you are looking for. To list the selectors, you can use this command. The result can be used by findWebComponentBySelector. 
+
+You can also move your mouse to the component. For more information, see the Control Actions.
+
+Syntax
+
+FindAllWebComponentsBySelector(string selector, int timeout);
+
+Enlarges the table by opening it in a full screen dialog
+
+Parameter
+	
+
+Type
+	
+
+Default Value
+	
+
+Description
+
+selector
+	
+
+string
+	
+
+ 
+	
+
+Selector object name
+
+timeOut
+	
+
+string
+	
+
+30
+	
+
+Timeout value
+
+Code Example
+
+var components = FindAllWebComponentsBySelector(selector:"A", timeout:30);
+
+Native Automation Scripting
+
+Native automation scripting enhances the capabilities of scripting within the Virtual Appliance by providing deeper control over Windows applications through native OS elements. The NativeWindowHandle and FromNativeWindowHandle functions enable you to identify and work directly with windows using their native OS handles, allowing for precise targeting. SwitchTopMostWindow ensures that the desired window remains on top, preventing pop-ups from interrupting automated tasks. NativeAutomationElement offers direct access to UIAutomation features, providing robust control over UI elements when default methods, such as typing, are insufficient. These functions significantly enhance your ability to script and automate complex interactions with Windows applications.
+
+Note: Using these functions requires you to include the following line at the top of your script:
+
+using Interop.UIAutomationClient;
+
+NativeWindowHandle
+
+Returns the unique identifier of the window as it is known to the Windows OS. This solves the issue where we cannot uniquely identify any given window.
+
+Syntax
+
+IntPtr NativeWindowHandle;
+
+Code Example
+
+FindWindow(title:"*Untitled*", timeout: 5).NativeWindowHandle;
+
+FromNativeWindowHandle
+
+Constructs a scripting window object from a native window handle. This allows us to work with a window that was found by its handle using native technologies like Win32 calls.
+
+Syntax
+
+IWindow FromNativeWindowHandle(IntPtr handle);
+
+Code Example
+
+var myNativeWindow = Process.GetProcessesByName("notepad")[0].MainWindowHandle;
+var myLEWindow = FromNativeWindowHandle(myNativeWindow);
+
+NativeAutomationElement
+
+This provides access to the underlying automation (UIAutomation) library that the Login Enterprise Engine uses. It allows us to use low-level automation actions like manipulating checkboxes directly or setting the value of a text edit control in a more resilient way if typing doesn't work properly.
+
+Note: In-depth information about the UIAutomationClient functions is beyond the scope of this section.
+
+You can download a code example from Additional Resources.
+
+Syntax
+
+IUIAutomationElement NativeAutomationElement;
+
+Code Example
+
+MainWindow.FindControl(classname:"*Document*").NativeAutomationElement;
+
+Control Flow Functions
+
+Control flow functions provide options for implementing conditional logic and iteration in your scripts. The If Else statement allows you to execute code based on whether a condition is true or false. The Try Catch construct enables error handling, ensuring scripts continue running smoothly even if an element is not found. Loops like While and ForEach let you repeat actions until a condition is met or iterate over a collection of values. These control flow functions are essential for building dynamic and resilient scripts, helping you automate workflows that adapt to changing conditions and handle errors gracefully.
+
+Note: These functions represent standard programming concepts that are common across many languages, including C#. While they may be familiar to experienced programmers, we recognize that many of our users may not have a programming background. This section aims to clarify these concepts for those who may be new to scripting, particularly as our workload scripting in C# supports these features, facilitating more advanced and conditional scenarios.
+If Else versus Try Catch
+
+Function name: If Else statement
+
+Description: The If...Else statement allows you to create conditional logic in your scripts. If the condition is true, the code within the If block executes. If the condition is false, the code within the Else block executes. Note that the Else statement is not mandatory.
+
+Example:
+
+var Condition = MainWindow.FindControl(title:"Condition");
+if (Condition != null)
+{
+Type("Condition is true");
+}
+else
+{
+Type("Condition is not true");
+}
+
+Challenges:
+
+Finding a control may throw an exception if the control is not found. If "Continue on Error" is not enabled, this will terminate the workflow.
+
+Solution
+
+Reword the script using a Try...Catch statement. This approach can eliminate inconsistent pop-ups and allow the script to continue running even if a control is not found.
+
+Example:
+
+Try{
+var Condition = MainWindow.FindControl(title:"Condition");
+Condition.Click();
+}
+catch{
+Log("Was unable to find conditional window");
+};
+
+While
+
+Function name: While
+
+Description: The While statement executes a block of code in a loop as long as the specified condition evaluates to true. The condition is evaluated before each iteration of the loop.
+
+Example:
+
+In the following example, we specify an integer variable that equals zero. While the number is less than 10, we log the number to the console and add +1 to it until it evaluates to false.
+
+int number = 0;
+while(number < 10)
+{
+Log(number);
+number++;
+}
+
+ForEach
+
+Function name: foreach
+
+Description: The ForEach statement iterates through each item in an array of values.
+
+Example:
+
+In the following example, we iterate through 3 sample values.
+
+string[] example = {"example 1","example 2","example 3"};
+foreach (string value in example)
+{
+Log(value);
+}
+
+Additional Uses
+
+When working with a browser application, collecting all web selectors can be beneficial. You can then use a ForEach loop to find a specific condition or to identify a particular selector from an array of many.
+Additional Resources
+
+NativeAutomation 1.cs
+https://docs.loginvsi.com/login-enterprise/6.8/scripting-functions-overview
+
+Understanding WinApp Recorder Implementation
+Overview
+
+To improve the robustness, maintainability, and flexibility of Script Recorder, the following changes took place in v6.5:
+
+    The existing automation library has been replaced with FlaUI.
+
+    XPath matching has been made more flexible. Previously, the full sequence of element descriptors had to be provided, and every part had to match exactly. Now you can omit steps or use wildcards, making element lookup less rigid and easier to maintain.
+
+    A new IAutomationElement abstraction replaces the former IAutomatableComponent, reducing bloat and decoupling it from the Engine.
+
+    A more stable foundation for creating reliable and reproducible automation scripts has been established.
+
+    Script Recorder can now record multiple applications at once, regardless of the specified target application. For example, if you set Calculator as a target when creating a new application script, you can launch and record Calculator. However, you can also record any other window present on the desktop, such as Microsoft Word.
+
+This page describes the inventory of methods used by Script Recorder and XPath changes. For information on how to use WinApp Recorder, see Using the WinApp Recorder.
+Inventory of Methods (Generated by Script Recorder)
+FindAutomationElement Methods
+
+New FindAutomationElement methods have been added to the Recorder. These methods allow recording across multiple applications, rather than being limited to a single target application.
+
+The MainWindow is still populated with the target application window for compatibility with existing methods.
+
+Note: When using FindByInformation or FindByXpathOrInformation without providing window information, the search traverses all windows on the desktop, which may result in slower performance in some scenarios.
+Enlarges the table by opening it in a full screen dialog
+
+Method: FindAutomationElementByXPath(…)
+
+Description
+	
+
+Finds anAutomationElement that matches the specified XPath expression. The entire element sequence must match for the element to be considered found.
+
+You can omit ancestor or window information to make the search more flexible, or include it to improve performance.
+
+Returns
+	
+
+An AutomationElement that implements the IAutomationElement interface.
+
+XPath Language Changes
+	
+
+There is a change in the XPath syntax between the old and new methods. For more details, see the XPath Query Changes.
+
+Parameters:
+
+XPath
+	
+
+The XPath query used to locate the automation element. Must match exactly one element for a successful result.
+
+timeout
+	
+
+The maximum time, in milliseconds, to wait for the element to be found. Must be greater than or equal to zero.
+
+A FindAllVariant variant of the method can also be generated manually. For details, see Appendix.
+Enlarges the table by opening it in a full screen dialog
+
+Method: FindAutomationElementByInformation(…)
+
+Description
+	
+
+Finds an AutomationElement by its properties, without using information about ancestor elements.
+
+This method is useful in scenarios where the element hierarchy may change frequently. It provides the most flexible search approach; however, this flexibility may result in slower performance. A new optimization improves performance by splitting the element search into two steps:
+
+    First, it locates the window via XPath.
+
+    Then, it finds the desired element using FindByInformation, starting from that window, substantially narrowing the search scope.
+
+Example (Before optimization):
+
+var buttonNine0 = FindAutomationElementByInformation("num9Button", "Button", "Nine", "Button", 5, continueOnError:false);
+
+Example (After optimization):
+
+var buttonNine0 = FindAutomationElementByXPath("/Window[@ClassName=\"ApplicationFrameWindow\"][@Name=\"Calculator\"]", 5, continueOnError:false).FindAutomationElementByInformation("num9Button", "Button", "Nine", "Button", 5, continueOnError:false);
+
+This optimization is configurable in the Recorder UI. For details, see Using the WinApp Recorder.
+
+Returns
+	
+
+A list of AutomationElement objects that implement the IAutomationElement interface.
+
+Remarks
+
+Search Root
+	
+
+The old Engine required window information to locate elements. The new method performs searches from the Desktop as the root.
+
+Because ancestor and window information are omitted, the search covers all elements on the Desktop. As an optimization, you can configure the element search to first attempt to locate the window.
+
+Parameters
+
+AutomationId
+	
+
+The automation ID of the element to find. Can be null or empty to ignore this property.
+
+className
+	
+
+The element's class name to find. Can be null or empty to ignore this property.
+
+name
+	
+
+The name of the element to find. Can be null or empty to ignore this property.
+
+Framework ID
+	
+
+The underlying technology used to build the UI element (for example, WPF or Win32).
+
+Note: Only used by find by information methods.
+
+Value pattern
+	
+
+The current value of elements that support the Value pattern (for example, text in a text box or a combo box selection).
+
+Note: Only used by find by information methods.
+
+Text pattern
+	
+
+The full text content of elements that support the Text pattern (for example, rich text or document controls).
+
+Note: Only used by find by information methods.
+
+controlType
+	
+
+The control type of the element to find. Can be null or empty to ignore this property.
+
+timeout
+	
+
+The maximum time, in milliseconds, to wait for the element to be found. Must be greater than or equal to zero.
+
+A FindAll variant of the method can also be generated manually. For details, see Appendix.
+Enlarges the table by opening it in a full screen dialog
+
+Method: FindAutomationElementByXPathOrInformation(…)
+
+Description
+	
+
+Finds an automation element by using the specified XPath expression. If no match is found, the method attempts to locate the element by matching automation properties such as automation ID, class name, name, and control type.
+
+This approach first uses a strict, performant search strategy (findByXpath) and then falls back to a more flexible property-based search (findByInformation) if metadata in the XPath chain has changed or is no longer reliable.
+
+Returns
+	
+
+AutomationElement that implements the IAutomationElement contract
+
+Remarks:
+
+Search Root
+	
+
+FindByInformation previously required window information to locate elements. The new method performs searches from the Desktop as the root, so you do not need to provide window information. This increases flexibility, but because it traverses all windows on the Desktop, performance may be slower in some scenarios. FindByXpath, by contrast, follows a specific set of breadcrumbs from the Desktop, making it considerably faster.
+
+In Win365 scenarios, window metadata (such as title or class name) can change between recording and execution. For example, if the document moves or the window title differs. Hiding window information ensures that scripts continue to work even when window details vary. For instance, if a script is recorded on one document window but executed when only a different window is open, it will succeed when window information is omitted.
+
+XPath Language Changes
+	
+
+There is a change in the XPath syntax between the old and new methods. For details, see XPath Query Changes.
+
+Parameters:
+
+XPath
+	
+
+The XPath expression used to locate the automation element. If null or empty, the search uses the provided automation properties instead.
+
+AutomationId
+	
+
+The automation ID of the element to find. Used if the XPath expression is not successful. Can be null or empty to ignore this property.
+
+className
+	
+
+The element's class name to find. Used if the XPath expression is not successful. Can be null or empty to ignore this property.
+
+Framework ID
+	
+
+The underlying technology used to build the UI element (for example, WPF or Win32).
+
+Note: Only used by find by information methods.
+
+Value pattern
+	
+
+The current value of elements that support the Value pattern (for example, text in a text box or a combo box selection).
+
+Note: Only used by find by information methods.
+
+Text pattern
+	
+
+The full text content of elements that support the Text pattern (for example, rich text or document controls).
+
+Note: Only used by find by information methods.
+
+name
+	
+
+The name of the element to find. Used if the XPath expression is not successful. Can be null or empty to ignore this property.
+
+controlType
+	
+
+The control type of the element to find. Used if the XPath expression is not successful. Can be null or empty to ignore this property.
+
+timeout
+	
+
+The maximum time, in milliseconds, to wait for the element to be found. Must be greater than or equal to zero.
+
+This method provides a FindAll variant that returns a list of elements instead of a single element. Unlike the single-element version, it does not throw an exception when multiple elements are found.
+
+Note: A FindAll command is not currently generated automatically by Script Recorder. Script Recorder uses Find[single]ElementByXXXX, a method only available for manual use. For details, see Appendix.
+
+In addition to element search methods, the interface provides the following methods. These methods cover user interactions within a window environment, such as clicks and keyboard input.
+Enlarges the table by opening it in a full screen dialog
+Use table header to sort columns
+	
+
+Click
+	
+
+Performs a click at the specified element’s location (as defined by its bounding rectangle). The mouse pointer may not move directly over the element, but the click action is still executed on the requested element.
+
+Move Mouse To Center
+	
+
+Performs the mouse move from its initial location to the center of the specified element.
+
+Move Mouse Relative To Coordinates
+	
+
+Performs the mouse move from its initial location to the specified coordinates relative to the current element’s location. In other words, the movement is not based on the global pixel location, but on the pixel location within the element’s bounding rectangle. These coordinates are captured during recording.
+
+Right Click
+	
+
+Performs a right-click at the specified element’s location (as defined by its bounding rectangle). The mouse pointer may not move directly over the element, but the click action is still executed on the requested element.
+
+Double Click
+	
+
+Performs a double-click at the specified element’s location (as defined by its bounding rectangle). The mouse pointer may not move directly over the element, but the click action is still executed on the requested element. The “delta” (the amount of time between clicks) used to register a double-click is based on the window's default values.
+
+GetRootWindow
+	
+
+Attempts to fetch the containing top-level window for the current element. This allows access to window-specific methods, such as Close().
+
+AsWindow
+	
+
+Attempts to convert the current element to a window. The conversion fails if the element does not have a control type of Window.
+XPath Query Changes
+
+Script Recorder has transitioned to a standard XPath-style syntax. In the new format, introduced in v6.5:
+
+    The ControlType is used as the XPath node (tag)
+
+    All other metadata is expressed as named attributes
+
+/MenuBar/MenuItem[@Name='SpecificName'][@AutomationId : ‘123’][@ClassName='ClassName']
+
+The standardized XPath query language makes each property explicit, readable, and independently matchable. It allows you to perform complex queries and leverage built-in XPath functions to create flexible and resilient selectors.
+
+/MenuBar/MenuItem[@Name='SpecificName'][@AutomationId : ‘123’][Contains(@ClassName, 'Name’)]
+
+or
+
+/MenuBar/MenuItem[@Name='SpecificName'][@AutomationId : ‘123’][Starts-with(@ClassName, 'Name’)]
+
+You can also omit requirements from an element search in two ways: by leaving metadata fields blank or by omitting specific metadata from the query altogether.
+
+Blank metadata: /RandomWindow[@Class, “ “]
+
+Omitted metadata: /RandomWindow________
+
+Finally, the XPath language allows you to exclude entire chains of elements and to search within a specific subsection of elements using the following syntax:
+
+Original Hierarchy:
+
+/Window/Pane/Pane/Pane/Pane/Pane/Pane/Pane/Pane/Pane/Pane/Pane/Document/Group/Button[@Name=\"Sign in\"]
+
+Trimmed Hierarchy:
+//Group/Button[@Name=\"Sign in\"]
+
+Note: The first tags don’t enforce any metadata, and Button enforces the Name value to be “Sign in”.
+
+An element search is considered successful when a sequence of elements includes both:
+
+    A group node
+
+    A button node with the Name property set to "Sign In"
+
+These capabilities provide the following benefits:
+
+    Partial matches for dynamic values
+
+    More tolerant element selection
+
+    Fewer failures caused by minor UI changes
+
+Appendix
+FindAll Methods
+
+The following are methods that are not generated by Script Recorder, but can be performed manually.
+Enlarges the table by opening it in a full screen dialog
+
+Method: FindAllAutomationElementByXPath
+
+Description
+	
+
+Finds all AutomationElement objects that match the specified property criteria.
+
+Returns
+	
+
+A list of AutomationElement objects that implement the IAutomationElement interface.
+Enlarges the table by opening it in a full screen dialog
+
+Method: FindAllAutomationElementByInformation(…)
+
+Description
+	
+
+Finds all AutomationElement objects that match the specified property criteria.
+
+Returns
+	
+
+A list of AutomationElement objects that implement the IAutomationElement interface.
+Enlarges the table by opening it in a full screen dialog
+
+Method: FindAllAutomationElementByXPathOrInformation(…)
+
+Description
+	
+
+Finds all AutomationElement objects that match the specified XPath expression. If no elements are found, the method attempts to locate matches by automation properties such as automation ID, class name, name, and control type.
+
+Use this method when you need to interact with all elements that meet the specified criteria.
+
+Returns
+	
+
+A list of AutomationElement objects that implement the IAutomationElement interface.
+
+    X
+    LinkedIn
+    YouTube
+
+https://docs.loginvsi.com/login-enterprise/6.8/understanding-winapp-recorder-implementation
