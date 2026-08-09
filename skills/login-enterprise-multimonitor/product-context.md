@@ -1,17 +1,11 @@
 # Product context
 
-Status: Draft context, not a formal PRD or product commitment.
+Status: draft technical context, not a formal PRD, support statement, roadmap, or delivery commitment.
 
-Compatible Login Enterprise workloads commonly interact primarily with the primary display. Multi-monitor validation may require representative application activity distributed across available displays.
+Compatible Login Enterprise workloads commonly interact primarily with one application window on the primary display. Multi-monitor validation may need representative application activity distributed repeatably across active displays.
 
-The productization direction is broad compatibility across Login Enterprise C# workloads, not a solution tied to one application or workload set. Representative Knowledge Worker flows provide concrete validation across Office, browser, and persistent Start/Run behavior while keeping the core mechanism generic.
+The productization direction is broad reuse across compatible Login Enterprise C# workloads. Representative Knowledge Worker Office and browser flows exercise the mechanism but must not define the generic architecture.
 
-Potential value includes:
+Potential value includes repeatable multi-display validation, more representative desktop activity, reusable workload-authoring patterns, and a shared evidence base. The workload must retain ownership of application-specific launch, real-window discovery, business behavior, sequencing, and measurements.
 
-- repeatable multi-monitor validation;
-- more representative application activity across available displays;
-- reusable workload-authoring patterns;
-- a common mechanism and evidence base rather than per-application reinvention;
-- technical learning for possible future productization.
-
-Preview findings must remain distinct from validated requirements, support claims, GA behavior, or delivery commitments.
+The current Preview provides implementation evidence and a validation vehicle. It does not establish supported compatibility, GA behavior, product requirements, or a delivery date. Keep findings categorized as built, generated/not validated, or proven in a named environment.

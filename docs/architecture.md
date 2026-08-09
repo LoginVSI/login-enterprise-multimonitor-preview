@@ -1,69 +1,85 @@
 # Architecture
 
-Status: Planned. This document scaffolds decisions; it does not describe a validated implementation.
+Status: implemented and locally build-tested; Login Enterprise and interactive placement validation remain pending.
 
-## Problem
+## Problem and universal intent
 
-Compatible Login Enterprise workloads commonly interact primarily with the primary display. Multi-monitor validation may require representative application activity distributed predictably across available displays.
+Compatible Login Enterprise workloads commonly interact primarily with the primary display. The Preview provides deterministic, reusable distribution across active displays without coupling the generic mechanism to Office, Edge, or a particular workload set.
 
-## Goals and universal design intent
+## API priority and responsibility boundary
 
-Create a reusable, application-neutral Preview mechanism applicable to broadly compatible Login Enterprise C# workloads. Representative Knowledge Worker flows validate the mechanism but do not define its architecture. Preserve workload behavior and measurement integrity.
+Workloads use documented Login Enterprise APIs first: launch through `START` or `ShellExecute`, find the correct `IWindow` through `FindWindow`/`FindWindows`, use `Restore`/`Maximize` where script-contained, log through `Log`, and bridge through `IWindow.NativeWindowHandle`. Ordinary .NET provides reflection, state, timing, collections, and files. Win32 is limited to display enumeration, HWND validation/movement, and monitor verification.
 
-## Metalanguage-first principle
+Application-specific code owns launch, correct window identification, sequencing, business actions, timers, and the placement insertion point. `LoginVSI.MultiMonitor` owns discovery, ordering, state, selection, native restore/move/maximize for DLL calls, verification, locking, and structured results. It never changes Windows primary-monitor configuration.
 
-Use documented Login Enterprise scripting/metalanguage first, compatible .NET/C# second, and native Windows/P/Invoke third. Confirm exact APIs in supplied documentation; do not invent them.
+## Managed library
 
-## Responsibility boundary
+The single dependency-free assembly targets `netstandard2.0` with C# 7.3. This is a conservative portability choice for mature .NET Framework-era consumers and modern .NET, without a LoginPI.Engine reference or third-party package. Actual Login Enterprise loader compatibility is not inferred from local SDK success.
 
-Application-specific workloads own launch, application interaction, correct main-window identification, sequencing, existing timer boundaries, and when to request placement. Reusable code owns monitor discovery, primary detection and primary-first ordering, persistent round-robin state, next-monitor selection, native placement, suitable restore/maximize behavior, verification, and result/error information.
+The reflection-friendly static API is:
+
+- `ResetState(string stateFilePath)`
+- `PlaceNext(IntPtr windowHandle, string applicationName, string stateFilePath, bool maximize, int stabilizationDelayMilliseconds)`
+- `PlaceOnMonitor(..., int targetMonitorIndex, ...)`
+- `PlaceLastUsed(...)`
+
+`PlaceNext` advances round-robin state after verified success. `PlaceOnMonitor` reasserts a known target without advancing. `PlaceLastUsed` supports persistent Start/Run pairs by reading the last verified target without consuming another destination.
+
+`PlacementResult` reports success, application, monitor count, initial/target/verified indices, elapsed milliseconds, state advancement, Win32 error code, and a message.
 
 ## State
 
-TBD after reference review: persistence location and format, initialization, atomicity, concurrency, corruption recovery, monitor-count changes, and standard-user access.
+State remains compatible with the proven POC:
 
-## Monitor enumeration and primary-first ordering
+```text
+%TEMP%\LoginPI\MultiMonitor\state.txt
+MonitorCount=<integer>
+LastUsedIndex=<integer>
+```
 
-TBD after POC and documentation review: enumerate active displays, capture bounds/working areas and primary status, then define deterministic primary-first ordering for remaining displays. Cover negative coordinates and topology changes.
+Initialization uses `LastUsedIndex=-1`; next selection is `(lastUsedIndex + 1) % monitorCount`. Missing, malformed, out-of-range, or monitor-count-changed state resets to the current count and `-1`. The state update uses a same-directory temporary file and replacement. A short-lived exclusive `.lock` file serializes readers/writers around selection and placement. HWND and monitor handles are rediscovered and never persisted.
 
-## Placement
+## Monitor discovery and ordering
 
-TBD: native HWND placement, restore/maximize policy, working-area versus monitor bounds, verification, retry policy, focus effects, and structured results.
+Each allocation or maintenance placement calls `EnumDisplayMonitors` and `GetMonitorInfo`. The primary flag is explicit. Ordering is:
 
-## Reuse alternatives
+1. Primary monitor.
+2. Remaining monitors by signed `Left`, then signed `Top`, bounds, and handle as deterministic tie-breakers for that discovery.
 
-### Helper-copy architecture
+Signed bounds preserve displays left of or above the primary. Synthetic tests cover primary-first order and negative coordinates.
 
-Script-contained compatible helper code can isolate behavior before deployment and runtime-loading complexity. Duplication and drift are open concerns.
+## Placement flow
 
-### DLL architecture
+1. Validate the current HWND.
+2. Acquire state access.
+3. Rediscover and order monitors.
+4. load/repair state and choose a target.
+5. Restore the current window.
+6. Wait for stabilization.
+7. call `SetWindowPos` with the target's full bounds.
+8. Wait, optionally maximize, and wait again.
+9. Verify with `MonitorFromWindow`.
+10. Advance state only for a verified `PlaceNext`.
+11. Return timing and result information.
 
-A managed helper may centralize the application-neutral mechanism. Its API, target runtime, deployment, Script Editor compatibility, and versioning remain TBD.
+The library does not force foreground focus. Workloads retain focus ownership.
 
-### Dynamic loading
+## Script-only and DLL-backed paths
 
-Loading a helper dynamically may reduce compile-time coupling, but discovery, compatibility, error handling, and security require validation.
+Script-only workloads embed the same core state and placement behavior while using `IWindow.Restore`/`Maximize`. They isolate Script Editor behavior before assembly loading.
 
-### Possible background session router
+DLL-backed and integrated workloads use `FileExists`, ordinary `Assembly.LoadFrom`, and reflection. The documentation does not establish a dedicated DLL distribution API, so the DLL must be staged at `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll` by an environment-appropriate method.
 
-A future background window router is an architecture alternative, not a requirement or commitment. Ownership, lifecycle, matching, security, timing, and deployment implications remain open.
+## Integrated sequencing and measurement
 
-## Scenario sequencing
+Office document windows are placed after their existing open-document timers stop. Later minimize/maximize actions reassert the same target without advancing state. Preparation and close workloads do not consume targets.
 
-State and application behavior span independent workload files. The preserved scenario reference informs integration, but experiments must not alter it silently. Full behavior requires an actual sequential Login Enterprise scenario.
+Edge Start identifies a newly observed top-level Edge HWND, ends `Browser_Start`, preserves its initialization wait, then allocates. Edge Run uses the last verified target from Start and reasserts it after repeated maximize/focus operations. This adds cadence overhead but avoids treating a Start/Run pair as two applications.
 
-## Measurement boundary
+The authoritative scenario order and settings remain in `reference/test-scenario/workload-sequence.txt`.
 
-Placement adds overhead. Keep it outside EUX, application-response, and performance timers wherever practical, without silently moving boundaries or altering cadence.
+## Alternatives and open questions
 
-## Deployment and compatibility
+Copying helper source into every workload remains useful for isolation but creates drift. The DLL centralizes behavior but adds staging and runtime compatibility requirements. A background session router remains a possible future alternative, not an implemented requirement or commitment.
 
-Target standard-user execution without third-party runtime dependencies. Compatibility across Login Enterprise runtime versions, Windows versions, DPI modes, display topologies, VDI platforms, and helper deployment remains to be established.
-
-## Open questions
-
-- Which supplied Login Enterprise APIs can perform each step?
-- What state contract is safest across independent executions?
-- Which reuse architecture best fits Script Editor and deployed workloads?
-- How should placement, verification, retries, focus, restore, and maximize interact?
-- What compatibility and distribution envelope can evidence support?
+Open evidence areas include Script Editor language/runtime compatibility, DLL loading, application window replacement, DPI/scaling, concurrency under real scenario load, display changes during placement, interactive/VDI behavior, and acceptable timing overhead.

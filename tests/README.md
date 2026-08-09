@@ -1,3 +1,5 @@
 # Tests
 
-Reserved for future pure-logic tests and integration-support tooling for state, ordering, topology, selection, placement results, and failure behavior. Login Enterprise Script Editor and actual scenario validation remain separate required environments; local unit tests cannot substitute for either. No test result is currently proven.
+`LoginVSI.MultiMonitor.Tests/` is a dependency-free `net8.0` console harness. Its 17 tests cover round-robin sequences for one through four displays, synthetic primary-first ordering, negative coordinates, valid/invalid/missing state, repair persistence, monitor-count changes, serialization, round trips, replacement writes, and the safe zero-HWND failure result.
+
+Run through `build.ps1` or directly with `dotnet run`. These tests do not claim actual window movement, Login Enterprise compatibility, cross-workload continuity, an interactive display topology, or VDI behavior.

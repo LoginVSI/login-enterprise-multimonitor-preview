@@ -1,50 +1,80 @@
 # Login Enterprise Multi-Monitor Preview
 
-This repository is the public engineering home for an early, unsupported Login Enterprise Multi-Monitor Preview. It is under active development. It does not represent a generally available feature, a support commitment, or a delivery commitment.
+This repository contains an early, unsupported Preview and active R&D implementation for distributing compatible Login Enterprise C# workload windows across active Windows displays. It is a public working example, not a generally available feature, support commitment, compatibility promise, or delivery commitment.
 
-The goal is a reusable mechanism that can distribute representative application activity across available displays for broadly compatible Login Enterprise C# workloads. Knowledge Worker workloads will validate that generic mechanism; the architecture must not be coupled to Office, a browser, or a single workload set.
+The implementation is deliberately application-neutral. Login Enterprise workloads continue to launch applications, identify the correct `IWindow`, preserve application behavior and measurement boundaries, and choose when placement occurs. The reusable helper receives `IWindow.NativeWindowHandle` and owns monitor discovery, primary-first ordering, persistent round-robin selection, native movement, maximize behavior, verification, timing, and structured results.
 
-## Repository purposes
+## Current implementation
 
-1. Active engineering and exploration of multi-monitor behavior.
-2. Public Preview workload delivery, examples, documentation, and intentional distributables.
-3. Technical companion material for a future product-management PRD and development handoff. The formal PRD lives elsewhere.
+- A dependency-free `netstandard2.0` library under `src/LoginVSI.MultiMonitor/`.
+- A two-file script-only Notepad/Paint then Command Prompt/Edge sequence.
+- Equivalent reflection-loaded DLL-backed workloads.
+- Derived Preview adaptations of the enabled representative Office and Edge workloads.
+- Pure-logic and safe failure-path tests that run without an interactive desktop.
+- A Windows PowerShell 5.1-friendly build and distribution script.
+- A draft AI skill and technical Product/Development handoff material.
 
-## Current status
+The library and its 17 local tests build successfully in this repository. Login Enterprise Script Editor compilation, Login Enterprise runtime loading, actual multi-display movement, two-file state continuity, the complete scenario, and VDI behavior remain unvalidated.
 
-Only repository scaffolding, guardrails, reference locations, a scenario reference, and hygiene helpers exist. No final implementation, reusable DLL, integrated workload, or validated Preview behavior is present.
+## Build
 
-## Directory map
+From Windows PowerShell:
 
-- `reference/original-workloads/`: immutable, known-good baseline workloads supplied later; integrity is tracked with SHA-256.
-- `reference/proven-pocs/`: previously successful proof-of-concept source supplied later and retained as evidence.
-- `reference/login-enterprise-docs/`: supplied scripting/metalanguage documentation and representative examples; the primary API source of truth.
-- `reference/test-scenario/`: preserved scenario ordering and configuration evidence.
-- `workloads/script-only/`: self-contained Preview experiments before DLL complexity.
-- `workloads/dll-backed/`: workloads using the future reusable managed library.
-- `workloads/integrated/`: adapted copies of complete representative workloads. Originals are never edited.
-- `src/LoginVSI.MultiMonitor/`: reserved reusable implementation source.
-- `tests/`: future pure-logic and integration-support tests.
-- `skills/login-enterprise-multimonitor/`: draft, unvalidated AI workflow instructions.
-- `docs/`: architecture, testing, limitations, history, requirements context, and handoff material.
-- `scripts/`: reference-integrity and public-repository hygiene helpers.
-- `dist/`: intentional public Preview distributables only.
-- `artifacts/`: ignored local logs, screenshots, state, diagnostics, and build scratch; only `.gitkeep` is tracked.
+```powershell
+.\build.ps1
+```
 
-## Implementation principles
+The script cleans known build outputs, restores and builds without third-party packages, runs the console test harness, and copies the intentional distributable to `dist/LoginVSI.MultiMonitor.dll`.
 
-Use documented Login Enterprise scripting/metalanguage functionality first, compatible .NET/C# second, and native Windows APIs only where the preceding layers do not provide the required behavior. Never invent a Login Enterprise API; confirm exact functions against supplied documentation.
+## Runtime staging
 
-Application-specific code owns launch, interaction, correct main-window identification, sequencing, measurement boundaries, and the placement call site. Reusable code owns monitor discovery and ordering, persistent round-robin state, selection, native placement, suitable restore/maximize behavior, verification, and result/error information.
+The supplied scripting documentation establishes `CopyFile` for known or accessible files but does not establish a dedicated DLL distribution API. DLL-backed and integrated workloads therefore expect the reviewed DLL to be staged at:
+
+```text
+%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll
+```
+
+State is stored separately in the same directory as `state.txt`:
+
+```text
+MonitorCount=<integer>
+LastUsedIndex=<integer>
+```
+
+The initial index is `-1`. State advances only after the target monitor verifies successfully. Monitor-count changes, missing state, and invalid state reset the index safely. HWND and monitor handles are never persisted.
+
+## Repository map
+
+- `reference/original-workloads/`: immutable known-good baselines protected by SHA-256 and byte-preserving Git attributes.
+- `reference/proven-pocs/`: byte-preserved successful POC evidence.
+- `reference/login-enterprise-docs/`: supplied scripting/metalanguage reference and examples; the API source of truth.
+- `reference/test-scenario/`: authoritative scenario transcription and supporting screenshot.
+- `workloads/script-only/`: self-contained placement proofs without DLL loading.
+- `workloads/dll-backed/`: the same sequence using the staged managed helper.
+- `workloads/integrated/`: derived representative workload adaptations; originals remain unchanged.
+- `src/LoginVSI.MultiMonitor/`: reusable state, ordering, Win32, placement, and result implementation.
+- `tests/LoginVSI.MultiMonitor.Tests/`: dependency-free console tests.
+- `dist/`: intentional Preview distributable output.
+- `docs/`: architecture, testing, limitations, requirements context, history, and handoff.
+- `skills/login-enterprise-multimonitor/`: draft AI workflow grounded in this implementation.
+- `artifacts/`: ignored local logs, screenshots, state, and diagnostics.
 
 ## Validation model
 
-Login Enterprise Script Editor and its standalone runner validate compilation and individual-workload behavior. They do not prove state or behavior across independent workload executions. Cross-workload state, Start/Run relationships, complete sequencing, and end-to-end behavior require an actual Login Enterprise test scenario. See [docs/testing.md](docs/testing.md).
+Script Editor and the standalone runner can compile, run, and debug one workload at a time. They can validate individual launch, window identification, DLL loading, and placement behavior. They cannot prove state continuity across two independent workload files merely by combining phases into one script.
 
-## Reference protection
+True cross-workload state, Start/Run relationships, complete Knowledge Worker ordering, and end-to-end behavior require an actual Login Enterprise test scenario. Actual movement also requires an interactive Windows session with the target display topology. See `docs/testing.md`.
 
-Never edit, rename, delete, reformat, modernize, or add Preview logic directly to files in `reference/original-workloads/`. Create adaptations under `workloads/` and run `scripts/Verify-ReferenceHashes.ps1 -Verify` before and after major implementation passes once the owner has established the manifest.
+## Timing and behavior
+
+Placement is not zero-cost. Restore, stabilization, move, maximize, verification, locking, and state I/O add runtime and cadence overhead. Integrated placement is kept outside existing application-response timers wherever practical, and the structured result reports elapsed milliseconds.
+
+The helper does not change the Windows primary monitor. It only orders the reported primary display first for round-robin selection. Edge remains the highest-risk integration because later browser actions repeatedly focus and maximize its persistent window; the adapted Run workload therefore reasserts the previously selected target without advancing state.
+
+## Reference protection and public safety
+
+Never edit files under `reference/original-workloads/` or `reference/proven-pocs/`. Verify original hashes before and after implementation work. Create all adaptations under `workloads/`, label evidence accurately, and run `scripts/Test-PublicSafety.ps1` before publication.
 
 ## License and support
 
-License selection is pending. This unsupported Preview makes no GA, support, compatibility, or delivery claim.
+License selection remains pending. This unsupported Preview makes no GA, support, compatibility, or release claim.

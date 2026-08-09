@@ -1,35 +1,25 @@
 # Development history
 
-Record evidence-backed milestones here without inventing dates or results. Each entry should identify source/build, environment, validation status, evidence, decisions, and remaining limitations.
+## Basic placement evidence
 
-## Basic placement
+The preserved v0.1 POC provides successful implementation evidence for monitor enumeration, primary-first ordering, signed coordinates, restore/move/maximize, and monitor verification in a Login Enterprise workload.
 
-Planned.
+## Persistent state evidence
 
-## Persistent state
-
-Planned.
-
-## Cross-workload state
-
-Planned; requires separate workload files and an actual Login Enterprise scenario.
+The preserved v0.3 POC provides successful implementation evidence for the two-line state schema, reset behavior, round-robin selection, verified-success advancement, timing, and in-script phase continuity. Its two internal phases are not evidence for separate workload-file continuity.
 
 ## Reusable library
 
-Planned.
+The Preview now contains a dependency-free `netstandard2.0` implementation with reflection-friendly APIs and structured results. Local build: passed with zero warnings/errors. Pure-logic/failure-path tests: 17 passed. Login Enterprise loading remains unvalidated.
+
+## Sequential workloads
+
+Script-only and DLL-backed Notepad/Paint then Command Prompt/Edge pairs are generated. Cross-file continuity remains planned for a real scenario.
 
 ## Integrated workloads
 
-Planned.
+Ten enabled-scenario derivatives are present. Durable Outlook, Edge, Excel, PowerPoint, and Word windows receive placement; transient preparation and cleanup workloads do not consume state. No integrated workload is yet proven in Script Editor or a full scenario.
 
-## Complete scenario
+## Complete scenario, VDI, and product handoff
 
-Planned.
-
-## VDI validation
-
-Planned.
-
-## Product handoff
-
-Planned.
+The authoritative sequence is preserved. Complete scenario and VDI validation remain planned. Product and Development handoff documents now describe the implemented Preview and outstanding evidence.

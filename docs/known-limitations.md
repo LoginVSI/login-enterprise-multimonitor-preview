@@ -1,23 +1,21 @@
 # Known limitations and validation risks
 
-Status: Planned investigation. This unsupported Preview has no committed product delivery date, support claim, or validated compatibility envelope.
+This unsupported Preview has no committed delivery date, support claim, or validated compatibility envelope.
 
-- **Window identification:** the correct main window may be ambiguous.
-- **Splash screens and secondary dialogs:** early or modal windows may be mistaken for the main window or remain elsewhere.
-- **Replacement windows:** applications may replace an HWND after placement.
-- **Browser multiprocess behavior:** process identity may not map directly to the intended browser window.
-- **Existing browser instances:** launch behavior may reuse a window not created by the current workload.
-- **Persistent Start/Run applications:** window ownership and state may span independent workloads and require full-scenario evidence.
-- **Focus:** native movement or restore operations may affect foreground focus.
-- **Maximize/fullscreen:** restoring, moving, maximizing, or fullscreen transitions may interact differently.
-- **Later workload actions:** subsequent steps may change location, size, focus, or window identity.
-- **Scenario ordering:** order and `Run once`/`Leave application running` settings may materially affect results.
-- **Display topology:** enumeration order and active-monitor changes require deterministic handling.
-- **DPI and scaling:** logical and physical coordinate behavior is not yet established.
-- **Negative coordinates:** displays left of or above the primary require signed-coordinate validation.
-- **State concurrency:** multiple writers, partial writes, and recovery remain TBD.
-- **Timing and cadence:** discovery, persistence, placement, verification, and retry add overhead.
-- **DLL/runtime compatibility:** target framework, Script Editor loading, and runtime compatibility are unproven.
-- **Deployment/distribution:** helper location, updates, trust, and rollback are not designed.
-
-Update this list from evidence; distinguish confirmed limitations from risks still under investigation.
+- **Login Enterprise runtime:** workload compilation and `netstandard2.0` reflection loading are not yet validated in Script Editor/runner.
+- **Interactive desktop:** local unit tests do not prove actual movement, maximize behavior, focus, or verification on a desktop.
+- **Window identification:** correct main-window selection remains application-specific. Splash, modal, secondary, and replacement windows can invalidate an earlier HWND.
+- **Edge:** existing instances, multiprocess behavior, delayed/new top-level windows, and later maximize/focus actions make it higher risk. Start aborts rather than selecting an indistinguishable existing window; Run assumes the authoritative Start/Run order.
+- **Persistent applications:** `PlaceLastUsed` requires valid prior state. A monitor-count reset between Start and Run leaves no prior target and fails safely.
+- **Focus:** the library does not force foreground focus; workloads do. Native placement and application actions may still affect focus.
+- **Fullscreen and later actions:** applications can relocate or replace windows after verification. Integrated code reasserts after known minimize/maximize points only.
+- **Scenario dependencies:** enabled state, order, `Run once`, and `Leave application running` semantics may materially affect behavior.
+- **DPI/scaling:** mixed DPI and scaling behavior is unvalidated. Full monitor bounds are supplied before maximize.
+- **Negative coordinates:** represented and unit-tested, but not proven on a physical topology.
+- **State concurrency:** calls use a five-second exclusive file lock. Real concurrent workloads, delayed lock-file cleanup, non-local filesystems, and abrupt termination need validation.
+- **Atomic state replacement:** implemented with same-directory `File.Replace`/`File.Move`; target filesystem behavior must be validated in deployment.
+- **Monitor changes:** count changes reset state. Same-count topology or identity changes are not represented in the MVP schema.
+- **Timing:** restore, three stabilization intervals, movement, maximize, verification, locking, and I/O add overhead. Edge maintenance placement adds repeated cadence overhead.
+- **DLL staging:** automatic distribution is not implemented because no supported custom DLL delivery contract was established in supplied docs.
+- **Media staging:** the integrated 4K Edge Start workload expects a generic local media file to be staged separately.
+- **Deployment/security:** binary provenance, signing, version selection, update, rollback, and trust policy remain deployment responsibilities.

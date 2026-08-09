@@ -1,67 +1,54 @@
 # Implementation guidance
 
-Status: **TBD / UNVALIDATED**. Do not infer a stable API or final design from these placeholders. Complete them only after reading all supplied documentation, original workloads, representative examples, and proven POCs.
+Status: **DRAFT / NOT LOGIN ENTERPRISE-VALIDATED**. This describes the current Preview implementation, not a stable product contract.
 
-## Metalanguage-first principle
+## API priority and boundary
 
-TBD: map required operations to documented Login Enterprise functions first, compatible .NET/C# second, and native Windows/P/Invoke third.
+Use documented Login Enterprise operations for launch, `FindWindow`/`FindWindows`, waits, logs, timers, file checks, and `IWindow` operations. Use ordinary compatible C# for reflection and state logic. Use Win32 only for display discovery, HWND placement, and verification not exposed by the supplied scripting API.
 
-## Architecture
+The workload owns launch, current `IWindow` discovery, application behavior, insertion point, and measurement boundaries. `LoginVSI.MultiMonitor.dll` owns monitor/state/placement mechanics and has no LoginPI.Engine reference.
 
-TBD: preserve the workload-specific/reusable responsibility boundary and application neutrality.
+## Current state and selection contract
 
-## State
+- Path: `%TEMP%\LoginPI\MultiMonitor\state.txt`.
+- Schema: `MonitorCount=<integer>` and `LastUsedIndex=<integer>`.
+- Initial/reset index: `-1`.
+- Allocation: `(lastUsedIndex + 1) % monitorCount`.
+- Recovery: reset for missing, malformed, out-of-range, or monitor-count-changed state.
+- Commit: write atomically only after verified successful placement.
+- Concurrency: serialize allocation with a sibling lock file.
 
-TBD: persistence scope, location, schema, atomic writes, concurrency, recovery, reset, and monitor-count change.
+Rediscover monitors for every call. Put the explicit primary first, then order remaining monitors by signed left/top coordinates and stable tie-breakers. Signed bounds preserve displays left of or above the primary. Never persist native handles.
 
-## Monitor enumeration
+## Current DLL contract
 
-TBD: supported discovery method, metadata, active-display filtering, bounds, work areas, DPI, and failures.
+The dependency-free `netstandard2.0` assembly exposes reflection-friendly static methods on `LoginVSI.MultiMonitor.MultiMonitorPlacer`:
 
-## Primary-first ordering
+- `ResetState(string stateFilePath)` initializes state deliberately.
+- `PlaceNext(IntPtr, string, string, bool, int)` allocates, places, verifies, then advances.
+- `PlaceLastUsed(IntPtr, string, string, bool, int)` reapplies the persisted target without advancing.
+- `PlaceOnMonitor(IntPtr, string, string, int, bool, int)` reapplies a specified target without advancing.
 
-TBD: deterministic primary-first algorithm and ordering of remaining displays.
+`PlacementResult` exposes success, application, monitor count, initial/target/verified indices, state advancement, elapsed milliseconds, Win32 error, and message. Callers must inspect `Success`; reflection invocation success alone does not prove placement.
 
-## Coordinates
+## Placement behavior
 
-TBD: coordinate systems, working areas, scaling, and placement calculations.
+Restore the HWND, allow stabilization, call `SetWindowPos` using full monitor bounds, maximize when requested, stabilize again, and verify with `MonitorFromWindow`. The operation has measurable overhead. A result advances state only after target verification.
 
-## Negative coordinates
+## Loading and staging
 
-TBD: signed bounds for displays left of or above the primary.
+Current DLL-backed workloads expect `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll` and use `Assembly.LoadFrom` plus reflection. The supplied documentation did not establish a supported automatic custom-DLL distribution API, so stage the DLL explicitly and validate that process. Do not invent delivery functionality.
 
-## Native placement
+## Application patterns
 
-TBD: HWND bridge, restore/move/maximize policy, verification, retries, focus, and results.
+- **Office:** identify the durable document/main `IWindow` after open measurement stops; allocate there. Reassert after later minimize/maximize behavior when needed.
+- **Edge/browser:** snapshot existing Edge windows before launch, prefer a newly observed window, and account for multiprocess/existing-instance ambiguity. Start allocates after original initialization; Run reuses and repeatedly reasserts the saved target after focus/maximize actions.
+- **Persistent Start/Run:** state continuity and the long-lived window must be tested across independent workload files in an actual scenario.
 
-## DLL/helper API
+## Failure handling
 
-TBD: public contract, target runtime, types, versioning, dependencies, and deployment.
+Return and log structured failure information for invalid HWNDs, monitor discovery, state locking, Win32 movement, and verification. Examples abort on placement failure to avoid silent false success. Product continuation policy remains undecided.
 
-## Dynamic loading
+## Future alternative
 
-TBD: assembly discovery, path trust, reflection contract, compatibility, and graceful failure.
-
-## Error handling
-
-TBD: structured results, logging, recovery, continuation policy, and public-safe diagnostics.
-
-## Office
-
-TBD: application-specific window identification and sequencing only; do not move generic behavior into Office-specific code.
-
-## Browser/Edge
-
-TBD: existing instances, multiprocess/window identity, launch behavior, and replacement windows.
-
-## Persistent Start/Run workloads
-
-TBD: ownership and state across independent workload files and long-lived application windows.
-
-## Scenario sequencing
-
-TBD: integrate without silently changing the known-good reference ordering or settings.
-
-## Possible future background window router
-
-TBD architecture alternative only; not an approved requirement, implementation, or delivery commitment.
+A background session window router could respond to replacement windows, but it is neither implemented nor an approved requirement. Evaluate only with lifecycle, security, ownership, timing, and deployment evidence.

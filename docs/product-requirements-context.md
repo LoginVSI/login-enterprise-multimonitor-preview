@@ -1,119 +1,95 @@
 # Product requirements context
 
-This document is a technical companion and working input. It is **not the formal PRD**. The formal PRD will live in the product-management system. Do not convert placeholders or Preview observations into commitments without Product Owner review.
+This is a technical companion and working input, **not the formal PRD**. The formal PRD lives in the product-management system. Preview code and findings are not product commitments.
 
 ## Problem
 
-Workloads commonly interact primarily with the primary display; the precise validated problem statement remains to be completed.
+Compatible Login Enterprise workloads commonly drive one primary application window on the primary display. Multi-monitor validation may need representative application activity distributed repeatably across the active display topology.
 
-## User story
+## User story and value
 
-TBD with Product Owner input.
+Provisional story: a workload author can opt a correctly identified application window into a reusable next-monitor operation without rewriting launch, application interaction, or measurement logic.
 
-## User/customer value
+Potential value includes repeatable multi-display activity, more representative desktop behavior, reusable authoring, and a common evidence base. Scope and prioritization require Product Owner review.
 
-Potential value includes more representative multi-monitor validation, repeatability, and reusable workload authoring. Validate scope and wording.
+## Current and desired behavior
 
-## Current behavior
+The Preview rediscovers active monitors, orders the primary first, selects from file-backed state, restores/moves/maximizes, verifies, reports overhead, and advances state after success. The desired product direction is broad compatible-workload reuse rather than per-application placement code.
 
-TBD from supplied workloads and evidence; do not generalize beyond observations.
-
-## Desired behavior
-
-TBD. The Preview direction is deterministic distribution of appropriate application windows across available displays while preserving workload intent.
+The Preview does not change the configured Windows primary monitor and does not persist window or monitor handles.
 
 ## Universal compatible-workload goal
 
-Broad compatibility across essentially any compatible Login Enterprise C# workload is the productization goal. Define the compatibility boundary from evidence.
+The generic helper accepts only an HWND, application label, state path, maximize choice, and stabilization delay. Application-specific code continues to own the actual `IWindow` and insertion point. Compatibility boundaries remain evidence-driven and unapproved as formal requirements.
 
 ## Representative Knowledge Worker validation
 
-Office, browser, Knowledge Worker, and persistent Start/Run flows should exercise the generic mechanism; they must not define an application-specific architecture.
+Office and Edge derivatives exercise different patterns: replaced document windows, persistent Start/Run windows, later minimize/maximize/focus actions, timers, and cleanup. They validate the generic mechanism; they do not define application-specific core architecture.
 
-## Base requirements
+## Candidate base requirements
 
-TBD and subject to Product Owner approval.
+- Primary-first deterministic ordering with signed coordinates.
+- Persistent round-robin state across independent workload executions.
+- Safe missing/invalid/count-changed state recovery.
+- Verified-success-only state advancement.
+- Structured results and placement time.
+- Standard-user operation and no third-party runtime dependency.
+- Clear workload/helper responsibility boundary.
+
+These are implemented Preview behaviors, not yet accepted formal product requirements.
 
 ## Nice-to-haves
 
-TBD; keep separate from accepted base requirements.
-
-## Technical requirements
-
-Candidate areas: documented-API priority, application-neutral placement, deterministic ordering, persistent state, verification, standard-user operation, and compatible deployment. Confirm before treating as formal requirements.
-
-## Nontechnical requirements
-
-TBD: documentation, supportability, licensing, accessibility, release, and ownership expectations.
+Potential future areas include richer monitor identity in state, configurable ordering/policies, diagnostics tooling, signed distribution, centralized routing, and a supported workload-author integration surface. None is committed.
 
 ## Workload-author experience
 
-TBD: integration steps, placement call site, window handoff, result handling, configuration, and diagnostics.
+The current DLL pattern requires staging one assembly, loading it, passing `IWindow.NativeWindowHandle`, logging `PlacementResult`, and choosing either allocation or maintenance placement. A productized experience should reduce reflection boilerplate and clearly describe supported window-lifecycle patterns.
 
-## Runtime behavior
+## Runtime and persistent-state behavior
 
-TBD: initialization, selection, placement, verification, retries, focus, restore/maximize, and monitor changes.
-
-## Persistent-state behavior
-
-TBD: scope, lifecycle, format, location, concurrency, recovery, reset, and upgrade behavior.
+The MVP state path and schema remain POC-compatible. Calls serialize through a short file lock. Monitor-count changes reset the index; same-count identity/topology changes do not. `PlaceLastUsed` supports Start/Run continuity without consuming another target.
 
 ## Scenario/sequencing behavior
 
-TBD using the preserved known-good sequence and actual Login Enterprise scenario evidence.
+True continuity requires independent files in an actual scenario. The authoritative sequence, enabled states, `Run once`, and `Leave application running` settings must remain intact during validation.
 
 ## Compatibility
 
-TBD across Login Enterprise runtime/Script Editor, Windows, applications, display topology, DPI, VDI, and helper architecture.
+The library targets `netstandard2.0`/C# 7.3. Compatibility remains unvalidated across Login Enterprise releases, Script Editor, standalone runner, Windows versions, Office/Edge versions, DPI modes, display topologies, VDI platforms, and deployment policies.
 
-## Measurement/timing expectations
+## Measurement and timing expectations
 
-Preserve existing measurement intent and keep placement outside performance-related timers wherever practical. Define acceptable overhead from evidence.
+Placement should remain outside existing application-response measurements wherever practical. It is explicitly nonzero-cost and reports elapsed milliseconds. Product thresholds and acceptable cadence impact are open.
 
 ## Error/failure behavior
 
-TBD: graceful degradation, structured results, logging, retries, recovery, and whether workload execution continues.
+The helper returns structured failures for invalid HWNDs, no monitors, state-lock timeout, invalid target, Win32 failure, and failed verification. Workload examples abort on unsuccessful placement to avoid silently claiming success. A product continuation/degradation policy remains open.
 
-## Security
+## Security and deployment
 
-TBD: standard-user permissions, state and binary integrity, dynamic loading, path trust, logging, and dependency review.
+The helper runs as the standard user, writes beneath `%TEMP%`, loads a staged local assembly, and has no third-party dependency. Signing, trusted staging, binary integrity, allowed paths, update/rollback, logging policy, and distribution ownership remain open product decisions.
 
-## Deployment/distribution
+## Observability
 
-TBD: script-only delivery, helper deployment, versioning, updates, rollback, and intentional public Preview packaging.
+Results expose application name, monitor count, initial/target/verified indices, state advancement, Win32 error, message, and elapsed time. Future evidence should determine whether additional topology/state identifiers are necessary.
 
-## Observability/logging
+## Risks and open questions
 
-TBD: public-safe diagnostics for monitor discovery, selection, state, window identity, placement, verification, timing, and failures.
+See `known-limitations.md`. Key questions include runtime compatibility, correct-window durability, Edge replacement behavior, concurrency, same-count topology changes, mixed DPI, acceptable overhead, automatic deployment, and support ownership.
 
-## Risks
+## Preview findings and validation evidence
 
-Seed risks are listed in `known-limitations.md`; assess likelihood, impact, mitigation, and evidence.
-
-## Open questions
-
-Maintain unresolved product and engineering decisions without fabricating answers.
-
-## Preview findings
-
-None yet. Label each future finding with its evidence status and environment.
+Local build and 17 pure-logic/failure-path tests pass. POCs are preserved successful evidence. New workloads and actual placement remain generated/not validated. Use `testing.md` statuses.
 
 ## Architecture alternatives
 
-Evaluate helper-copy, reusable DLL, dynamic loading, and possible future session-router approaches without implying selection.
-
-## Validation evidence
-
-None yet. Use `testing.md` statuses and distinguish Script Editor from full-scenario and VDI evidence.
+Current choices are embedded script-only logic for isolation and a single managed DLL for reuse. A future background router is only an alternative for evaluation.
 
 ## Productization considerations
 
-TBD: generic API, compatibility, lifecycle, ownership, support, distribution, versioning, security, and migration.
+Review API stability, framework/runtime support, signed packaging, state contract/versioning, concurrency, configuration, diagnostics, failure policy, authoring ergonomics, security, support, and migration before formalization.
 
-## Product Owner handoff
+## Product Owner and Development handoff
 
-TBD: accepted problem, value, priorities, requirements, evidence, tradeoffs, risks, and open decisions.
-
-## Development handoff
-
-TBD: selected architecture, contracts, source map, build/deployment, validation evidence, limitations, debt, and follow-up.
+Product Owner review should establish the accepted problem, value, requirements, priorities, and release posture. Development handoff should use the source, API, build, scenario, evidence statuses, limitations, and manual validation ladder in this repository.
