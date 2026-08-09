@@ -33,20 +33,21 @@ An actual Login Enterprise scenario is required for the two-file proof, state ac
 ## Manual test order
 
 1. Run `build.ps1` and retain the console output.
-2. Stage `dist/LoginVSI.MultiMonitor.dll` at `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`.
-3. Compile each script-only file in Script Editor.
-4. Run script-only file 01 independently; verify Notepad/Paint logs and state.
-5. Run script-only file 02 independently only for local behavior; do not label this cross-workload proof.
-6. Repeat compilation/execution for DLL-backed files and confirm reflection loading.
-7. Validate one, two, three, then four displays where available.
-8. Validate a topology with negative X/Y coordinates.
-9. Validate missing/corrupt state and a monitor-count change.
-10. Run the two distinct files in a real scenario and verify `0,1,2,3` cycling as applicable.
-11. Compile and run each integrated Office adaptation in Script Editor, checking timer boundaries.
-12. Validate Edge Start then Run, including every later maximize/focus reassertion.
-13. Run the complete authoritative enabled sequence in an actual scenario.
-14. Repeat execution and inspect state, placement timing, logs, window identity, and application behavior.
-15. Validate in the intended VDI environment and test DPI/scaling/topology variants.
+2. Treat `FindWindows` named-argument casing as a blocking Script Editor compile check: the supplied syntax example uses `classname`/`processname`, the parameter table uses `className`/`processName`, and no preserved known-good call resolves the conflict. Do not change the generated lowercase call sites without runtime/signature evidence.
+3. Stage `dist/LoginVSI.MultiMonitor.dll` at `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`.
+4. Compile each script-only file in Script Editor.
+5. Run script-only file 01 independently; verify Notepad/Paint logs and state.
+6. Run script-only file 02 independently only for local behavior; do not label this cross-workload proof.
+7. Repeat compilation/execution for DLL-backed files and confirm reflection loading.
+8. Validate one, two, three, then four displays where available.
+9. Validate a topology with negative X/Y coordinates.
+10. Validate missing/corrupt state and a monitor-count change.
+11. Run the two distinct files in a real scenario and verify `0,1,2,3` cycling as applicable.
+12. Compile and run each integrated Office adaptation in Script Editor, checking timer boundaries.
+13. Validate Edge Start discovery success/failure timing against its configured launch timeout, then validate Edge Run including every later maximize/focus reassertion.
+14. Run the complete authoritative enabled sequence in an actual scenario.
+15. Repeat execution and inspect state, placement timing, logs, window identity, and application behavior.
+16. Validate in the intended VDI environment and test DPI/scaling/topology variants.
 
 ## Timing evidence
 

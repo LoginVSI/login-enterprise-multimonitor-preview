@@ -14,4 +14,6 @@ For the first four successful placements, the expected logical indices are:
 
 The second workload snapshots existing top-level Edge HWNDs before launch and accepts only a newly observed Edge window. It aborts instead of deliberately falling back to an unrelated existing window.
 
+State access uses an exclusive `FileStream`; disposal releases mutual exclusion and then attempts to delete the zero-byte `.lock` marker. Abrupt termination or a cleanup failure can leave the marker behind, but the marker alone does not hold the lock and later calls still acquire mutual exclusion through `FileShare.None`.
+
 Script Editor can validate each file independently. Only a real Login Enterprise scenario running these distinct files in order can validate cross-workload state continuity. Status: generated/not validated in Script Editor or a full scenario.

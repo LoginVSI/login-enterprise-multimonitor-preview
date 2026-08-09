@@ -151,10 +151,11 @@ public class Edge_Start : ScriptBase
 
     private IWindow FindNewEdgeWindow(HashSet<IntPtr> existingHandles)
     {
-        int attempts = waitTimeoutInSecondsMsedgeLaunch * 2;
-        for (int attempt = 0; attempt < attempts; attempt++)
+        Stopwatch discoveryTimer = Stopwatch.StartNew();
+        while (discoveryTimer.Elapsed.TotalSeconds < waitTimeoutInSecondsMsedgeLaunch)
         {
-            var windows = FindWindows(classname: "Win32 Window:Chrome_WidgetWin_1", processname: "msedge", timeout: 2);
+            // Keep each search short so the complete failure path remains close to the configured timeout.
+            var windows = FindWindows(classname: "Win32 Window:Chrome_WidgetWin_1", processname: "msedge", timeout: 1);
             foreach (var window in windows)
             {
                 if (!existingHandles.Contains(window.NativeWindowHandle))
@@ -163,7 +164,10 @@ public class Edge_Start : ScriptBase
                 }
             }
 
-            Wait(0.5);
+            if (discoveryTimer.Elapsed.TotalSeconds < waitTimeoutInSecondsMsedgeLaunch)
+            {
+                Wait(0.5);
+            }
         }
 
         return null;

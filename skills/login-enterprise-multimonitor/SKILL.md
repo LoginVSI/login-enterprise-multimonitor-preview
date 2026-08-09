@@ -10,7 +10,7 @@ Status: **DRAFT / UNVALIDATED**. The Preview API and implementation are not stab
 ## Workflow
 
 1. Read `AGENTS.md`, `README.md`, the relevant documents, the complete source workload, the supplied Login Enterprise scripting reference, applicable examples, and proven POCs. Read `product-context.md` for product boundaries and `implementation-guidance.md` for the current implementation contract.
-2. Run `scripts/Verify-ReferenceHashes.ps1 -Verify` before and after a major pass. Never edit, rename, reformat, or delete immutable originals or proven POCs. Create adaptations under `workloads/`.
+2. Run `scripts/Verify-ReferenceHashes.ps1 -Verify` and `scripts/Verify-PreservedEvidenceHashes.ps1 -Verify` before and after a major pass. Never edit, rename, reformat, or delete immutable originals, proven POCs, or the authoritative scenario transcription. Create adaptations under `workloads/`.
 3. Trace the workload before editing: launch path, process and window lifecycle, correct `IWindow`, interactions, timer boundaries, cadence, cleanup, and Start/Run relationships. Do not assume the first process window is durable.
 4. Prefer documented Login Enterprise APIs, then compatible .NET/C#, then Win32 only when necessary. Never invent a Login Enterprise API. Use `IWindow.NativeWindowHandle` only after the workload has identified the correct current window.
 5. Choose the pattern:

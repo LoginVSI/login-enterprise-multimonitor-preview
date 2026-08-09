@@ -48,7 +48,7 @@ Do not hard-code the reusable architecture around any particular application.
 
 - Never modify, rename, delete, reformat, or modernize `reference/original-workloads/` contents.
 - Put every adaptation in a new file under `workloads/`.
-- Verify reference hashes before and after major implementation passes.
+- Verify original-workload and preserved-evidence hashes before and after major implementation passes.
 - Preserve `reference/test-scenario/workload-sequence.txt`; do not silently change its order or settings.
 - Treat `reference/proven-pocs/` as implementation evidence, not style-cleanup targets.
 - Treat `reference/login-enterprise-docs/` as the primary source of truth for Login Enterprise APIs.

@@ -266,7 +266,7 @@ internal sealed class PreviewMultiMonitorSupport
         }
     }
 
-    private FileStream AcquireStateLock(string statePath)
+    private PreviewStateLock AcquireStateLock(string statePath)
     {
         string directory = Path.GetDirectoryName(Path.GetFullPath(statePath));
         Directory.CreateDirectory(directory);
@@ -276,7 +276,7 @@ internal sealed class PreviewMultiMonitorSupport
         {
             try
             {
-                return new FileStream(lockPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                return new PreviewStateLock(lockPath, new FileStream(lockPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None));
             }
             catch (IOException)
             {
@@ -362,6 +362,36 @@ internal sealed class PreviewState
 {
     internal PreviewState(int monitorCount, int lastUsedIndex) { MonitorCount = monitorCount; LastUsedIndex = lastUsedIndex; }
     internal int MonitorCount; internal int LastUsedIndex;
+}
+
+internal sealed class PreviewStateLock : IDisposable
+{
+    private readonly string _path;
+    private FileStream _stream;
+
+    internal PreviewStateLock(string path, FileStream stream)
+    {
+        _path = path;
+        _stream = stream;
+    }
+
+    public void Dispose()
+    {
+        if (_stream != null)
+        {
+            _stream.Dispose();
+            _stream = null;
+        }
+
+        try
+        {
+            File.Delete(_path);
+        }
+        catch
+        {
+            // A zero-byte marker does not provide mutual exclusion if best-effort cleanup is delayed.
+        }
+    }
 }
 
 internal sealed class PreviewPlacementResult

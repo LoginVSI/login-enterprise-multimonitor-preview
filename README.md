@@ -73,7 +73,7 @@ The helper does not change the Windows primary monitor. It only orders the repor
 
 ## Reference protection and public safety
 
-Never edit files under `reference/original-workloads/` or `reference/proven-pocs/`. Verify original hashes before and after implementation work. Create all adaptations under `workloads/`, label evidence accurately, and run `scripts/Test-PublicSafety.ps1` before publication.
+Never edit files under `reference/original-workloads/` or `reference/proven-pocs/`. Run both `scripts/Verify-ReferenceHashes.ps1 -Verify` and `scripts/Verify-PreservedEvidenceHashes.ps1 -Verify` before and after implementation work. Create all adaptations under `workloads/`, label evidence accurately, and run `scripts/Test-PublicSafety.ps1` before publication.
 
 ## License and support
 

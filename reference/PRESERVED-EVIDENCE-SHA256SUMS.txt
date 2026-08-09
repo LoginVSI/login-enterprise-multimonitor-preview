@@ -1,0 +1,6 @@
+# SHA-256 manifest for preserved POC source and the authoritative scenario transcription.
+# Established intentionally for scripts/Verify-PreservedEvidenceHashes.ps1 -Verify.
+# The supporting scenario PNG is intentionally excluded.
+a1048ecf58a005a996efb4056053e44d1fbc7c64f514cd08cc1578e6ca16c096  reference/proven-pocs/MultiMonitor-Basic-Placement-Poc-v0.1.cs
+b8777f63144c0315dc9be8877a7387a31bd8464838261225a89f8abddc8068a1  reference/proven-pocs/MultiMonitor-PersistentState-TwoPhase-Poc-v0.3.cs
+3953f89d7eb65c6196766c01c8c7faf07b68efc192c8426d8129a57dc6b8a796  reference/test-scenario/workload-sequence.txt

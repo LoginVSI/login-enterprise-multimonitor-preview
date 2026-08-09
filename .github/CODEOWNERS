@@ -1,4 +1,7 @@
 /reference/original-workloads/ @JKennedyLoginVSI
+/reference/proven-pocs/ @JKennedyLoginVSI
+/reference/test-scenario/workload-sequence.txt @JKennedyLoginVSI
+/reference/PRESERVED-EVIDENCE-SHA256SUMS.txt @JKennedyLoginVSI
 /.github/CODEOWNERS @JKennedyLoginVSI
 /AGENTS.md @JKennedyLoginVSI
 /skills/ @JKennedyLoginVSI
