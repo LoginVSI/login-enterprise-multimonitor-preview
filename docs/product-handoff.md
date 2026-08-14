@@ -12,7 +12,7 @@ See `product-requirements-context.md` and `architecture.md`. The core authoring 
 
 ## Repository and distribution
 
-The root README maps source and evidence. `build.ps1` produces `dist/LoginVSI.MultiMonitor.dll`. Runtime examples expect the DLL beneath `%TEMP%\LoginPI\MultiMonitor` because no supported custom DLL distribution API was established.
+The root README maps source and evidence. `build.ps1` produces `dist/LoginVSI.MultiMonitor.dll`. The unsupported Preview workflow uploads it to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`; `workloads/dll-backed/00-Prepare-MultiMonitor.cs` then uses `UrnBaseForFiles.UrnBase` plus documented file operations to stage it beneath `%TEMP%\LoginPI\MultiMonitor`. Consumers load only that target-local file.
 
 ## Validated behavior
 
@@ -23,7 +23,7 @@ The root README maps source and evidence. `build.ps1` produces `dist/LoginVSI.Mu
 
 ## Scenario behavior
 
-Use `reference/test-scenario/workload-sequence.txt` without changing order or settings. Preparation and close derivatives do not consume destinations. Edge Run reuses the Start target. Outlook, Excel, PowerPoint, and Word each allocate one target for their durable main/document window.
+Use `reference/test-scenario/workload-sequence.txt` without changing order or settings. Manually configure the new run-once multi-monitor prepare workload before existing Office/M365 preparation for Preview testing; this future scenario edit is not preserved evidence. Preparation and close derivatives do not consume destinations. Edge Run reuses the Start target. Outlook, Excel, PowerPoint, and Word each allocate one target for their durable main/document window. Splash screens, first-run/file dialogs, Outlook message/reminder windows, popups, and child windows never allocate.
 
 ## Decisions
 
@@ -32,7 +32,9 @@ Use `reference/test-scenario/workload-sequence.txt` without changing order or se
 - Rediscover on every placement and never persist handles.
 - Advance only after verification.
 - Use `netstandard2.0`/C# 7.3 and no third-party dependencies.
-- Keep automatic DLL delivery out until supported documentation establishes a contract.
+- Use the supplied ScriptContent pattern only for this unsupported Preview staging workflow; do not represent it as a product updater.
+- Retain existing target-local DLLs by default and require explicit remove-and-copy refresh.
+- Allocate only after the workload has identified its durable/base HWND; application readiness and helper stabilization are separate delays.
 - Keep placement outside known open-document timers.
 - Reassert rather than reallocate after later maximize/focus behavior.
 
@@ -46,7 +48,7 @@ The product-requirements context supplies implementation findings, not approved 
 
 ## Recommended engineering follow-up
 
-Follow `testing.md` in order: Script Editor compile/load, individual placement, topology/state cases, two independent files in a real scenario, integrated Office, Edge Start/Run, complete sequence, repeated runs, timing, and VDI.
+Follow `testing.md` in order: ScriptContent preparation and refresh, Script Editor compile/load, durable-window identity, individual placement, topology/state cases, two independent files in a real scenario, integrated Office, Edge Start/Run, complete sequence, repeated runs, timing, and VDI.
 
 ## Support and release considerations
 

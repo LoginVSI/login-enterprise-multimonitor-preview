@@ -10,7 +10,21 @@ Compatible Login Enterprise workloads commonly interact primarily with the prima
 
 Workloads use documented Login Enterprise APIs first: launch through `START` or `ShellExecute`, find the correct `IWindow` through `FindWindow`/`FindWindows`, use `Restore`/`Maximize` where script-contained, log through `Log`, and bridge through `IWindow.NativeWindowHandle`. Ordinary .NET provides reflection, state, timing, collections, and files. Win32 is limited to display enumeration, HWND validation/movement, and monitor verification.
 
-Application-specific code owns launch, correct window identification, sequencing, business actions, timers, and the placement insertion point. `LoginVSI.MultiMonitor` owns discovery, ordering, state, selection, native restore/move/maximize for DLL calls, verification, locking, and structured results. It never changes Windows primary-monitor configuration.
+Application-specific code owns launch, correct durable/base-window identification, sequencing, business actions, timers, and the placement insertion point. `LoginVSI.MultiMonitor` owns discovery, ordering, state, selection, native restore/move/maximize for DLL calls, verification, locking, and structured results. It never changes Windows primary-monitor configuration.
+
+## Durable-window allocation contract
+
+One application consumes one round-robin destination only when its durable/base UI has been identified. A splash screen, first-run/setup dialog, open/save dialog, Outlook compose/read/reminder window, popup, child interaction window, or temporary launcher never allocates. Secondary windows normally remain under application and Windows placement control. Maintenance placement of the already allocated base window may reassert its existing target but does not advance state.
+
+Window readiness is application-specific and precedes the helper call:
+
+1. Prefer documented `START` matching that identifies and waits for the real main UI by appropriate title, class, and process.
+2. Otherwise explicitly resolve the intended durable `IWindow` with documented `FindWindow`/`FindWindows` behavior.
+3. Pass `NativeWindowHandle` only after that durable window is known.
+4. If empirical application evidence requires settling after identification, use a workload-level setting such as `int PrePlacementReadinessDelayMilliseconds = 0;` and wait only when it is greater than zero.
+5. Treat a blind fixed startup sleep as a fallback, not the primary identification mechanism.
+
+Application readiness delay and placement stabilization delay are separate. The former is an optional, default-zero workload wait after the correct HWND is known. The latter is the existing helper argument used around restore, move, maximize, and verification of that same HWND. There is no mandatory global readiness wait.
 
 ## Managed library
 
@@ -68,13 +82,19 @@ The library does not force foreground focus. Workloads retain focus ownership.
 
 Script-only workloads embed the same core state and placement behavior while using `IWindow.Restore`/`Maximize`. They isolate Script Editor behavior before assembly loading.
 
-DLL-backed and integrated workloads use `FileExists`, ordinary `Assembly.LoadFrom`, and reflection. The documentation does not establish a dedicated DLL distribution API, so the DLL must be staged at `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll` by an environment-appropriate method.
+DLL-backed and integrated workloads use `FileExists`, ordinary `Assembly.LoadFrom`, and reflection. The unsupported Preview deployment uses the supplied ScriptContent file pattern, not a new distribution API:
+
+1. Upload `LoginVSI.MultiMonitor.dll` to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll` on the appliance.
+2. Run `workloads/dll-backed/00-Prepare-MultiMonitor.cs` once. It copies `UrnBaseForFiles.UrnBase + "LoginVSI.MultiMonitor.dll"` to `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`.
+3. Consumers verify that local path and load it; they never force-refresh or routinely copy it.
+
+The prepare workload always stages a missing local DLL. With the default `ForceRefreshMultiMonitorDll = false`, it retains an existing local DLL. With the toggle set to `true`, it removes the existing file with documented `RemoveFile`, confirms removal, copies from ScriptContent, and verifies the new local file. Updating only the appliance file therefore does not update an existing target-local copy while the toggle remains false.
 
 ## Integrated sequencing and measurement
 
-Office document windows are placed after their existing open-document timers stop. Later minimize/maximize actions reassert the same target without advancing state. Preparation and close workloads do not consume targets.
+Office document windows are placed after their existing open-document timers stop. The selected workbook, presentation, or document window is the base window; open/save and other dialogs do not allocate. Outlook allocates only its Inbox `MainWindow`; open-message, compose, reminder, and first-run windows do not. Later base-window minimize/maximize actions reassert the same target without advancing state. Preparation and close workloads do not consume targets.
 
-Edge Start identifies a newly observed top-level Edge HWND, ends `Browser_Start`, preserves its initialization wait, then allocates. Edge Run uses the last verified target from Start and reasserts it after repeated maximize/focus operations. This adds cadence overhead but avoids treating a Start/Run pair as two applications.
+Edge Start snapshots existing top-level Edge HWNDs, identifies a newly observed `Chrome_WidgetWin_1` Edge window, ends `Browser_Start`, preserves its existing initialization wait, then allocates that browser base window. Edge Run resolves the expected persistent browser window, uses the last verified target from Start, and reasserts it after repeated maximize/focus operations. This adds cadence overhead but avoids treating a Start/Run pair as two applications. Same-HWND continuity and ambiguity with multiple matching Edge windows remain runtime validation gates.
 
 The authoritative scenario order and settings remain in `reference/test-scenario/workload-sequence.txt`.
 
@@ -82,4 +102,4 @@ The authoritative scenario order and settings remain in `reference/test-scenario
 
 Copying helper source into every workload remains useful for isolation but creates drift. The DLL centralizes behavior but adds staging and runtime compatibility requirements. A background session router remains a possible future alternative, not an implemented requirement or commitment.
 
-Open evidence areas include Script Editor language/runtime compatibility, DLL loading, application window replacement, DPI/scaling, concurrency under real scenario load, display changes during placement, interactive/VDI behavior, and acceptable timing overhead.
+Open evidence areas include Script Editor language/runtime compatibility, ScriptContent preparation, DLL loading, durable-window identity and replacement, DPI/scaling, concurrency under real scenario load, display changes during placement, interactive/VDI behavior, and acceptable timing overhead.

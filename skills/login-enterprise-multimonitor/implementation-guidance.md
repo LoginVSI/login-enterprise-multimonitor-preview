@@ -6,7 +6,21 @@ Status: **DRAFT / NOT LOGIN ENTERPRISE-VALIDATED**. This describes the current P
 
 Use documented Login Enterprise operations for launch, `FindWindow`/`FindWindows`, waits, logs, timers, file checks, and `IWindow` operations. Use ordinary compatible C# for reflection and state logic. Use Win32 only for display discovery, HWND placement, and verification not exposed by the supplied scripting API.
 
-The workload owns launch, current `IWindow` discovery, application behavior, insertion point, and measurement boundaries. `LoginVSI.MultiMonitor.dll` owns monitor/state/placement mechanics and has no LoginPI.Engine reference.
+The workload owns launch, durable/base `IWindow` discovery, application behavior, insertion point, and measurement boundaries. `LoginVSI.MultiMonitor.dll` owns monitor/state/placement mechanics and has no LoginPI.Engine reference.
+
+## Durable/base-window contract and readiness
+
+Only the durable/base UI consumes a round-robin destination. Never call allocating placement for a splash, first-run/setup dialog, open/save dialog, Outlook compose/read/reminder window, popup, child/secondary interaction window, or temporary launcher. Leave secondary placement to the application and Windows unless a separate evidence-backed requirement says otherwise.
+
+Before adaptation, document process lifecycle, splash versus main UI, stable title/class/process criteria, whether the selected HWND survives for the workload/session, excluded dialogs/children, and the placement insertion point. Use this readiness hierarchy:
+
+1. Prefer documented `START` with sufficiently specific main title/class/process matching.
+2. Otherwise resolve the intended durable `IWindow` through documented `FindWindow`/`FindWindows` behavior.
+3. Supply `NativeWindowHandle` only after identification.
+4. If empirical evidence shows that the correct window needs settling, expose `int PrePlacementReadinessDelayMilliseconds = 0;` at workload level and wait after identification only when positive.
+5. Use blind fixed startup sleeps only as a fallback.
+
+The optional application readiness delay is not the DLL's placement stabilization delay. Readiness happens after durable HWND identification but before invoking placement. Stabilization is the existing helper delay during restore/move/maximize/verification of that already-correct HWND. Do not add a mandatory global wait.
 
 ## Current state and selection contract
 
@@ -35,13 +49,21 @@ The dependency-free `netstandard2.0` assembly exposes reflection-friendly static
 
 Restore the HWND, allow stabilization, call `SetWindowPos` using full monitor bounds, maximize when requested, stabilize again, and verify with `MonitorFromWindow`. The operation has measurable overhead. A result advances state only after target verification.
 
-## Loading and staging
+## Unsupported Preview loading and staging
 
-Current DLL-backed workloads expect `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll` and use `Assembly.LoadFrom` plus reflection. The supplied documentation did not establish a supported automatic custom-DLL distribution API, so stage the DLL explicitly and validate that process. Do not invent delivery functionality.
+Build or obtain `dist/LoginVSI.MultiMonitor.dll` and upload it to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`. The run-once `workloads/dll-backed/00-Prepare-MultiMonitor.cs` uses the supplied Knowledge Worker pattern `UrnBaseForFiles.UrnBase + "LoginVSI.MultiMonitor.dll"` with documented `CopyFile` to stage `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`.
+
+Its contract is:
+
+- missing local DLL: create the directory, copy from appliance ScriptContent, verify destination, fail clearly if absent;
+- existing local DLL and default `ForceRefreshMultiMonitorDll = false`: retain it and log without copying;
+- existing local DLL and `true`: use documented `RemoveFile`, verify removal, copy the appliance file, verify destination, and log refresh.
+
+Updating the appliance file alone does not update targets that retain a local copy. Return the toggle to `false` after deliberate refresh where appropriate. Consumer workloads use `FileExists`, abort usefully when missing, then use `Assembly.LoadFrom` plus reflection. They never force-refresh or routinely download. This is an unsupported Preview mechanism, not a formal product distribution/update API. Re-check supplied API evidence before altering any staging behavior; never invent an LE file API.
 
 ## Application patterns
 
-- **Office:** identify the durable document/main `IWindow` after open measurement stops; allocate there. Reassert after later minimize/maximize behavior when needed.
+- **Office:** identify the durable document/main `IWindow` after open measurement stops; allocate there. Exclude first-run, file, confirmation, message, compose, reminder, and slideshow windows. Reassert the base window after later minimize/maximize behavior when needed.
 - **Edge/browser:** snapshot existing Edge windows before launch, prefer a newly observed window, and account for multiprocess/existing-instance ambiguity. Start allocates after original initialization; Run reuses and repeatedly reasserts the saved target after focus/maximize actions.
 - **Persistent Start/Run:** state continuity and the long-lived window must be tested across independent workload files in an actual scenario.
 

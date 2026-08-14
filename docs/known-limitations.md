@@ -5,7 +5,7 @@ This unsupported Preview has no committed delivery date, support claim, or valid
 - **Login Enterprise runtime:** workload compilation and `netstandard2.0` reflection loading are not yet validated in Script Editor/runner.
 - **`FindWindows` signature:** supplied documentation conflicts on `classname`/`processname` versus `className`/`processName`, and no preserved known-good call resolves it. Generated lowercase call sites remain unvalidated and are a Monday Script Editor compile gate.
 - **Interactive desktop:** local unit tests do not prove actual movement, maximize behavior, focus, or verification on a desktop.
-- **Window identification:** correct main-window selection remains application-specific. Splash, modal, secondary, and replacement windows can invalidate an earlier HWND.
+- **Durable-window identification:** allocation is restricted by contract to the application-specific durable/base window, but current generated workloads have not been runtime-proven to exclude every splash, modal, temporary launcher, or replacement HWND. Title/class/process and same-HWND durability must be recorded in Script Editor and scenario validation.
 - **Edge:** existing instances, multiprocess behavior, delayed/new top-level windows, and later maximize/focus actions make it higher risk. Start aborts rather than selecting an indistinguishable existing window; Run assumes the authoritative Start/Run order.
 - **Persistent applications:** `PlaceLastUsed` requires valid prior state. A monitor-count reset between Start and Run leaves no prior target and fails safely.
 - **Focus:** the library does not force foreground focus; workloads do. Native placement and application actions may still affect focus.
@@ -17,6 +17,7 @@ This unsupported Preview has no committed delivery date, support claim, or valid
 - **Atomic state replacement:** implemented with same-directory `File.Replace`/`File.Move`; target filesystem behavior must be validated in deployment.
 - **Monitor changes:** count changes reset state. Same-count topology or identity changes are not represented in the MVP schema.
 - **Timing:** restore, three stabilization intervals, movement, maximize, verification, locking, and I/O add overhead. Edge maintenance placement adds repeated cadence overhead.
-- **DLL staging:** automatic distribution is not implemented because no supported custom DLL delivery contract was established in supplied docs.
+- **Preview DLL staging:** the generated prepare workload follows the supplied ScriptContent `UrnBaseForFiles`/`CopyFile` pattern and uses documented `FileExists`/`RemoveFile`, but it is not yet validated in Script Editor or a Login Enterprise scenario. This is an unsupported Preview mechanism, not formal distribution/update behavior.
+- **DLL refresh/versioning:** the default retains an existing target-local DLL. Updating the appliance copy alone does not update those targets; intentional refresh requires the workload toggle. There is no version comparison, integrity check, rollback, fleet orchestration, or automatic toggle reset.
 - **Media staging:** the integrated 4K Edge Start workload expects a generic local media file to be staged separately.
 - **Deployment/security:** binary provenance, signing, version selection, update, rollback, and trust policy remain deployment responsibilities.

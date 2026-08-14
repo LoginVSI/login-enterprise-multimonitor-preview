@@ -16,9 +16,11 @@ The Preview now contains a dependency-free `netstandard2.0` implementation with 
 
 Script-only and DLL-backed Notepad/Paint then Command Prompt/Edge pairs are generated. Cross-file continuity remains planned for a real scenario.
 
+A dedicated generated preparation workload now stages the helper from appliance ScriptContent to the target-local Preview path. Missing, retain-by-default, and explicit remove-and-copy refresh branches are implemented but not Login Enterprise-validated.
+
 ## Integrated workloads
 
-Ten enabled-scenario derivatives are present. Durable Outlook, Edge, Excel, PowerPoint, and Word windows receive placement; transient preparation and cleanup workloads do not consume state. No integrated workload is yet proven in Script Editor or a full scenario.
+Ten enabled-scenario derivatives are present. Their durable/base Outlook, Edge, Excel, PowerPoint, and Word windows receive placement; splash, setup, dialogs, Outlook message/reminder windows, transient preparation, and cleanup workloads do not consume state by contract. No integrated workload or durable-HWND continuity is yet proven in Script Editor or a full scenario.
 
 ## Complete scenario, VDI, and product handoff
 

@@ -199,7 +199,7 @@ public class M365Word813 : ScriptBase
         _multiMonitorStatePath = Path.Combine(previewDirectory, "state.txt");
         if (!FileExists(assemblyPath))
         {
-            ABORT("Multi-monitor Preview DLL was not staged at: " + assemblyPath);
+            ABORT("Multi-monitor Preview DLL is missing at: " + assemblyPath + ". Run the multi-monitor prepare workload before this workload.");
         }
 
         _multiMonitorPlacerType = Assembly.LoadFrom(assemblyPath).GetType("LoginVSI.MultiMonitor.MultiMonitorPlacer", true);

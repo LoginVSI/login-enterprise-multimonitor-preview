@@ -20,7 +20,7 @@ public class DllMultiMonitorPreviewContinueCmdEdge : ScriptBase
         string assemblyPath = Path.Combine(previewDirectory, "LoginVSI.MultiMonitor.dll");
         if (!FileExists(assemblyPath))
         {
-            ABORT("Multi-monitor Preview DLL was not staged at: " + assemblyPath);
+            ABORT("Multi-monitor Preview DLL is missing at: " + assemblyPath + ". Run 00-Prepare-MultiMonitor before this workload.");
             return;
         }
 

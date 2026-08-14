@@ -44,7 +44,7 @@ Potential future areas include richer monitor identity in state, configurable or
 
 ## Workload-author experience
 
-The current DLL pattern requires staging one assembly, loading it, passing `IWindow.NativeWindowHandle`, logging `PlacementResult`, and choosing either allocation or maintenance placement. A productized experience should reduce reflection boilerplate and clearly describe supported window-lifecycle patterns.
+The current unsupported Preview pattern requires uploading one assembly to appliance ScriptContent, running a preparation workload to stage it locally, loading it, passing the already identified durable `IWindow.NativeWindowHandle`, logging `PlacementResult`, and choosing either allocation or maintenance placement. Existing local copies are retained by default and explicitly refreshed only in preparation. A productized experience should reduce reflection boilerplate and clearly describe supported window-lifecycle and update patterns.
 
 ## Runtime and persistent-state behavior
 
@@ -68,7 +68,7 @@ The helper returns structured failures for invalid HWNDs, no monitors, state-loc
 
 ## Security and deployment
 
-The helper runs as the standard user, writes beneath `%TEMP%`, loads a staged local assembly, and has no third-party dependency. Signing, trusted staging, binary integrity, allowed paths, update/rollback, logging policy, and distribution ownership remain open product decisions.
+The helper runs as the standard user, writes beneath `%TEMP%`, loads a staged local assembly, and has no third-party dependency. The ScriptContent/remove-and-copy workflow is Preview-only. Signing, trusted staging, binary integrity, allowed paths, version detection, update/rollback, logging policy, and distribution ownership remain open product decisions.
 
 ## Observability
 
