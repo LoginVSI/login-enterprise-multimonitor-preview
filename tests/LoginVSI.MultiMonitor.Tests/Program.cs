@@ -28,6 +28,9 @@ internal static class Program
             Run("State round trip", TestRoundTrip);
             Run("Atomic replacement write", TestAtomicReplacement);
             Run("Invalid HWND result", TestInvalidWindowHandle);
+            Run("Canonical Open/Place workload contract", TestCanonicalOpenPlaceWorkload);
+            Run("Canonical Close workload is state-neutral", TestCanonicalCloseWorkload);
+            Run("Workload source API casing and harness disposition", TestWorkloadSourceContracts);
 
             Console.WriteLine("PASS: " + _passed + " tests completed.");
             return 0;
@@ -192,6 +195,106 @@ internal static class Program
         Equal(false, result.Success, "Zero HWND unexpectedly succeeded.");
         Equal(false, result.StateAdvanced, "Failed placement advanced state.");
         Equal(-1, result.TargetMonitorIndex, "Failed placement selected a target.");
+    }
+
+    private static void TestCanonicalOpenPlaceWorkload()
+    {
+        string source = ReadRepositoryFile("workloads", "dll-backed", "01-Open-Place-Applications.cs");
+        Contains(source, "LoginVSI.MultiMonitor.dll", "Open/Place does not reference the staged Preview DLL.");
+        Contains(source, "state.txt", "Open/Place does not reference the round-robin state path.");
+        Contains(source, "Assembly.LoadFrom", "Open/Place does not load the staged Preview DLL.");
+        Contains(source, "PlaceNext", "Open/Place does not allocate through the Preview DLL.");
+        Equal(3, CountOccurrences(source, "placement.PlaceNext("), "Open/Place must call the allocating API once per durable demonstration window.");
+        Contains(source, "ResetStateForFreshPreviewRun", "Fresh-run reset intent is not explicit.");
+        Contains(source, "className:", "Open/Place does not use compiler-proven className casing.");
+        Contains(source, "processName:", "Open/Place does not use compiler-proven processName casing.");
+    }
+
+    private static void TestCanonicalCloseWorkload()
+    {
+        string source = ReadRepositoryFile("workloads", "dll-backed", "02-Close-Applications.cs");
+        Contains(source, "FindWindows", "Close does not resolve base windows.");
+        Contains(source, ".Close()", "Close does not request bounded window cleanup.");
+        DoesNotContain(source, "PlaceNext", "Close must not allocate a monitor destination.");
+        DoesNotContain(source, "ResetState", "Close must not reset round-robin state.");
+        DoesNotContain(source, "state.txt", "Close must not read or write round-robin state.");
+        DoesNotContain(source, "NativeWindowHandle", "Close must not persist or use native handles.");
+        DoesNotContain(source, "LoginVSI.MultiMonitor.dll", "Close must not load the placement DLL.");
+    }
+
+    private static void TestWorkloadSourceContracts()
+    {
+        string repositoryRoot = FindRepositoryRoot();
+        string regressionDirectory = Path.Combine(repositoryRoot, "workloads", "dll-backed", "regression");
+        Equal(true, File.Exists(Path.Combine(regressionDirectory, "01-Initialize-Notepad-Paint.cs")), "Proven phase-one harness was not retained under regression.");
+        Equal(true, File.Exists(Path.Combine(regressionDirectory, "02-Continue-Edge.cs")), "Proven phase-two harness was not retained under regression.");
+        Equal(false, File.Exists(Path.Combine(repositoryRoot, "workloads", "dll-backed", "01-Initialize-Notepad-Paint.cs")), "Old harness remains ambiguous with the canonical flow.");
+
+        string[] workloadFiles = Directory.GetFiles(Path.Combine(repositoryRoot, "workloads"), "*.cs", SearchOption.AllDirectories);
+        foreach (string workloadFile in workloadFiles)
+        {
+            string source = File.ReadAllText(workloadFile);
+            DoesNotContain(source, "classname:", "Lowercase classname named argument reappeared in " + workloadFile + ".");
+            DoesNotContain(source, "processname:", "Lowercase processname named argument reappeared in " + workloadFile + ".");
+        }
+    }
+
+    private static string ReadRepositoryFile(params string[] relativePathParts)
+    {
+        string path = FindRepositoryRoot();
+        foreach (string part in relativePathParts)
+        {
+            path = Path.Combine(path, part);
+        }
+
+        return File.ReadAllText(path);
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        DirectoryInfo directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory != null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "README.md")) &&
+                Directory.Exists(Path.Combine(directory.FullName, "workloads")) &&
+                Directory.Exists(Path.Combine(directory.FullName, "reference")))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException("Could not locate the repository root from " + AppContext.BaseDirectory + ".");
+    }
+
+    private static void Contains(string text, string expected, string message)
+    {
+        if (text.IndexOf(expected, StringComparison.Ordinal) < 0)
+        {
+            throw new InvalidOperationException(message + " Missing=" + expected + ".");
+        }
+    }
+
+    private static void DoesNotContain(string text, string unexpected, string message)
+    {
+        if (text.IndexOf(unexpected, StringComparison.Ordinal) >= 0)
+        {
+            throw new InvalidOperationException(message + " Unexpected=" + unexpected + ".");
+        }
+    }
+
+    private static int CountOccurrences(string text, string value)
+    {
+        int count = 0;
+        int offset = 0;
+        while ((offset = text.IndexOf(value, offset, StringComparison.Ordinal)) >= 0)
+        {
+            count++;
+            offset += value.Length;
+        }
+
+        return count;
     }
 
     private static void WithTemporaryDirectory(Action<string> action)

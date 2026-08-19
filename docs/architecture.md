@@ -1,6 +1,6 @@
 # Architecture
 
-Status: implemented and locally build-tested; selected Login Enterprise 6.8.6 Script Editor/Standalone Engine paths and a real three-workload Desktop Connector Application Test on two monitors are runtime-proven. Final Knowledge Worker orchestration remains pending.
+Status: implemented and locally build-tested; selected Login Enterprise 6.8.6 Script Editor/Standalone Engine paths and a real regression-harness Desktop Connector Application Test on two monitors are runtime-proven. The canonical Prepare -> Open/Place -> Close source is generated/not runtime-proven; representative application orchestration remains pending.
 
 ## Problem and universal intent
 
@@ -90,7 +90,13 @@ DLL-backed and integrated workloads use `FileExists`, ordinary `Assembly.LoadFro
 
 The prepare workload always stages a missing local DLL. With the default `ForceRefreshMultiMonitorDll = false`, it retains an existing local DLL. With the toggle set to `true`, it removes the existing file with documented `RemoveFile`, confirms removal, copies from ScriptContent, and verifies the new local file. Updating only the appliance file therefore does not update an existing target-local copy while the toggle remains false.
 
-Initial staging and forced `RemoveFile` -> `CopyFile` refresh were runtime-proven with a locally staged ScriptContent DLL in Login Enterprise 6.8.6 Script Editor/Standalone Engine. Appliance delivery from `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll` is not yet proven.
+Initial staging and forced `RemoveFile` -> `CopyFile` refresh were runtime-proven with a locally staged ScriptContent DLL in Login Enterprise 6.8.6 Script Editor/Standalone Engine. Appliance delivery from `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`, including missing/default-retain/forced-refresh Prepare paths, is proven in the tested Desktop Connector Application Test.
+
+## Canonical generic Preview flow
+
+`00-Prepare-MultiMonitor.cs` retains the proven staging responsibility and does not initialize placement state. `01-Open-Place-Applications.cs` owns fresh-demonstration initialization through an explicit `ResetStateForFreshPreviewRun` toggle, keeping deployment separate from continuity policy. It preflights for zero matching Notepad, Paint, and Edge base windows, launches them, requires exactly one durable match per application, then calls `PlaceNext` once per window. `02-Close-Applications.cs` requests normal closure only for a sole matching base window; it skips ambiguity and has no placement DLL or state dependency.
+
+Application Test must leave Open/Place running into Close while Prepare and Close remain off/not relevant. Continuous Test and Load Test adaptations must also choose `Run once` deliberately. No HWND or monitor handle crosses files. This complete lifecycle is implemented/generated and awaits real Desktop Connector validation.
 
 ## Integrated sequencing and measurement
 
@@ -104,4 +110,4 @@ The authoritative scenario order and settings remain in `reference/test-scenario
 
 Copying helper source into every workload remains useful for isolation but creates drift. The DLL centralizes behavior but adds staging and runtime compatibility requirements. A background session router remains a possible future alternative, not an implemented requirement or commitment.
 
-Open evidence areas include the final Prepare -> Open/Place -> Close flow, integrated durable-window identity and replacement, DPI/scaling, concurrency under representative scenario load, display changes during placement, broader interactive/VDI behavior, and acceptable timing overhead. Appliance ScriptContent delivery and simple serial Desktop Connector orchestration are proven for the tested 6.8.6 environment.
+Open evidence areas include runtime validation of the canonical Prepare -> Open/Place -> Close flow and its bounded cleanup, integrated durable-window identity and replacement, DPI/scaling, concurrency under representative scenario load, display changes during placement, broader interactive/VDI behavior, and acceptable timing overhead. Appliance ScriptContent delivery and simple regression-harness Desktop Connector orchestration are proven for the tested 6.8.6 environment.

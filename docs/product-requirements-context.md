@@ -52,11 +52,11 @@ The MVP state path and schema remain POC-compatible. Calls serialize through a s
 
 ## Scenario/sequencing behavior
 
-Platform continuity across independent files is proven for the simple three-workload Desktop Connector Application Test. Application persistence remains scenario-controlled: Application Test provides per-workload `Leave application running` with a default of off; Continuous Test and Load Test provide per-workload `Leave application running` and `Run once`. The final Open/Place workload must deliberately retain applications for a later Close workload, which must explicitly close them. Preserve intended `Run once` semantics in Continuous/Load adaptations.
+Platform continuity across independent files is proven for the simple regression Desktop Connector Application Test. The canonical Application Test must configure Prepare off/not relevant, Open/Place `Leave application running` on, and Close off. Close performs explicit bounded cleanup without changing placement state. Continuous Test and Load Test also expose `Run once`; preserve its intended semantics in those adaptations.
 
 ## Compatibility
 
-The library targets `netstandard2.0`/C# 7.3. Loading and invocation are proven in Login Enterprise 6.8.6 Script Editor/Standalone Engine and Desktop Connector Application Test on the tested Windows machine. Compatibility remains unvalidated across other Login Enterprise releases, the unbuilt final application flow, other Windows and Office/Edge versions, DPI modes, display topologies beyond the tested physical pair, VDI platforms, and deployment policies.
+The library targets `netstandard2.0`/C# 7.3. Loading and invocation are proven in Login Enterprise 6.8.6 Script Editor/Standalone Engine and Desktop Connector Application Test on the tested Windows machine. Compatibility remains unvalidated across other Login Enterprise releases, the generated canonical lifecycle, other Windows and application versions, DPI modes, display topologies beyond the tested physical pair, VDI platforms, and deployment policies.
 
 ## Measurement and timing expectations
 
@@ -80,7 +80,7 @@ See `known-limitations.md`. Key questions include runtime compatibility, correct
 
 ## Preview findings and validation evidence
 
-Local build and 17 pure-logic/failure-path tests pass. POCs are preserved successful evidence. The August 18, 2026 standalone results prove individual preparation/loading, named-argument casing, simple placement, continued state, and missing-state recovery. The Desktop Connector Application Test additionally proves appliance delivery, all Prepare paths, real serial execution, and platform cross-workload state for the simple two-monitor harness. Integrated workloads and the final Prepare -> Open/Place -> Close flow remain generated/not validated. Use `testing.md` statuses.
+POCs are preserved successful evidence. The August 18, 2026 standalone results prove individual preparation/loading, named-argument casing, simple placement, continued state, and missing-state recovery. The Desktop Connector Application Test additionally proves appliance delivery, all Prepare paths, real serial execution, and platform cross-workload state for the simple two-monitor regression harness. The canonical Prepare -> Open/Place -> Close source and integrated workloads remain generated/not validated. Use `testing.md` for current local checks and evidence statuses.
 
 ## Architecture alternatives
 

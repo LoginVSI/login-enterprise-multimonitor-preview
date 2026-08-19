@@ -1,17 +1,30 @@
-# DLL-backed preparation and sequential proof
+# DLL-backed Preview workloads
 
-These files provide the unsupported Preview staging step and reproduce the script-only sequence through reflection without a compile-time reference to the helper assembly:
+## Canonical current flow
 
-- `00-Prepare-MultiMonitor.cs`
-- `01-Initialize-Notepad-Paint.cs`
-- `02-Continue-Edge.cs`
+1. `00-Prepare-MultiMonitor.cs` stages or retains `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll` without consuming a destination.
+2. `01-Open-Place-Applications.cs` verifies and reflection-loads that DLL, resets state once for a fresh demonstration run, resolves one durable/base window each for Notepad, Paint, and Microsoft Edge, and calls `PlaceNext` exactly once per application.
+3. `02-Close-Applications.cs` closes only a sole matching base window for each application. It skips ambiguous matches and does not load the DLL, allocate, reset, or touch `%TEMP%\LoginPI\MultiMonitor\state.txt`.
 
-For Script Editor/Standalone Engine testing, place the DLL in that engine's local ScriptContent directory. For platform execution, upload `dist/LoginVSI.MultiMonitor.dll` to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll` on the appliance. The prepare workload copies `UrnBaseForFiles.UrnBase + "LoginVSI.MultiMonitor.dll"` to `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`; it stages no application and consumes no monitor destination.
+This new flow is implemented/generated and has not yet passed Script Editor or Desktop Connector runtime validation. Do not infer runtime compatibility from the local build.
 
-`ForceRefreshMultiMonitorDll` defaults to `false`. A missing local DLL is always staged. Existing plus `false` retains it without copying. Existing plus `true` removes it, verifies removal, copies the configured ScriptContent file, and verifies the destination. Set `true` only for an intentional update and return it to `false` afterward where appropriate. Replacing the ScriptContent file alone does not replace existing target-local copies while the toggle is false.
+For its next Application Test, configure `Leave application running` as follows:
 
-Consumers use documented `FileExists`, then ordinary compatible `Assembly.LoadFrom`, and pass the intended base `IWindow.NativeWindowHandle` to `MultiMonitorPlacer`. The initializer uses documented `START`/`MainWindow` for Notepad because raw `ShellExecute` tracked a short-lived PID in actual testing; it retains the existing Paint launch/`FindWindow` flow that placed successfully. The continuation uses `START`/`MainWindow` for the simple Edge proof for the same durable-window reason. CMD was removed because Windows Terminal hosted the visible UI on the tested configuration and Login Enterprise could not find the requested standalone `cmd` top-level window. A missing local DLL aborts with instructions to run the prepare workload. Consumers never copy or force-refresh it.
+- Prepare: off/not relevant.
+- Open/Place: on.
+- Close: off.
 
-This is an unsupported Preview mechanism, not a formal distribution/update contract. Login Enterprise 6.8.6 Script Editor/Standalone Engine runtime-proved individual compilation, loading, durable windows, placement, state continuation, and recovery. The Desktop Connector Application Test then proved appliance delivery, missing/default-retain/forced-refresh Prepare paths, serial execution of these three independent workloads, platform state continuity, two-monitor `Notepad -> 0`, `Paint -> 1`, `Edge -> 0`, final `MonitorCount=2` / `LastUsedIndex=0`, and three successful AppExecutions. Integrated secondary-window behavior and the final application flow still require validation.
+Continuous Test and Load Test also provide per-workload `Run once`. Preserve the scenario's intended one-time preparation/open/cleanup behavior instead of blindly copying Application Test settings.
 
-With Application Test `Leave application running` off, Login Enterprise stopped the `START`-launched Notepad and Edge at workload end; the `ShellExecute`-launched Paint lingered. Do not use Paint lingering as the persistence model. Application survival between future Open/Place and Close workloads must be enabled deliberately through scenario settings.
+One workload has one associated `TARGET`. Edge uses the runtime-proven `START(processName: "msedge")`/`MainWindow` path. Modern Notepad's raw `ShellExecute` PID was not durable, so this combined demonstration uses the compatible `.NET Process.Start` pattern already preserved in repository evidence, then independently requires one durable Notepad window. Paint retains its proven `ShellExecute` plus `FindWindows(className: "Win32 Window:MSPaintApp", processName: "mspaint")` path. All three applications must be absent at preflight so later cleanup can be bounded; this ownership model and cross-workload survival require runtime validation.
+
+## Proven regression harness
+
+The previous runtime-proven files are retained unchanged under `regression/`:
+
+- `regression/01-Initialize-Notepad-Paint.cs`
+- `regression/02-Continue-Edge.cs`
+
+Together with Prepare, these are the workloads proven in Login Enterprise 6.8.6 Script Editor/Standalone Engine and a real Desktop Connector Application Test: appliance delivery, serial execution, state continuity, `Notepad -> 0`, `Paint -> 1`, `Edge -> 0`, and final state `MonitorCount=2` / `LastUsedIndex=0`. They are evidence/regression harnesses, not the canonical lifecycle flow.
+
+For Script Editor/Standalone Engine testing, place the DLL in that engine's local ScriptContent directory. For platform execution, upload `dist/LoginVSI.MultiMonitor.dll` to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`. `ForceRefreshMultiMonitorDll` defaults to `false`: missing stages, existing plus false retains, and existing plus true removes/copies/verifies. Consumers only load the staged local DLL.

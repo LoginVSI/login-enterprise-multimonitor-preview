@@ -7,14 +7,14 @@ The implementation is deliberately application-neutral. Login Enterprise workloa
 ## Current implementation
 
 - A dependency-free `netstandard2.0` library under `src/LoginVSI.MultiMonitor/`.
-- A two-file script-only Notepad/Paint then Edge sequence.
-- Equivalent reflection-loaded DLL-backed workloads plus a dedicated Preview DLL preparation workload.
+- A two-file script-only Notepad/Paint then Edge regression sequence.
+- A canonical reflection-loaded DLL-backed Prepare -> Open/Place -> Close flow, plus the retained proven regression harness.
 - Derived Preview adaptations of the enabled representative Office and Edge workloads.
 - Pure-logic and safe failure-path tests that run without an interactive desktop.
 - A Windows PowerShell 5.1-friendly build and distribution script.
 - A draft AI skill and technical Product/Development handoff material.
 
-The library and its 17 local tests build successfully in this repository. Login Enterprise 6.8.6 Script Editor/Standalone Engine testing on August 18, 2026 proved individual compilation, loading, durable-window, placement, and state-recovery behavior. A subsequent real Desktop Connector Application Test in a Console / NoRemote session proved appliance ScriptContent delivery, all three Prepare branches, serial execution of the three independent DLL-backed workloads, and platform cross-workload state persistence. The complete Knowledge Worker scenario and VDI behavior remain unvalidated.
+The library and its 20 local tests build successfully in this repository. Login Enterprise 6.8.6 Script Editor/Standalone Engine testing on August 18, 2026 proved individual compilation, loading, durable-window, placement, and state-recovery behavior. A subsequent real Desktop Connector Application Test in a Console / NoRemote session proved appliance ScriptContent delivery, all three Prepare branches, serial execution of the three independent regression workloads, and platform cross-workload state persistence. The new canonical flow is implemented/generated but not runtime-proven. The complete representative scenario and VDI behavior remain unvalidated.
 
 ## Build
 
@@ -60,7 +60,7 @@ The initial index is `-1`. State advances only after the target monitor verifies
 - `reference/login-enterprise-docs/`: supplied scripting/metalanguage reference and examples; the API source of truth.
 - `reference/test-scenario/`: authoritative scenario transcription and supporting screenshot.
 - `workloads/script-only/`: self-contained placement proofs without DLL loading.
-- `workloads/dll-backed/`: the same sequence using the staged managed helper.
+- `workloads/dll-backed/`: the canonical staged-DLL flow; `regression/` retains the runtime-proven simple harness.
 - `workloads/integrated/`: derived representative workload adaptations; originals remain unchanged.
 - `src/LoginVSI.MultiMonitor/`: reusable state, ordering, Win32, placement, and result implementation.
 - `tests/LoginVSI.MultiMonitor.Tests/`: dependency-free console tests.
@@ -71,11 +71,11 @@ The initial index is `-1`. State advances only after the target monitor verifies
 
 ## Validation model
 
-Script Editor and the Standalone Engine compile, run, and debug one workload at a time. They validate individual launch, window identification, DLL loading, placement, and file behavior. The Desktop Connector Application Test separately proved real serial platform execution and state continuity across `00-Prepare-MultiMonitor`, `01-Initialize-Notepad-Paint`, and `02-Continue-Edge`.
+Script Editor and the Standalone Engine compile, run, and debug one workload at a time. They validate individual launch, window identification, DLL loading, placement, and file behavior. The Desktop Connector Application Test separately proved real serial platform execution and state continuity across the workloads now retained under `workloads/dll-backed/regression/` together with `00-Prepare-MultiMonitor.cs`.
 
 Keep repository files as source of truth. Copy a workload to a disposable location before opening it in Script Editor because the editor may rewrite the working representation or line endings; apply validated changes deliberately back to repository source.
 
-The simple three-workload platform proof is complete. The next mini-project is the clean final Preview flow: Prepare; Open and resolve/place durable base windows; then Close applications cleanly. That flow is planned, not implemented. Complete Knowledge Worker ordering and end-to-end behavior still require later scenario validation. See `docs/testing.md`.
+The canonical current Preview flow is `00-Prepare-MultiMonitor.cs`, `01-Open-Place-Applications.cs`, then `02-Close-Applications.cs`. It is implemented/generated and awaits a real Desktop Connector Application Test; a successful build is not runtime proof. The old Notepad/Paint initializer and Edge continuation remain as proven regression evidence under `workloads/dll-backed/regression/`. Complete representative application integration remains a later track. See `docs/testing.md`.
 
 ## Timing and behavior
 
@@ -85,7 +85,7 @@ Only a correctly identified durable/base application window consumes a destinati
 
 The helper does not change the Windows primary monitor. It only orders the reported primary display first for round-robin selection. Edge remains the highest-risk integration because later browser actions repeatedly focus and maximize its persistent window; the adapted Run workload therefore reasserts the previously selected target without advancing state.
 
-Application persistence is scenario-controlled, not inferred from a process lingering. Application Test exposes per-workload `Leave application running`, defaulting to off. Continuous Test and Load Test expose both per-workload `Leave application running` and `Run once`. A future Open/Place workload must deliberately leave applications running when a later Close workload owns cleanup; the Close workload must explicitly close them.
+Application persistence is scenario-controlled, not inferred from a process lingering. For the canonical Application Test, configure Prepare with `Leave application running` off/not relevant, Open/Place with it on, and Close with it off. Continuous Test and Load Test expose both per-workload `Leave application running` and `Run once`; preserve the intended one-time setup/cleanup semantics when adapting the flow. Close explicitly requests bounded window cleanup and never consumes or resets monitor state.
 
 ## Reference protection and public safety
 

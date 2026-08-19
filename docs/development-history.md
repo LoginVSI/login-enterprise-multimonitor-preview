@@ -10,7 +10,7 @@ The preserved v0.3 POC provides successful implementation evidence for the two-l
 
 ## Reusable library
 
-The Preview now contains a dependency-free `netstandard2.0` implementation with reflection-friendly APIs and structured results. Local build: passed with zero warnings/errors. Pure-logic/failure-path tests: 17 passed. Login Enterprise 6.8.6 Script Editor/Standalone Engine loading and invocation were proven on August 18, 2026.
+The Preview now contains a dependency-free `netstandard2.0` implementation with reflection-friendly APIs and structured results. Login Enterprise 6.8.6 Script Editor/Standalone Engine loading and invocation were proven on August 18, 2026. Current build and test results are recorded in `testing.md`.
 
 ## Sequential workloads
 
@@ -32,4 +32,4 @@ Ten enabled-scenario derivatives are present. Their durable/base Outlook, Edge, 
 
 The authoritative sequence is preserved. A real Login Enterprise 6.8.6 Desktop Connector Application Test subsequently ran the three independent DLL-backed workloads serially in a Console / NoRemote session. Appliance ScriptContent delivery, missing/default-retain/forced-refresh Prepare paths, platform state continuity, the two-monitor `0,1,0` sequence, final `MonitorCount=2` / `LastUsedIndex=0` state, and successful AppExecutions are proven.
 
-The next mini-project is the clean final three-workload Preview flow: Prepare; Open/resolve durable base windows and round-robin place them; Close applications cleanly. It is not implemented in this evidence pass. Complete Knowledge Worker and VDI validation remain planned.
+The clean canonical three-workload Preview source now consists of Prepare; Open/resolve unique durable base windows and round-robin place them; then bounded Close. Reset remains in Open/Place as an explicit fresh-demonstration policy rather than being mixed into DLL staging. The earlier successful pair moved unchanged to `workloads/dll-backed/regression/`. The canonical lifecycle is generated/not runtime-proven; its Desktop Connector test is next. Representative application and VDI validation remain later tracks.
