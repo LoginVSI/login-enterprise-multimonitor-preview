@@ -56,7 +56,7 @@ Platform continuity across independent files is proven for the simple regression
 
 ## Compatibility
 
-The library targets `netstandard2.0`/C# 7.3. Loading and invocation are proven in Login Enterprise 6.8.6 Script Editor/Standalone Engine and Desktop Connector Application Test on the tested Windows machine. Compatibility remains unvalidated across other Login Enterprise releases, the generated canonical lifecycle, other Windows and application versions, DPI modes, display topologies beyond the tested physical pair, VDI platforms, and deployment policies.
+The library targets `netstandard2.0`/C# 7.3. Loading, invocation, and the canonical generic lifecycle are proven in Login Enterprise 6.8.6 on the tested Windows machine. Compatibility remains unvalidated across other Login Enterprise releases, Office/Knowledge Worker adaptations, other Windows and application versions, DPI modes, display topologies beyond the tested physical pair, VDI platforms, and deployment policies.
 
 ## Measurement and timing expectations
 
@@ -80,7 +80,7 @@ See `known-limitations.md`. Key questions include runtime compatibility, correct
 
 ## Preview findings and validation evidence
 
-POCs are preserved successful evidence. The August 18, 2026 standalone results prove individual preparation/loading, named-argument casing, simple placement, continued state, and missing-state recovery. The Desktop Connector Application Test additionally proves appliance delivery, all Prepare paths, real serial execution, and platform cross-workload state for the simple two-monitor regression harness. The canonical Prepare -> Open/Place -> Close source and integrated workloads remain generated/not validated. Use `testing.md` for current local checks and evidence statuses.
+POCs are preserved successful evidence. The August 2026 standalone and Desktop Connector results prove preparation/loading, named-argument casing, physical placement, state recovery/continuity, appliance delivery, serial execution, and the canonical generic Open/Place/Close lifecycle. Office Preview and Knowledge Worker adaptations remain generated/build-tested/static-validated with partner-lab runtime validation pending. Use `testing.md` for current evidence status.
 
 ## Architecture alternatives
 

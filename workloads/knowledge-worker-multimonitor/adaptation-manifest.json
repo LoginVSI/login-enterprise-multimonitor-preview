@@ -1,0 +1,87 @@
+{
+  "status": "generated/build-tested/static-validated; partner-lab runtime validation pending",
+  "sourceDirectory": "reference/original-workloads",
+  "adaptedDirectory": "workloads/knowledge-worker-multimonitor",
+  "workloads": [
+    {
+      "file": "(KW) Prepare for Microsoft Office 365.cs",
+      "type": "preparation/non-allocating",
+      "allocates": false,
+      "window": "Temporary Word preparation UI; no durable application allocation",
+      "change": "Public-safe comments/formatting only; explicitly documents no placement",
+      "maxAddedLines": 8
+    },
+    {
+      "file": "(KW) Microsoft Outlook.cs",
+      "type": "run/allocating",
+      "allocates": true,
+      "window": "START MainWindow matching Inbox*, rctrl_renwnd32, OUTLOOK",
+      "change": "Loads Preview DLL, allocates Inbox MainWindow once, reasserts after minimize/maximize; sanitizes example recipients",
+      "maxAddedLines": 70
+    },
+    {
+      "file": "KW25 Edge Start-4KVideoHeavy.cs",
+      "type": "start/allocating",
+      "allocates": true,
+      "window": "Newly observed Chrome_WidgetWin_1 msedge top-level window",
+      "change": "Snapshots existing windows, bounds durable-window discovery, uses public-safe local media, allocates once after Browser_Start",
+      "maxAddedLines": 100
+    },
+    {
+      "file": "KW25 Edge Run-4KVideoHeavy.cs",
+      "type": "run/maintenance",
+      "allocates": false,
+      "window": "Persistent Edge base window matching class/title/process",
+      "change": "Uses PlaceLastUsed and PlaceOnMonitor only; reasserts after existing maximize/focus actions",
+      "maxAddedLines": 70
+    },
+    {
+      "file": "(KW) Microsoft Excel.cs",
+      "type": "run/allocating",
+      "allocates": true,
+      "window": "loginvsi* XLMAIN workbook after Open_Excel_Document timer",
+      "change": "Loads Preview DLL, allocates durable workbook once, reasserts after minimize/maximize",
+      "maxAddedLines": 70
+    },
+    {
+      "file": "(KW) Microsoft PowerPoint.cs",
+      "type": "run/allocating",
+      "allocates": true,
+      "window": "loginvsi* PPTFrameClass presentation after Open_Powerpoint_Document timer",
+      "change": "Loads Preview DLL, allocates durable presentation once, reasserts after minimize/maximize",
+      "maxAddedLines": 70
+    },
+    {
+      "file": "(KW) Microsoft Word.cs",
+      "type": "run/allocating",
+      "allocates": true,
+      "window": "loginvsi* OpusApp document after Open_Word_Document timer",
+      "change": "Loads Preview DLL, allocates durable document once, reasserts after minimize/maximize",
+      "maxAddedLines": 70
+    },
+    {
+      "file": "(KW) Close Microsoft Excel.cs",
+      "type": "close/non-allocating",
+      "allocates": false,
+      "window": "Existing Excel base window; cleanup only",
+      "change": "Public-safe cleanup-only annotation; no placement or state access",
+      "maxAddedLines": 8
+    },
+    {
+      "file": "(KW) Close Microsoft Word.cs",
+      "type": "close/non-allocating",
+      "allocates": false,
+      "window": "Existing Word base window; cleanup only",
+      "change": "Public-safe cleanup-only annotation; no placement or state access",
+      "maxAddedLines": 8
+    },
+    {
+      "file": "(KW) Close Microsoft PowerPoint.cs",
+      "type": "close/non-allocating",
+      "allocates": false,
+      "window": "Existing PowerPoint base window; cleanup only",
+      "change": "Public-safe cleanup-only annotation; no placement or state access",
+      "maxAddedLines": 8
+    }
+  ]
+}

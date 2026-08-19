@@ -1,6 +1,6 @@
 # Architecture
 
-Status: implemented and locally build-tested; selected Login Enterprise 6.8.6 Script Editor/Standalone Engine paths and a real regression-harness Desktop Connector Application Test on two monitors are runtime-proven. The canonical Prepare -> Open/Place -> Close source is generated/not runtime-proven; representative application orchestration remains pending.
+Status: generic library and canonical Prepare -> Open/Place -> Close behavior are runtime-proven in the recorded Login Enterprise 6.8.6 two-monitor environment. Office Preview and Knowledge Worker adaptations are generated/build-tested/static-validated; partner-lab runtime validation is pending.
 
 ## Problem and universal intent
 
@@ -82,7 +82,7 @@ The library does not force foreground focus. Workloads retain focus ownership.
 
 Script-only workloads embed the same core state and placement behavior while using `IWindow.Restore`/`Maximize`. They isolate Script Editor behavior before assembly loading.
 
-DLL-backed and integrated workloads use `FileExists`, ordinary `Assembly.LoadFrom`, and reflection. The unsupported Preview deployment uses the supplied ScriptContent file pattern, not a new distribution API. Script Editor/Standalone Engine testing resolves ScriptContent from the engine's local ScriptContent directory; the real platform path is a separate delivery surface:
+DLL-backed, Office Preview, and Knowledge Worker workloads use `FileExists`, ordinary `Assembly.LoadFrom`, and reflection. The unsupported Preview deployment uses the supplied ScriptContent file pattern, not a new distribution API. Script Editor/Standalone Engine testing resolves ScriptContent from the engine's local ScriptContent directory; the real platform path is a separate delivery surface:
 
 1. Upload `LoginVSI.MultiMonitor.dll` to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll` on the appliance.
 2. Run `workloads/dll-backed/00-Prepare-MultiMonitor.cs` once. It copies `UrnBaseForFiles.UrnBase + "LoginVSI.MultiMonitor.dll"` to `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`.
@@ -96,18 +96,18 @@ Initial staging and forced `RemoveFile` -> `CopyFile` refresh were runtime-prove
 
 `00-Prepare-MultiMonitor.cs` retains the proven staging responsibility and does not initialize placement state. `01-Open-Place-Applications.cs` owns fresh-demonstration initialization through an explicit `ResetStateForFreshPreviewRun` toggle, keeping deployment separate from continuity policy. It preflights for zero matching Notepad, Paint, and Edge base windows, launches them, requires exactly one durable match per application, then calls `PlaceNext` once per window. `02-Close-Applications.cs` requests normal closure only for a sole matching base window; it skips ambiguity and has no placement DLL or state dependency.
 
-Application Test must leave Open/Place running into Close while Prepare and Close remain off/not relevant. Continuous Test and Load Test adaptations must also choose `Run once` deliberately. No HWND or monitor handle crosses files. This complete lifecycle is implemented/generated and awaits real Desktop Connector validation.
+Application Test leaves Open/Place running into Close while Prepare and Close remain off/not relevant. No HWND or monitor handle crosses files. This complete generic lifecycle is runtime-proven in the recorded Desktop Connector test. Continuous Test and Load Test adaptations must still choose `Run once` deliberately.
 
-## Integrated sequencing and measurement
+## Knowledge Worker sequencing and measurement
 
 Office document windows are placed after their existing open-document timers stop. The selected workbook, presentation, or document window is the base window; open/save and other dialogs do not allocate. Outlook allocates only its Inbox `MainWindow`; open-message, compose, reminder, and first-run windows do not. Later base-window minimize/maximize actions reassert the same target without advancing state. Preparation and close workloads do not consume targets.
 
 Edge Start snapshots existing top-level Edge HWNDs, identifies a newly observed `Chrome_WidgetWin_1` Edge window, ends `Browser_Start`, preserves its existing initialization wait, then allocates that browser base window. Edge Run resolves the expected persistent browser window, uses the last verified target from Start, and reasserts it after repeated maximize/focus operations. This adds cadence overhead but avoids treating a Start/Run pair as two applications. Same-HWND continuity and ambiguity with multiple matching Edge windows remain runtime validation gates.
 
-The authoritative scenario order and settings remain in `reference/test-scenario/workload-sequence.txt`.
+The complete adaptations live under `workloads/knowledge-worker-multimonitor/`; the authoritative scenario order and settings remain in `reference/test-scenario/workload-sequence.txt`. The mapping manifest and static contracts enforce minimal deltas, but partner-lab runtime validation remains pending.
 
 ## Alternatives and open questions
 
 Copying helper source into every workload remains useful for isolation but creates drift. The DLL centralizes behavior but adds staging and runtime compatibility requirements. A background session router remains a possible future alternative, not an implemented requirement or commitment.
 
-Open evidence areas include runtime validation of the canonical Prepare -> Open/Place -> Close flow and its bounded cleanup, integrated durable-window identity and replacement, DPI/scaling, concurrency under representative scenario load, display changes during placement, broader interactive/VDI behavior, and acceptable timing overhead. Appliance ScriptContent delivery and simple regression-harness Desktop Connector orchestration are proven for the tested 6.8.6 environment.
+Open evidence areas include Office/Knowledge Worker durable-window identity and replacement, DPI/scaling, concurrency under representative scenario load, display changes during placement, broader interactive/VDI behavior, and acceptable timing overhead. Appliance ScriptContent delivery, generic serial orchestration, state continuity, and canonical cleanup are proven for the tested 6.8.6 environment.

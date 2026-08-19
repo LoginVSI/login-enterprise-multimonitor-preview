@@ -5,7 +5,7 @@ description: Adapt and validate compatible Login Enterprise C# workloads with th
 
 # Login Enterprise Multi-Monitor Preview
 
-Status: **DRAFT / PARTIALLY VALIDATED**. Login Enterprise 6.8.6 Script Editor/Standalone Engine behavior and the simple regression-harness Desktop Connector Application Test are runtime-proven. The canonical Prepare -> Open/Place -> Close source is implemented/generated but not runtime-proven; integrated workloads also remain unvalidated. Treat repository evidence and recorded validation status as authoritative.
+Status: **DRAFT / PARTIALLY VALIDATED**. The generic library, staging, physical placement, state continuity, and canonical Prepare -> Open/Place -> Close lifecycle are runtime-proven in the recorded Login Enterprise 6.8.6 environment. Office Preview and Knowledge Worker adaptations are generated/build-tested/static-validated; partner-lab runtime validation is pending. Treat repository evidence and recorded status as authoritative.
 
 ## Workflow
 
@@ -16,12 +16,13 @@ Status: **DRAFT / PARTIALLY VALIDATED**. Login Enterprise 6.8.6 Script Editor/St
 5. Choose the pattern:
    - use `workloads/script-only/` to isolate placement/state behavior without assembly loading;
    - use `workloads/dll-backed/` for the canonical reflection-loaded reusable-assembly flow, and `workloads/dll-backed/regression/` only for the retained proven harness;
-   - use `workloads/integrated/` for derived complete workload adaptations.
+   - use `workloads/office-preview/` for small first-lab examples;
+   - use `workloads/knowledge-worker-multimonitor/` for complete preserved-workload adaptations, and read its manifest before editing.
 6. Insert allocating placement only after the durable/base application window exists and outside EUX/application-response/performance timers wherever practical. When the workload owns startup and needs the main window, prefer a specific documented `START`; otherwise resolve the intended window with documented `FindWindow`/`FindWindows`, then pass its `NativeWindowHandle`. Use compiler-proven `FindWindows` named arguments `className` and `processName`. Retain `ShellExecute` only where the lifecycle is understood and explicitly handled. Never allocate for splash, first-run/setup, open/save, Outlook compose/read/reminder, popup, child/secondary, or temporary launcher windows. Never move measurement boundaries silently. Log the structured result and overhead.
 7. For Start/Run pairs, allocate once in Start and use maintenance placement in Run. Reassert the same target after application actions that later restore, maximize, focus, replace, or reposition the durable window; do not consume another round-robin destination for maintenance or secondary windows.
 8. Preserve original behavior and scenario intent. For the canonical Application Test, set Prepare off/not relevant, Open/Place `Leave application running` on, and Close off. Continuous Test and Load Test also provide `Run once`; preserve deliberate one-time semantics. Close must use bounded explicit cleanup and must not allocate, reset, or alter placement state.
 9. For DLL-backed work, use the unsupported Preview ScriptContent workflow in `implementation-guidance.md`: use the engine's local ScriptContent directory for Script Editor/Standalone Engine development and appliance ScriptContent for platform execution. Run the dedicated preparation workload, retain an existing local copy by default, and force refresh only in that preparation step. Consumers verify and load the target-local DLL; they do not repeatedly download it. Appliance delivery and all three Prepare paths are proven in the tested Desktop Connector Application Test.
-10. Validate in the order in `validation-guidance.md`. Record durable HWND identity and secondary-window non-consumption. Script Editor proves an individual workload; an actual Login Enterprise test proves platform serial execution and cross-file persistence. Interactive movement requires a real multi-display desktop.
+10. Run `scripts/Test-Repository.ps1`, then validate in the order in `validation-guidance.md`. Record durable HWND identity and secondary-window non-consumption. Script Editor proves an individual workload; an actual Login Enterprise test proves platform serial execution and cross-file persistence. Interactive movement requires a real multi-display desktop.
 11. Record evidence precisely, update public documentation and limitations, rerun hash and public-safety checks, and label generated work as unvalidated until the relevant environment actually passes.
 
 ## Guardrails

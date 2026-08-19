@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using System.Runtime.Versioning;
 using LoginVSI.MultiMonitor;
 
 internal static class Program
@@ -31,6 +33,7 @@ internal static class Program
             Run("Canonical Open/Place workload contract", TestCanonicalOpenPlaceWorkload);
             Run("Canonical Close workload is state-neutral", TestCanonicalCloseWorkload);
             Run("Workload source API casing and harness disposition", TestWorkloadSourceContracts);
+            Run("Reusable DLL assembly contract", TestReusableDllAssemblyContract);
 
             Console.WriteLine("PASS: " + _passed + " tests completed.");
             return 0;
@@ -236,6 +239,19 @@ internal static class Program
             string source = File.ReadAllText(workloadFile);
             DoesNotContain(source, "classname:", "Lowercase classname named argument reappeared in " + workloadFile + ".");
             DoesNotContain(source, "processname:", "Lowercase processname named argument reappeared in " + workloadFile + ".");
+        }
+    }
+
+    private static void TestReusableDllAssemblyContract()
+    {
+        Assembly assembly = typeof(MultiMonitorPlacer).Assembly;
+        TargetFrameworkAttribute target = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
+        Equal(true, target != null, "Reusable DLL has no target-framework metadata.");
+        Equal(".NETStandard,Version=v2.0", target.FrameworkName, "Reusable DLL target framework changed.");
+
+        foreach (AssemblyName reference in assembly.GetReferencedAssemblies())
+        {
+            Equal(false, string.Equals(reference.Name, "LoginPI.Engine", StringComparison.OrdinalIgnoreCase), "Reusable DLL references LoginPI.Engine.");
         }
     }
 

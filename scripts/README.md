@@ -1,5 +1,17 @@
 # Repository helper scripts
 
+## Test-Repository.ps1
+
+The authoritative repository validation entry point is:
+
+```powershell
+.\scripts\Test-Repository.ps1
+```
+
+It runs whitespace/integrity checks, both preserved-reference verifiers, the public-safety scan, DLL and workload source contracts, restore/build, and all unit/pure-logic/source-contract tests. `-Fast` runs repository integrity and static checks without restore/build/unit execution; it is useful during editing but does not replace the full publication gate.
+
+`Test-WorkloadContracts.ps1` validates the generic, Office Preview, and Knowledge Worker workload invariants and mapping manifest. `Test-DllContract.ps1` enforces the reusable DLL target/dependency boundary. These are static checks, not Login Enterprise runtime tests.
+
 ## Verify-ReferenceHashes.ps1
 
 Use `-Generate` only after the repository owner has added and reviewed the complete immutable baseline workload set. It replaces `reference/original-workloads/SHA256SUMS.txt`. Use `-Verify` before and after major implementation passes to detect modified, missing, and unexpected files.
