@@ -15,7 +15,7 @@ Review date: August 19, 2026.
 
 All reachable commits/refs were searched by path-only secret-pattern scans and risky-filename inventory. No private keys, credential values, provider tokens, raw Engine logs, certificate/key files, or restricted partner names were found.
 
-Pattern-review candidates were limited to preserved supplied examples: an empty credential fallback and corporate example addresses/portal references. They are documentation/workload identifiers, not authentication material. Their immutable source status and benign use were reviewed; no history rewrite was required.
+Pattern-review candidates were limited to preserved supplied examples: an empty credential fallback, historical corporate example addresses, and a customer-oriented content target. They are not authentication material. The evidence intentionally remains verbatim and immutable; the addresses must not be used as active recipients. Public adaptations use reserved recipients and disclose the Edge `about:blank` substitution and resulting fidelity reduction. No history rewrite was required.
 
 ## License
 

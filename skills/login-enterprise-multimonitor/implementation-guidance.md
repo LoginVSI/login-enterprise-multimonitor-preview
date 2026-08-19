@@ -1,6 +1,6 @@
 # Implementation guidance
 
-Status: **DRAFT / PARTIALLY LOGIN ENTERPRISE-VALIDATED**. This describes the current Preview implementation, not a stable product contract. See `validation-guidance.md` for the proven 6.8.6 scope and remaining platform work.
+Status: **PREVIEW / PARTIALLY LOGIN ENTERPRISE-VALIDATED**. This describes the current Preview implementation, not a stable product contract. See `validation-guidance.md` for the proven 6.8.6 scope and remaining platform work.
 
 ## API priority and boundary
 
@@ -30,7 +30,7 @@ The optional application readiness delay is not the DLL's placement stabilizatio
 - Schema: `MonitorCount=<integer>` and `LastUsedIndex=<integer>`.
 - Initial/reset index: `-1`.
 - Allocation: `(lastUsedIndex + 1) % monitorCount`.
-- Recovery: reset for missing, malformed, out-of-range, or monitor-count-changed state.
+- Recovery: reset for missing, malformed, out-of-range, or monitor-count-changed state. Operational file read/access failures remain errors rather than being mislabeled and overwritten as corruption.
 - Commit: write atomically only after verified successful placement.
 - Concurrency: serialize allocation with a sibling lock file.
 
@@ -83,8 +83,8 @@ In the proven Application Test with `Leave application running` off, Login Enter
 - **Integrated Edge/browser:** preserve its application-specific new-window discovery and account for multiprocess/existing-instance ambiguity. Start allocates after original initialization; Run reuses and repeatedly reasserts the saved target after focus/maximize actions. Do not generalize the simplified harness into the Knowledge Worker flow without runtime evidence.
 - **CMD:** do not use it as a generic proof target on configurations where Windows Terminal owns the visible terminal UI.
 - **Canonical generic flow:** `00-Prepare-MultiMonitor.cs` stages only. `01-Open-Place-Applications.cs` explicitly resets once for a fresh demonstration, then allocates Notepad, Paint, and Edge. `02-Close-Applications.cs` does bounded cleanup without state access. This lifecycle is runtime-proven in the recorded Desktop Connector environment.
-- **Office Preview:** five separate application workloads allocate once through documented `START`/`MainWindow` patterns and remain partner-lab pending.
-- **Knowledge Worker:** preserve the original file, target, class, timers, interactions, and scenario intent. Use `adaptation-manifest.json`; Start/open workloads allocate once, Edge Run uses maintenance only, and preparation/Close workloads never allocate.
+- **Office Preview:** Word, Excel, PowerPoint, and classic Outlook preflight stable process/class matches and use documented `START`; Edge snapshots existing durable handles, launches a new window, and accepts only a uniquely new top-level window. Each allocates once and remains partner-lab pending. New Outlook is unsupported/unvalidated.
+- **Knowledge Worker:** preserve the original file, target, class, ordered timer calls, interactions, content, and scenario intent. Use `adaptation-manifest.json`; disclose any public-safety content substitution and fidelity impact; Start/open workloads allocate once, Edge Run uses maintenance only, and preparation/Close workloads never allocate.
 - **Persistent Start/Run:** file-state continuity is proven across the simple independent Desktop Connector regression workloads. Preserve intended `Run once` semantics when adapting the canonical flow to Continuous Test or Load Test.
 
 ## Failure handling

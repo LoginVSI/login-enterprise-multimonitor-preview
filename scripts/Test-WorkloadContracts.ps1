@@ -55,9 +55,31 @@ foreach ($name in $officeApps) {
     Assert-True (Test-Path -LiteralPath $path -PathType Leaf) "Office Preview workload is missing: $name"
     $text = Get-Text $path
     Assert-True ((Get-MatchesCount $text 'placement\.PlaceNext\(') -eq 1) "Office Preview workload must allocate exactly once: $name"
-    foreach ($required in @('START(', 'MainWindow', 'NativeWindowHandle', 'state.txt', 'LoginVSI.MultiMonitor.dll', 'StateAdvanced')) {
+    foreach ($required in @('NativeWindowHandle', 'state.txt', 'LoginVSI.MultiMonitor.dll', 'StateAdvanced')) {
         Assert-True $text.Contains($required) "Office Preview workload lacks '$required': $name"
     }
+    Assert-True (-not [regex]::IsMatch($text, '(?i)[A-Z]:\\Program Files')) "Office Preview workload uses an absolute application path: $name"
+}
+
+$officePreflightContracts = @{
+    '10-Place-Microsoft-Word.cs' = @('RequireNoExistingWordWindow', 'className: "Win32 Window:OpusApp"', 'processName: "WINWORD"', 'START(')
+    '20-Place-Microsoft-Excel.cs' = @('RequireNoExistingExcelWindow', 'className: "*XLMAIN*"', 'processName: "EXCEL"', 'START(')
+    '30-Place-Microsoft-PowerPoint.cs' = @('RequireNoExistingPowerPointWindow', 'className: "*PPTFrameClass*"', 'processName: "POWERPNT"', 'START(')
+    '40-Place-Microsoft-Outlook.cs' = @('RequireNoExistingClassicOutlookWindow', 'className: "Win32 Window:rctrl_renwnd32"', 'processName: "OUTLOOK"', 'START(')
+}
+foreach ($name in $officePreflightContracts.Keys) {
+    $text = Get-Text (Join-Path $officeRoot $name)
+    foreach ($required in $officePreflightContracts[$name]) {
+        Assert-True $text.Contains($required) "Office ownership preflight lacks '$required': $name"
+    }
+    Assert-True $text.Contains('FindWindows(') "Office ownership preflight does not inspect existing windows: $name"
+}
+
+$officeOutlook = Get-Text (Join-Path $officeRoot '40-Place-Microsoft-Outlook.cs')
+Assert-True (-not $officeOutlook.Contains('Inbox*')) 'Generic Office Outlook example regressed to an English/folder-specific Inbox title.'
+$officeEdge = Get-Text (Join-Path $officeRoot '50-Place-Microsoft-Edge.cs')
+foreach ($required in @('CaptureEdgeWindowHandles', 'FindUniqueNewEdgeWindow', 'HashSet<IntPtr>', '--new-window about:blank', 'Stopwatch.StartNew()', 'existingHandles.Contains', 'newWindowCount == 1')) {
+    Assert-True $officeEdge.Contains($required) "Office Edge new-window disambiguation lacks '$required'."
 }
 
 $resetText = Get-Text (Join-Path $officeRoot '01-Reset-Placement-State.cs')
@@ -91,7 +113,19 @@ foreach ($entry in $manifest.workloads) {
     Assert-True ($addedLines -le [int]$entry.maxAddedLines) "Adaptation exceeds its documented line-delta budget: $($entry.file) delta=$addedLines"
 
     $timerPattern = '(StartTimer|StopTimer|CancelTimer)\("([^"]+)"'
+    $originalTimerSequence = @([regex]::Matches($originalText, $timerPattern) | ForEach-Object { $_.Groups[1].Value + ':' + $_.Groups[2].Value })
+    $adaptedTimerSequence = @([regex]::Matches($adaptedText, $timerPattern) | ForEach-Object { $_.Groups[1].Value + ':' + $_.Groups[2].Value })
+    $adaptedOffset = 0
+    foreach ($originalTimerCall in $originalTimerSequence) {
+        while ($adaptedOffset -lt $adaptedTimerSequence.Count -and $adaptedTimerSequence[$adaptedOffset] -ne $originalTimerCall) { $adaptedOffset++ }
+        Assert-True ($adaptedOffset -lt $adaptedTimerSequence.Count) "Original ordered timer call '$originalTimerCall' is missing/reordered: $($entry.file)"
+        $adaptedOffset++
+    }
     $originalTimers = @([regex]::Matches($originalText, $timerPattern) | ForEach-Object { $_.Groups[2].Value } | Sort-Object -Unique)
+    $adaptedTimers = @([regex]::Matches($adaptedText, $timerPattern) | ForEach-Object { $_.Groups[2].Value } | Sort-Object -Unique)
+    foreach ($timer in $adaptedTimers) {
+        Assert-True ($originalTimers -contains $timer) "Adaptation introduced an undocumented timer name '$timer': $($entry.file)"
+    }
     foreach ($timer in $originalTimers) {
         Assert-True $adaptedText.Contains('"' + $timer + '"') "Original timer '$timer' is missing from adaptation: $($entry.file)"
     }
@@ -114,6 +148,20 @@ foreach ($entry in $manifest.workloads) {
     }
 }
 
+$substitutions = @($manifest.publicSafetySubstitutions)
+Assert-True ($substitutions.Count -eq 3) 'Knowledge Worker public-safety substitutions are not completely disclosed.'
+foreach ($id in @('outlook-example-recipients', 'edge-customer-target', 'edge-local-media-path')) {
+    Assert-True (@($substitutions | Where-Object { $_.id -eq $id }).Count -eq 1) "Missing or duplicate Knowledge Worker substitution disclosure: $id"
+}
+$adaptedOutlook = Get-Text (Join-Path $adaptedRoot '(KW) Microsoft Outlook.cs')
+Assert-True $adaptedOutlook.Contains('@example.invalid') 'Adapted Outlook recipients are not reserved public-safe placeholders.'
+Assert-True (-not $adaptedOutlook.Contains('@loginvsi.com')) 'Adapted Outlook workload contains supplied corporate recipients.'
+$adaptedEdgeStart = Get-Text (Join-Path $adaptedRoot 'KW25 Edge Start-4KVideoHeavy.cs')
+Assert-True $adaptedEdgeStart.Contains('"about:blank;"') 'Adapted Edge workload lost its disclosed public-safe target substitution.'
+Assert-True (-not $adaptedEdgeStart.Contains('/customer-portal/')) 'Adapted Edge workload contains the supplied customer-oriented target.'
+$edgeStartEntry = @($manifest.workloads | Where-Object { $_.file -eq 'KW25 Edge Start-4KVideoHeavy.cs' })[0]
+Assert-True $edgeStartEntry.change.Contains('about:blank') 'Edge manifest entry does not disclose the meaningful URL substitution.'
+
 $manifestNames = @($manifest.workloads | ForEach-Object { $_.file } | Sort-Object)
 $originalNames = @($originalFiles | ForEach-Object { $_.Name } | Sort-Object)
 Assert-True (($manifestNames -join "`n") -eq ($originalNames -join "`n")) 'Knowledge Worker manifest filenames differ from the preserved original set.'
@@ -125,13 +173,29 @@ Assert-True $stateSource.Contains('"LastUsedIndex="') 'State schema lost LastUse
 
 foreach ($relativePath in @(
     'dist\LoginVSI.MultiMonitor.dll',
+    'dist\SHA256SUMS.txt',
     'workloads\dll-backed\00-Prepare-MultiMonitor.cs',
     'workloads\office-preview\README.md',
     'workloads\knowledge-worker-multimonitor\README.md',
     'docs\test-lab-quickstart.md',
-    '.github\workflows\repository-validation.yml'
+    '.github\workflows\repository-validation.yml',
+    '.github\dependabot.yml',
+    'SECURITY.md',
+    'docs\getting-started.md',
+    'docs\adapt-your-own-workload.md',
+    'docs\agentic-workload-adaptation.md',
+    'docs\troubleshooting.md',
+    'scripts\New-TestLabBundle.ps1',
+    'scripts\Test-Documentation.ps1'
 )) {
     Assert-True (Test-Path -LiteralPath (Join-Path $repoRoot $relativePath) -PathType Leaf) "Required public/test-lab path is missing: $relativePath"
+}
+
+$workflow = Get-Text (Join-Path $repoRoot '.github\workflows\repository-validation.yml')
+$actionReferences = @([regex]::Matches($workflow, '(?m)^\s*uses:\s*[^@\s]+@([^\s#]+)') | ForEach-Object { $_.Groups[1].Value })
+Assert-True ($actionReferences.Count -gt 0) 'GitHub Actions workflow has no action references.'
+foreach ($reference in $actionReferences) {
+    Assert-True ($reference -match '^[0-9a-f]{40}$') "GitHub Action is not pinned to an immutable full commit SHA: $reference"
 }
 
 $trackedArtifacts = @(git -C $repoRoot ls-files -- 'artifacts/*' '*.log')

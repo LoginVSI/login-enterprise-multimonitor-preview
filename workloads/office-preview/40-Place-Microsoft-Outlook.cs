@@ -12,8 +12,17 @@ public class OfficePreviewPlaceMicrosoftOutlook : ScriptBase
     private void Execute()
     {
         OfficePreviewPlacement placement = LoadPlacement();
-        START(mainWindowTitle: "Inbox*", mainWindowClass: "Win32 Window:rctrl_renwnd32", processName: "OUTLOOK", timeout: 60);
+        RequireNoExistingClassicOutlookWindow();
+        START(mainWindowClass: "Win32 Window:rctrl_renwnd32", processName: "OUTLOOK", timeout: 60);
         Place(placement, MainWindow, "Microsoft Outlook");
+    }
+
+    private void RequireNoExistingClassicOutlookWindow()
+    {
+        int count = 0;
+        var windows = FindWindows(className: "Win32 Window:rctrl_renwnd32", processName: "OUTLOOK", timeout: 2);
+        foreach (IWindow window in windows) { count++; }
+        if (count > 0) { ABORT("Classic Microsoft Outlook already has a durable Explorer window. Close existing Outlook windows before running this ownership-safe Preview example."); }
     }
 
     private OfficePreviewPlacement LoadPlacement()

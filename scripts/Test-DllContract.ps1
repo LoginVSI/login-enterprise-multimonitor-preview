@@ -18,4 +18,14 @@ if ($packageReferences.Count -ne 0 -or $assemblyReferences.Count -ne 0) {
 $sourceHits = @(Get-ChildItem (Join-Path $repoRoot 'src\LoginVSI.MultiMonitor') -Filter '*.cs' | Select-String -Pattern 'LoginPI\.Engine')
 if ($sourceHits.Count -ne 0) { throw 'Reusable DLL source contains a LoginPI.Engine dependency.' }
 
-Write-Host 'DLL contract passed: netstandard2.0, no package/assembly references, no LoginPI.Engine source dependency.' -ForegroundColor Green
+$distributionDll = Join-Path $repoRoot 'dist\LoginVSI.MultiMonitor.dll'
+$checksumPath = Join-Path $repoRoot 'dist\SHA256SUMS.txt'
+if (-not (Test-Path -LiteralPath $distributionDll -PathType Leaf)) { throw 'The distributable DLL is missing.' }
+if (-not (Test-Path -LiteralPath $checksumPath -PathType Leaf)) { throw 'dist/SHA256SUMS.txt is missing.' }
+$checksumLine = @(Get-Content -LiteralPath $checksumPath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) -and -not $_.TrimStart().StartsWith('#') })
+$checksumMatch = if ($checksumLine.Count -eq 1) { [regex]::Match($checksumLine[0], '^([0-9a-fA-F]{64})\s{2}LoginVSI\.MultiMonitor\.dll$') } else { $null }
+if ($null -eq $checksumMatch -or -not $checksumMatch.Success) { throw 'dist/SHA256SUMS.txt has an unexpected format.' }
+$actualHash = (Get-FileHash -LiteralPath $distributionDll -Algorithm SHA256).Hash.ToLowerInvariant()
+if ($actualHash -ne $checksumMatch.Groups[1].Value.ToLowerInvariant()) { throw 'The distributable DLL does not match dist/SHA256SUMS.txt.' }
+
+Write-Host 'DLL contract passed: netstandard2.0, dependency-free, no LoginPI.Engine dependency, checksum verified.' -ForegroundColor Green

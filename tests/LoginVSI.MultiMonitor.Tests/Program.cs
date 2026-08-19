@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Threading;
+using System.Threading.Tasks;
 using LoginVSI.MultiMonitor;
 
 internal static class Program
@@ -17,18 +19,27 @@ internal static class Program
             Run("Next index - two displays", delegate { AssertSequence(2, new int[] { 0, 1, 0, 1 }); });
             Run("Next index - three displays", delegate { AssertSequence(3, new int[] { 0, 1, 2, 0 }); });
             Run("Next index - four displays", delegate { AssertSequence(4, new int[] { 0, 1, 2, 3 }); });
+            Run("Next index rejects non-positive monitor count", TestNonPositiveMonitorCount);
+            Run("Next index rejects invalid last-used index", TestInvalidLastUsedIndex);
+            Run("Next index wraps at upper boundary", delegate { Equal(0, RoundRobinLogic.GetNextIndex(3, 4), "Upper-boundary state did not wrap."); });
             Run("Primary-first synthetic ordering", TestPrimaryFirstOrdering);
             Run("Negative-coordinate monitor data", TestNegativeCoordinates);
             Run("Valid state parsing", TestValidState);
             Run("Invalid state recovery", TestInvalidState);
+            Run("Duplicate state keys are rejected", TestDuplicateStateKeys);
+            Run("Out-of-range state is rejected", TestOutOfRangeState);
             Run("Missing state handling", TestMissingState);
             Run("Monitor-count-change reset", TestMonitorCountChange);
             Run("Missing state repair", TestMissingStateRepair);
             Run("Invalid state repair", TestInvalidStateRepair);
             Run("Monitor-count-change repair", TestMonitorCountChangeRepair);
+            Run("Maintenance repair exposes no previous allocation", TestMaintenanceRepairHasNoPreviousAllocation);
             Run("State serialization", TestSerialization);
             Run("State round trip", TestRoundTrip);
             Run("Atomic replacement write", TestAtomicReplacement);
+            Run("State read IO failures remain operational errors", TestStateReadIoFailure);
+            Run("State lock serializes contenders", TestStateLockSerialization);
+            Run("State lock times out", TestStateLockTimeout);
             Run("Invalid HWND result", TestInvalidWindowHandle);
             Run("Canonical Open/Place workload contract", TestCanonicalOpenPlaceWorkload);
             Run("Canonical Close workload is state-neutral", TestCanonicalCloseWorkload);
@@ -61,6 +72,18 @@ internal static class Program
             Equal(expected[index], actual, "Unexpected round-robin index at position " + index + ".");
             lastUsedIndex = actual;
         }
+    }
+
+    private static void TestNonPositiveMonitorCount()
+    {
+        Throws<ArgumentOutOfRangeException>(delegate { RoundRobinLogic.GetNextIndex(-1, 0); }, "Zero monitor count was accepted.");
+        Throws<ArgumentOutOfRangeException>(delegate { StateFileStore.Parse(new string[0], 0); }, "State parser accepted zero monitors.");
+    }
+
+    private static void TestInvalidLastUsedIndex()
+    {
+        Throws<ArgumentOutOfRangeException>(delegate { RoundRobinLogic.GetNextIndex(-2, 2); }, "Index below -1 was accepted.");
+        Throws<ArgumentOutOfRangeException>(delegate { RoundRobinLogic.GetNextIndex(2, 2); }, "Index equal to monitor count was accepted.");
     }
 
     private static void TestPrimaryFirstOrdering()
@@ -99,6 +122,21 @@ internal static class Program
         StateLoadResult result = StateFileStore.Parse(new string[] { "MonitorCount=three", "LastUsedIndex=1" }, 3);
         Equal(StateLoadStatus.Invalid, result.Status, "Invalid state was not detected.");
         Equal(-1, result.State.LastUsedIndex, "Invalid state did not reset the index.");
+    }
+
+    private static void TestDuplicateStateKeys()
+    {
+        StateLoadResult duplicateMonitor = StateFileStore.Parse(new string[] { "MonitorCount=2", "MonitorCount=2", "LastUsedIndex=0" }, 2);
+        StateLoadResult duplicateIndex = StateFileStore.Parse(new string[] { "MonitorCount=2", "LastUsedIndex=0", "LastUsedIndex=1" }, 2);
+        Equal(StateLoadStatus.Invalid, duplicateMonitor.Status, "Duplicate MonitorCount was accepted.");
+        Equal(StateLoadStatus.Invalid, duplicateIndex.Status, "Duplicate LastUsedIndex was accepted.");
+    }
+
+    private static void TestOutOfRangeState()
+    {
+        Equal(StateLoadStatus.Invalid, StateFileStore.Parse(new string[] { "MonitorCount=2", "LastUsedIndex=-2" }, 2).Status, "Index below -1 was accepted by the state parser.");
+        Equal(StateLoadStatus.Invalid, StateFileStore.Parse(new string[] { "MonitorCount=2", "LastUsedIndex=2" }, 2).Status, "Out-of-range index was accepted by the state parser.");
+        Equal(StateLoadStatus.Invalid, StateFileStore.Parse(new string[] { "MonitorCount=0", "LastUsedIndex=-1" }, 2).Status, "Non-positive stored monitor count was accepted.");
     }
 
     private static void TestMissingState()
@@ -159,6 +197,21 @@ internal static class Program
         });
     }
 
+    private static void TestMaintenanceRepairHasNoPreviousAllocation()
+    {
+        WithTemporaryDirectory(delegate(string directory)
+        {
+            string missingPath = Path.Combine(directory, "missing-state.txt");
+            StateLoadResult missing = StateFileStore.LoadAndRepair(missingPath, 2);
+            Equal(-1, missing.State.LastUsedIndex, "Missing-state repair invented a maintenance target.");
+
+            string corruptPath = Path.Combine(directory, "corrupt-state.txt");
+            File.WriteAllLines(corruptPath, new string[] { "MonitorCount=2", "LastUsedIndex=99" });
+            StateLoadResult corrupt = StateFileStore.LoadAndRepair(corruptPath, 2);
+            Equal(-1, corrupt.State.LastUsedIndex, "Corrupt-state repair advanced or invented a maintenance target.");
+        });
+    }
+
     private static void TestSerialization()
     {
         string[] lines = StateFileStore.Serialize(new PlacementState(4, 2));
@@ -189,6 +242,57 @@ internal static class Program
             StateLoadResult result = StateFileStore.Load(path, 2);
             Equal(1, result.State.LastUsedIndex, "Replacement write did not publish the new state.");
             Equal(0, Directory.GetFiles(directory, "*.tmp").Length, "Temporary state file was left behind.");
+        });
+    }
+
+    private static void TestStateReadIoFailure()
+    {
+        WithTemporaryDirectory(delegate(string directory)
+        {
+            string path = Path.Combine(directory, "state.txt");
+            File.WriteAllLines(path, new string[] { "MonitorCount=2", "LastUsedIndex=0" });
+            using (FileStream held = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+            {
+                Throws<IOException>(delegate { StateFileStore.Load(path, 2); }, "An unreadable state file was mislabeled as corrupt state.");
+            }
+        });
+    }
+
+    private static void TestStateLockSerialization()
+    {
+        WithTemporaryDirectory(delegate(string directory)
+        {
+            string path = Path.Combine(directory, "state.txt");
+            IDisposable first = StateFileStore.AcquireExclusiveLock(path, 1000);
+            bool secondAcquired = false;
+            Task contender = Task.Run(delegate
+            {
+                using (StateFileStore.AcquireExclusiveLock(path, 2000))
+                {
+                    secondAcquired = true;
+                }
+            });
+
+            Thread.Sleep(150);
+            Equal(false, secondAcquired, "Contending state access bypassed the exclusive lock.");
+            first.Dispose();
+            Equal(true, contender.Wait(2000), "Contending state access did not resume after lock release.");
+            Equal(true, secondAcquired, "Contender did not acquire the released state lock.");
+        });
+    }
+
+    private static void TestStateLockTimeout()
+    {
+        WithTemporaryDirectory(delegate(string directory)
+        {
+            string path = Path.Combine(directory, "state.txt");
+            using (StateFileStore.AcquireExclusiveLock(path, 1000))
+            {
+                Throws<TimeoutException>(delegate
+                {
+                    using (StateFileStore.AcquireExclusiveLock(path, 100)) { }
+                }, "Lock contention did not honor the timeout.");
+            }
         });
     }
 
@@ -333,5 +437,19 @@ internal static class Program
         {
             throw new InvalidOperationException(message + " Expected=" + expected + ", Actual=" + actual + ".");
         }
+    }
+
+    private static void Throws<TException>(Action action, string message) where TException : Exception
+    {
+        try
+        {
+            action();
+        }
+        catch (TException)
+        {
+            return;
+        }
+
+        throw new InvalidOperationException(message);
     }
 }

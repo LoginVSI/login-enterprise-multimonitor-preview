@@ -16,7 +16,9 @@ $rules = @(
     @{ Name = 'Credential-like assignment'; Pattern = '(?i)\b(api[_-]?key|access[_-]?token|client[_-]?secret|password)\s*[:=]\s*["''][^"'']{8,}["'']' },
     @{ Name = 'GitHub token-like value'; Pattern = '\bgh[pousr]_[A-Za-z0-9]{20,}\b' },
     @{ Name = 'AWS access-key-like value'; Pattern = '\bAKIA[0-9A-Z]{16}\b' },
-    @{ Name = 'Bearer token-like value'; Pattern = '(?i)\bBearer\s+[A-Za-z0-9._~-]{20,}\b' }
+    @{ Name = 'Bearer token-like value'; Pattern = '(?i)\bBearer\s+[A-Za-z0-9._~-]{20,}\b' },
+    @{ Name = 'Basic authorization-like value'; Pattern = '(?i)\bBasic\s+[A-Za-z0-9+/]{16,}={0,2}\b' },
+    @{ Name = 'Private-key header'; Pattern = '-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----' }
 )
 
 $sourceExtensions = @(
@@ -37,6 +39,11 @@ foreach ($relativePath in @($gitOutput | Sort-Object -Unique)) {
     $normalized = $relativePathText.Replace('\', '/')
     if ($normalized -match '(^|/)(\.git|artifacts|bin|obj)(/|$)') { continue }
 
+    # Supplied reference material remains verbatim evidence. The separate hash
+    # checks protect the immutable subsets; the email rule governs new public
+    # implementation/docs outside reference/ without echoing candidate values.
+    $isPreservedEvidence = $normalized.StartsWith('reference/', [System.StringComparison]::OrdinalIgnoreCase)
+
     $extension = [System.IO.Path]::GetExtension($normalized).ToLowerInvariant()
     if ($normalized -eq '.gitignore') { $extension = '.gitignore' }
     if ($sourceExtensions -notcontains $extension) { continue }
@@ -54,6 +61,18 @@ foreach ($relativePath in @($gitOutput | Sort-Object -Unique)) {
                     Path = $normalized
                     Line = $lineNumber
                 })
+            }
+        }
+
+        if (-not $isPreservedEvidence) {
+            foreach ($emailMatch in [regex]::Matches($line, '(?i)\b[A-Z0-9._%+-]+@([A-Z0-9.-]+\.[A-Z]{2,})\b')) {
+                if ($emailMatch.Groups[1].Value -ne 'example.invalid') {
+                    $findings.Add([pscustomobject]@{
+                        Rule = 'Email address outside preserved evidence'
+                        Path = $normalized
+                        Line = $lineNumber
+                    })
+                }
             }
         }
     }

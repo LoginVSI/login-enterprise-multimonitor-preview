@@ -18,14 +18,10 @@ namespace LoginVSI.MultiMonitor
                 return NewResetResult(currentMonitorCount, StateLoadStatus.Missing, "State file was missing; round-robin state was reset.");
             }
 
-            try
-            {
-                return Parse(File.ReadAllLines(stateFilePath), currentMonitorCount);
-            }
-            catch (Exception exception)
-            {
-                return NewResetResult(currentMonitorCount, StateLoadStatus.Invalid, "State file could not be read; round-robin state was reset. " + exception.Message);
-            }
+            // Parsing failures are represented by StateLoadStatus.Invalid. File-system
+            // failures are operational errors and must remain distinguishable instead
+            // of being mislabeled as corrupt state and silently overwritten.
+            return Parse(File.ReadAllLines(stateFilePath), currentMonitorCount);
         }
 
         public static StateLoadResult LoadAndRepair(string stateFilePath, int currentMonitorCount)
@@ -155,6 +151,16 @@ namespace LoginVSI.MultiMonitor
 
         internal static IDisposable AcquireExclusiveLock(string stateFilePath, int timeoutMilliseconds)
         {
+            if (string.IsNullOrWhiteSpace(stateFilePath))
+            {
+                throw new ArgumentException("A state-file path is required.", "stateFilePath");
+            }
+
+            if (timeoutMilliseconds < 0)
+            {
+                throw new ArgumentOutOfRangeException("timeoutMilliseconds");
+            }
+
             string fullPath = Path.GetFullPath(stateFilePath);
             string directory = Path.GetDirectoryName(fullPath);
             Directory.CreateDirectory(directory);

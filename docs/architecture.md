@@ -51,7 +51,7 @@ MonitorCount=<integer>
 LastUsedIndex=<integer>
 ```
 
-Initialization uses `LastUsedIndex=-1`; next selection is `(lastUsedIndex + 1) % monitorCount`. Missing, malformed, out-of-range, or monitor-count-changed state resets to the current count and `-1`. The state update uses a same-directory temporary file and replacement. A short-lived exclusive `.lock` file serializes readers/writers around selection and placement. HWND and monitor handles are rediscovered and never persisted.
+Initialization uses `LastUsedIndex=-1`; next selection is `(lastUsedIndex + 1) % monitorCount`. Missing, malformed, out-of-range, or monitor-count-changed state resets to the current count and `-1`. Parse corruption is distinct from file I/O/access failures: operational read failures propagate to the structured placement failure path rather than being mislabeled and overwritten as corruption. The state update uses a same-directory temporary file and replacement. A short-lived exclusive `.lock` file serializes readers/writers around selection and placement. HWND and monitor handles are rediscovered and never persisted. Maintenance calls never advance allocation; repair can initialize malformed/missing state, after which `PlaceLastUsed` fails because no previous target exists.
 
 ## Monitor discovery and ordering
 
@@ -100,7 +100,9 @@ Application Test leaves Open/Place running into Close while Prepare and Close re
 
 ## Knowledge Worker sequencing and measurement
 
-Office document windows are placed after their existing open-document timers stop. The selected workbook, presentation, or document window is the base window; open/save and other dialogs do not allocate. Outlook allocates only its Inbox `MainWindow`; open-message, compose, reminder, and first-run windows do not. Later base-window minimize/maximize actions reassert the same target without advancing state. Preparation and close workloads do not consume targets.
+The small Office Preview preflights Word, Excel, PowerPoint, and classic Outlook by stable process/class identity so it fails rather than moving a pre-existing base window. Classic Outlook avoids an English folder-title dependency. Edge snapshots existing qualifying handles and binds only to a uniquely new durable window. These examples are static-validated and still require runtime proof.
+
+Representative Office document workloads are placed after their existing open-document timers stop. The selected workbook, presentation, or document window is the base window; open/save and other dialogs do not allocate. Outlook allocates only its original Inbox `MainWindow`; open-message, compose, reminder, and first-run windows do not. Later base-window minimize/maximize actions reassert the same target without advancing state. Preparation and close workloads do not consume targets.
 
 Edge Start snapshots existing top-level Edge HWNDs, identifies a newly observed `Chrome_WidgetWin_1` Edge window, ends `Browser_Start`, preserves its existing initialization wait, then allocates that browser base window. Edge Run resolves the expected persistent browser window, uses the last verified target from Start, and reasserts it after repeated maximize/focus operations. This adds cadence overhead but avoids treating a Start/Run pair as two applications. Same-HWND continuity and ambiguity with multiple matching Edge windows remain runtime validation gates.
 

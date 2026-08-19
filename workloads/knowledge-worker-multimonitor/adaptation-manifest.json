@@ -2,6 +2,39 @@
   "status": "generated/build-tested/static-validated; partner-lab runtime validation pending",
   "sourceDirectory": "reference/original-workloads",
   "adaptedDirectory": "workloads/knowledge-worker-multimonitor",
+  "reviewedInvariants": [
+    "one-to-one preserved-source coverage",
+    "TARGET and primary script class retained",
+    "ordered timer calls and timer names retained",
+    "Start/open allocation occurs exactly once on the durable base window",
+    "Run maintenance never calls PlaceNext",
+    "preparation and Close workloads remain placement/state neutral",
+    "secondary and transient windows never allocate",
+    "no HWND or native monitor handle is persisted"
+  ],
+  "publicSafetySubstitutions": [
+    {
+      "id": "outlook-example-recipients",
+      "file": "(KW) Microsoft Outlook.cs",
+      "change": "Historical corporate example recipients were replaced with reserved example.invalid recipients.",
+      "fidelity": "Recipient identity differs intentionally; compose/send interaction structure is retained.",
+      "preservedSource": "The immutable supplied original remains verbatim and its historical addresses are not credentials or active test recipients."
+    },
+    {
+      "id": "edge-customer-target",
+      "file": "KW25 Edge Start-4KVideoHeavy.cs",
+      "change": "A customer-oriented target in the supplied URL sequence was replaced with about:blank.",
+      "fidelity": "This public-safety substitution reduces exact content fidelity for that tab; internal/original content behavior requires appropriately controlled validation.",
+      "preservedSource": "The immutable supplied original remains verbatim."
+    },
+    {
+      "id": "edge-local-media-path",
+      "file": "KW25 Edge Start-4KVideoHeavy.cs",
+      "change": "A machine-specific media path was replaced with a public generic path under the Preview staging directory.",
+      "fidelity": "The tester must stage the media file explicitly; the video interaction intent is retained.",
+      "preservedSource": "The immutable supplied original remains verbatim."
+    }
+  ],
   "workloads": [
     {
       "file": "(KW) Prepare for Microsoft Office 365.cs",
@@ -16,7 +49,7 @@
       "type": "run/allocating",
       "allocates": true,
       "window": "START MainWindow matching Inbox*, rctrl_renwnd32, OUTLOOK",
-      "change": "Loads Preview DLL, allocates Inbox MainWindow once, reasserts after minimize/maximize; sanitizes example recipients",
+      "change": "Loads Preview DLL, allocates the original Inbox MainWindow once, reasserts after minimize/maximize, and substitutes reserved public-safe recipients as disclosed above",
       "maxAddedLines": 70
     },
     {
@@ -24,7 +57,7 @@
       "type": "start/allocating",
       "allocates": true,
       "window": "Newly observed Chrome_WidgetWin_1 msedge top-level window",
-      "change": "Snapshots existing windows, bounds durable-window discovery, uses public-safe local media, allocates once after Browser_Start",
+      "change": "Snapshots existing windows, bounds durable-window discovery, uses public-safe local media, replaces one customer-oriented URL with about:blank as disclosed above, and allocates once after Browser_Start",
       "maxAddedLines": 100
     },
     {

@@ -12,8 +12,17 @@ public class OfficePreviewPlaceMicrosoftExcel : ScriptBase
     private void Execute()
     {
         OfficePreviewPlacement placement = LoadPlacement();
-        START(mainWindowTitle: "*Excel*", mainWindowClass: "*XLMAIN*", processName: "EXCEL", timeout: 60);
+        RequireNoExistingExcelWindow();
+        START(mainWindowClass: "*XLMAIN*", processName: "EXCEL", timeout: 60);
         Place(placement, MainWindow, "Microsoft Excel");
+    }
+
+    private void RequireNoExistingExcelWindow()
+    {
+        int count = 0;
+        var windows = FindWindows(className: "*XLMAIN*", processName: "EXCEL", timeout: 2);
+        foreach (IWindow window in windows) { count++; }
+        if (count > 0) { ABORT("Microsoft Excel already has a durable workbook window. Close existing Excel windows before running this ownership-safe Preview example."); }
     }
 
     private OfficePreviewPlacement LoadPlacement()

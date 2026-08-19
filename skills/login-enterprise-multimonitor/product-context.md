@@ -1,6 +1,6 @@
 # Product context
 
-Status: draft technical context, not a formal PRD, support statement, roadmap, or delivery commitment.
+Status: Preview technical context, not a formal PRD, support statement, roadmap, or delivery commitment.
 
 Compatible Login Enterprise workloads commonly interact primarily with one application window on the primary display. Multi-monitor validation may need representative application activity distributed repeatably across active displays.
 

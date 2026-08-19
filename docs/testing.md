@@ -1,77 +1,58 @@
 # Testing and validation
 
-## Evidence vocabulary
-
-- **Generated/build-tested/static-validated:** source and automated contracts pass; no Login Enterprise runtime claim.
-- **Proven in Script Editor:** one workload compiled and executed in Script Editor/Standalone Engine.
-- **Proven in full Login Enterprise test:** independent workloads executed through the actual platform.
-- **Proven in VDI:** exercised in a documented VDI protocol/environment.
-
-## Automated test taxonomy
-
-Run all automated repository gates with:
+Run the authoritative gate:
 
 ```powershell
 .\scripts\Test-Repository.ps1
 ```
 
-| Layer | Current coverage | What it does not prove |
+`-Fast` runs repository integrity and static/source contracts without restore/build/unit execution. CI runs the full command on Windows for pushes and pull requests to `main`.
+
+## Test taxonomy
+
+| Category | Automated coverage | It does not prove |
 | --- | --- | --- |
-| Smoke | Restore/build and executable test-harness launch | Login Enterprise compilation or UI automation |
-| Unit | Next-index sequences, serialization, parsing, state repair | Real files shared across platform workloads |
-| Functional/pure logic | Primary-first ordering, negative coordinates, atomic replacement, invalid-HWND result | Interactive window movement |
-| Source-contract/static | Canonical Close neutrality, workload API casing, staged paths, Office allocation count, Knowledge Worker manifest/deltas/timers/Start-Run contracts, compiled DLL framework/reference contract | Application window durability at runtime |
-| Repository integrity | Diff checks, reference hashes, preserved-evidence hashes, public-safety scan, artifact hygiene | Reachable-history security audit or legal approval |
-| Runtime/manual | Script Editor and Desktop Connector evidence below | Untested releases/topologies/protocols |
+| Smoke | Restore, clean Release build, executable test harness, distributable copy | Login Enterprise compilation/UI behavior |
+| Unit | Round robin, bounds, parsing, duplicate keys, serialization, repair | Interactive placement |
+| Functional/pure logic | Primary-first ordering, negative coordinates, atomic replacement, lock serialization/timeout, invalid-HWND failure | Real multi-display behavior |
+| Source-contract/static | DLL paths/API casing, allocation lifecycle, Office ownership/Edge/Outlook rules, KW mapping/deltas/timer sequence/substitutions, action SHA pins | Durable application identity at runtime |
+| Repository integrity | Git whitespace, immutable hashes, public safety, artifact hygiene, DLL target/dependency/checksum, expected public paths | Legal approval or Login Enterprise behavior |
+| Runtime/manual | Script Editor and actual platform evidence | Untested versions/topologies/protocols |
 
-`-Fast` runs repository integrity and static contracts only. CI runs the full command on Windows for every push and pull request to `main`.
+CI deliberately does not fake Login Enterprise end-to-end tests.
 
-## Runtime-proven generic baseline
+## Validation matrix
 
-Login Enterprise 6.8.6 Script Editor/Standalone Engine and Desktop Connector testing established:
+| Dimension | Evidence |
+| --- | --- |
+| Login Enterprise 6.8.6 generic framework | Runtime-proven |
+| Script Editor/Standalone Engine loading/staging | Runtime-proven |
+| Appliance ScriptContent and all Prepare branches | Runtime-proven |
+| Desktop Connector Console / NoRemote | Runtime-proven |
+| Physical two-monitor generic flow | Runtime-proven (`Notepad 0`, `Paint 1`, `Edge 0`) |
+| Cross-workload state and generic Prepare/Open/Close | Runtime-proven |
+| Missing-state recovery | Runtime-proven |
+| Corrupt state and topology-change recovery | Automated only; runtime pending |
+| 3+ monitors | Algorithmically covered; physical runtime pending |
+| Negative coordinates / mixed DPI / high resolution | Logic covered where stated; runtime pending |
+| Office Preview Word/Excel/PowerPoint/classic Outlook/Edge | Generated/build-tested/static-validated; partner-lab pending |
+| Representative ten-file KW adaptation | Generated/build-tested/static-validated; partner-lab pending |
+| New Outlook | Unsupported/unvalidated |
+| Other Login Enterprise/Office/Windows versions and VDI protocols | Pending |
 
-- local-engine and appliance ScriptContent delivery of `LoginVSI.MultiMonitor.dll`;
-- missing/default-retain/forced-refresh Prepare paths;
-- compiler-required `FindWindows(className: ..., processName: ...)` casing;
-- durable `START`/`MainWindow` behavior for the tested Notepad and Edge paths;
-- two physical monitors and verified `Notepad -> 0`, `Paint -> 1`, `Edge -> 0` round robin;
-- cross-workload state continuation and missing-state recovery;
-- actual serial workload execution in a Console / NoRemote Desktop Connector Application Test;
-- canonical generic Prepare -> Open/Place -> Close execution, scenario-controlled handoff, and cleanup behavior.
+## Partner-lab runtime validation
 
-This evidence is specific to the recorded environment. Corrupt-state and monitor-count-change recovery are unit-tested but remain separate runtime items. Mixed DPI, other releases, broader topologies, and VDI protocols remain unproven.
+Follow [test-lab-quickstart.md](test-lab-quickstart.md). For each workload record the selected durable title/class/process/HWND, structured result, state before/after, application events, scenario settings, and timing. Verify:
 
-## New workload status
+1. Word, Excel, PowerPoint, classic Outlook, and Edge Office examples in order, including existing-instance failure behavior.
+2. All ten adapted files in the preserved scenario order and lifecycle settings.
+3. Outlook secondary compose/read/reminder windows never allocate.
+4. Edge Start owns one new base window; Edge Run reports `StateAdvanced=false` and never allocates.
+5. Word/Excel/PowerPoint allocation occurs after original open timers, with maintenance rather than reallocation later.
+6. Preparation and Close remain state-neutral; cleanup and final state are correct.
+7. Content/media prerequisites, original interactions, first-run/profile/localization, and failure diagnostics.
+8. Relevant Windows/Office/LE/VDI/topology/scaling dimensions.
 
-The Office Preview and `knowledge-worker-multimonitor` sets are **generated/build-tested/static-validated; partner-lab runtime validation pending**. Passing CI must not change that label.
+Repository files remain source of truth. Test disposable copies in Script Editor because it may rewrite working representation/line endings. Never publish raw Engine logs.
 
-The Knowledge Worker contracts verify:
-
-- every preserved original has exactly one mapped adaptation;
-- originals remain hash-protected;
-- `TARGET`, primary class, and timer names remain present;
-- line deltas remain within the reviewed manifest budget;
-- Outlook, Edge Start, Excel, PowerPoint, and Word each contain one allocation;
-- Edge Run uses `PlaceLastUsed`/`PlaceOnMonitor` without `PlaceNext`;
-- preparation and Close workloads do not allocate or access placement state.
-
-## Partner-lab validation
-
-Follow [test-lab-quickstart.md](test-lab-quickstart.md). For every allocating workload, record the durable window title/class/process/HWND immediately before placement and verify that secondary/transient windows never allocate.
-
-Validate at least:
-
-1. Office Preview Word, Excel, PowerPoint, Outlook, and Edge in documented order.
-2. Complete preserved scenario order using the adapted files and original `Run once`/`Leave application running` intent.
-3. Outlook Inbox allocation while reminders, read, and compose windows remain non-allocating.
-4. Edge Start allocates the newly identified base window once; Edge Run reuses that destination and reports `StateAdvanced=false` for maintenance.
-5. Excel, PowerPoint, and Word allocate only after their open-document timers stop, then reassert rather than reallocate after minimize/maximize.
-6. Close workloads clean up without changing the final state.
-7. Application events/results, structured placement results, timing/cadence impact, and failure behavior.
-8. Existing-instance ambiguity, first-run UI, localization, application versions, media staging, and the active monitor topology.
-
-Repository files remain source of truth. Test disposable copies in Script Editor because the editor may rewrite its working representation or line endings. Do not commit raw Engine logs.
-
-## Non-blocking recorded environment observations
-
-The proven local Desktop Connector session emitted ICA/Blast/PCoIP probe warnings before resolving NoRemote, did not report latency, explained schedule-controlled `forceKillOnExit`, and logged an ARM `Microsoft.DiaSymReader.Native.amd64.dll` load message before successful compile/run. These were environment observations, not placement failures.
+Recorded non-blocking Desktop Connector observations include ICA/Blast/PCoIP probes before NoRemote resolution, unavailable latency, schedule-controlled `forceKillOnExit`, and an ARM DIA symbol-reader load message followed by successful compile/run. They were not placement failures.

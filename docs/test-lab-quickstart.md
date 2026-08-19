@@ -1,73 +1,44 @@
-# Login Enterprise test-lab quickstart
+# Test-lab quickstart
 
-Use this guide with Login Enterprise 6.8.6 and a normal interactive Connector/test-lab session. The generic Preview framework is runtime-proven on the recorded two-monitor Desktop Connector environment. The Office Preview and Knowledge Worker adaptations are **generated/build-tested/static-validated; partner-lab runtime validation pending**.
+The generic framework is runtime-proven in the recorded Login Enterprise 6.8.6 Desktop Connector environment. Office and Knowledge Worker workloads remain **generated/build-tested/static-validated; partner-lab runtime validation pending**.
 
-## 1. Download the files
+## 1. Get and verify the files
 
-From this repository, download:
+Download or clone:
 
-- [`dist/LoginVSI.MultiMonitor.dll`](../dist/LoginVSI.MultiMonitor.dll)
-- [`workloads/dll-backed/00-Prepare-MultiMonitor.cs`](../workloads/dll-backed/00-Prepare-MultiMonitor.cs)
-- either the simple [`workloads/office-preview/`](../workloads/office-preview/) examples or the complete [`workloads/knowledge-worker-multimonitor/`](../workloads/knowledge-worker-multimonitor/) adaptations.
+- [`dist/LoginVSI.MultiMonitor.dll`](../dist/LoginVSI.MultiMonitor.dll) and [`SHA256SUMS.txt`](../dist/SHA256SUMS.txt);
+- [`00-Prepare-MultiMonitor.cs`](../workloads/dll-backed/00-Prepare-MultiMonitor.cs);
+- the [Office examples](../workloads/office-preview/) or [Knowledge Worker adaptations](../workloads/knowledge-worker-multimonitor/).
 
-Repository files are the source of truth. For Script Editor development, test disposable copies because Script Editor may rewrite line endings or its working representation.
+Verify the DLL:
 
-## 2. Upload and stage the DLL
-
-Upload the DLL to the appliance at:
-
-```text
-/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll
+```powershell
+(Get-FileHash .\LoginVSI.MultiMonitor.dll -Algorithm SHA256).Hash.ToLowerInvariant()
+Get-Content .\SHA256SUMS.txt
 ```
 
-Add `00-Prepare-MultiMonitor.cs` before every DLL consumer. It stages the target-local copy at:
+The hashes must match. Optional: `.\scripts\New-TestLabBundle.ps1 -Zip` creates an ignored convenience bundle under `artifacts/`.
 
-```text
-%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll
-```
+## 2. Upload and stage
 
-Missing copies stage automatically. Existing copies are retained while `ForceRefreshMultiMonitorDll` is `false`; set it to `true` only for an intentional remove/copy/verify refresh, then return it to `false`.
+Upload the DLL to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`. Run Prepare before consumers. It stages `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`; missing copies stage automatically, existing copies retain by default, and `ForceRefreshMultiMonitorDll=true` performs the proven remove/copy/verify refresh. Return the toggle to `false` after deliberate refresh.
 
-## 3. Create the test
+For Script Editor development, use its local engine ScriptContent directory and disposable workload copies; no installation-specific path is a product requirement.
 
-Create an Application Test using a normal Connector/test-lab session whose interactive Windows desktop exposes the intended monitor topology. Desktop Connector Console / NoRemote is the proven generic baseline. Do not infer VDI protocol coverage from that result.
+## 3. Configure the session and scenario
 
-For the Office Preview examples, run:
+Use an Application Test with a normal Connector/test-lab interactive desktop that exposes the intended monitor topology. Console / NoRemote is the proven generic baseline, not proof of other protocols.
 
-1. Prepare.
-2. `office-preview/01-Reset-Placement-State.cs` for a deterministic fresh sequence.
-3. Word, Excel, PowerPoint, Outlook, then Edge.
+Office order: Prepare, Reset, Word, Excel, PowerPoint, classic Outlook, Edge. Close pre-existing Word/Excel/PowerPoint/classic Outlook durable windows first. Office examples expect `0,1,0,1,0` on two monitors and `0,1,2,0,1` on three.
 
-For the complete Knowledge Worker adaptation, run the files in the order and with the enabled/`Run once`/`Leave application running` intent recorded in [`reference/test-scenario/workload-sequence.txt`](../reference/test-scenario/workload-sequence.txt). The adapted files have identical names under `workloads/knowledge-worker-multimonitor/`. Add Prepare before that sequence without editing the preserved transcription.
+Knowledge Worker: add Prepare, then use adapted files in the immutable scenario order with original enabled/`Run once`/`Leave application running` intent. Outlook, Edge Start, Excel, PowerPoint, and Word allocate; Edge Run maintains without allocation; preparation/Close are neutral.
 
-## 4. Preserve lifecycle semantics
+Application Test defaults `Leave application running` off. Turn it on for a Start/Open workload that must hand an app to Run/Close, then explicitly close it later. Continuous/Load Tests also expose `Run once`; preserve the original one-time intent. Never use incidental process linger as persistence.
 
-- Application Test provides per-workload `Leave application running`; its default is off.
-- Continuous Test and Load Test also provide `Run once`.
-- Start workloads that hand an application to a later Run workload must leave it running.
-- Run workloads reuse or reassert the Start destination and do not allocate again.
-- Close workloads explicitly clean up and do not consume or reset monitor state.
-- A process that happens to linger is not a lifecycle contract.
+## 4. Inspect results
 
-## 5. Expected round robin
+Confirm the intended durable base window, target/verified monitor, `StateAdvanced`, final state, application events/results, and cleanup. Secondary/transient windows must not allocate. Capture environment dimensions listed in [troubleshooting](troubleshooting.md).
 
-The primary monitor is logical index 0. Remaining monitors are ordered by signed desktop coordinates. Starting from `LastUsedIndex=-1`, verified durable application windows receive `0,1,2,...` and wrap. State advances only after placement verifies.
+Keep raw Engine logs only under ignored `artifacts/` and never publish them. Use a reviewed, minimized excerpt through an approved private channel.
 
-The Office Preview sequence expects `0,1,0,1,0` on two monitors. The complete Knowledge Worker sequence allocates Outlook, Edge Start, Excel, PowerPoint, and Word; Edge Run performs maintenance placement without advancing.
-
-## 6. Capture useful failure evidence
-
-Record:
-
-- Login Enterprise version, test type, session type, Windows/application versions, and monitor topology;
-- workload/AppExecution result and application events;
-- structured placement result: application, monitor count, target, verified index, state advancement, elapsed time, and message;
-- selected durable window title/class/process and whether it was the intended base window;
-- `%TEMP%\LoginPI\MultiMonitor\state.txt` before/after when state behavior is relevant;
-- cleanup behavior and any existing-window ambiguity.
-
-Engine logs can contain authentication, session, infrastructure, or personal material. Keep raw logs in the ignored `artifacts/` area for local diagnosis and **do not publish them**. Share only a reviewed, minimized excerpt through an approved channel.
-
-## Runtime-status rule
-
-Passing the repository build, source contracts, or GitHub Actions does not prove Login Enterprise behavior. Record partner-lab evidence per workload before changing Office/KW status from generated/static-validated to runtime-proven.
+Passing build, static contracts, or GitHub Actions does not change runtime status. Record partner-lab evidence per workload before marking it proven.

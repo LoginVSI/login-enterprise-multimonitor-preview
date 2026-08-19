@@ -4,16 +4,50 @@
 using LoginPI.Engine.ScriptBase;
 using LoginPI.Engine.ScriptBase.Components;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
 public class OfficePreviewPlaceMicrosoftEdge : ScriptBase
 {
+    private const int WindowTimeoutSeconds = 60;
+
     private void Execute()
     {
         OfficePreviewPlacement placement = LoadPlacement();
-        START(processName: "msedge", timeout: 60);
-        Place(placement, MainWindow, "Microsoft Edge");
+        HashSet<IntPtr> existingHandles = CaptureEdgeWindowHandles();
+        ShellExecute("msedge.exe --new-window about:blank", waitForProcessEnd: false, continueOnError: false, forceKillOnExit: false);
+        IWindow edge = FindUniqueNewEdgeWindow(existingHandles);
+        if (edge == null) { ABORT("A unique new durable Microsoft Edge window could not be distinguished from pre-existing Edge windows. Close extra Edge windows and retry."); }
+        Place(placement, edge, "Microsoft Edge");
+    }
+
+    private HashSet<IntPtr> CaptureEdgeWindowHandles()
+    {
+        HashSet<IntPtr> handles = new HashSet<IntPtr>();
+        var windows = FindWindows(className: "Win32 Window:Chrome_WidgetWin_1", processName: "msedge", timeout: 2);
+        foreach (IWindow window in windows) { handles.Add(window.NativeWindowHandle); }
+        return handles;
+    }
+
+    private IWindow FindUniqueNewEdgeWindow(HashSet<IntPtr> existingHandles)
+    {
+        Stopwatch timer = Stopwatch.StartNew();
+        while (timer.Elapsed.TotalSeconds < WindowTimeoutSeconds)
+        {
+            IWindow candidate = null;
+            int newWindowCount = 0;
+            var windows = FindWindows(className: "Win32 Window:Chrome_WidgetWin_1", processName: "msedge", timeout: 1);
+            foreach (IWindow window in windows)
+            {
+                if (!existingHandles.Contains(window.NativeWindowHandle)) { candidate = window; newWindowCount++; }
+            }
+            if (newWindowCount == 1) { return candidate; }
+            if (newWindowCount > 1) { return null; }
+            Wait(0.5);
+        }
+        return null;
     }
 
     private OfficePreviewPlacement LoadPlacement()

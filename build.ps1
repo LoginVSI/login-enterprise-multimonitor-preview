@@ -7,6 +7,7 @@ $libraryProject = Join-Path $repoRoot 'src\LoginVSI.MultiMonitor\LoginVSI.MultiM
 $testProject = Join-Path $repoRoot 'tests\LoginVSI.MultiMonitor.Tests\LoginVSI.MultiMonitor.Tests.csproj'
 $distributionDirectory = Join-Path $repoRoot 'dist'
 $distributionDll = Join-Path $distributionDirectory 'LoginVSI.MultiMonitor.dll'
+$distributionChecksums = Join-Path $distributionDirectory 'SHA256SUMS.txt'
 
 function Invoke-DotNet {
     param([Parameter(Mandatory = $true)][string[]]$Arguments)
@@ -47,11 +48,6 @@ Remove-RepositoryBuildTree (Join-Path $repoRoot 'src\LoginVSI.MultiMonitor\obj')
 Remove-RepositoryBuildTree (Join-Path $repoRoot 'tests\LoginVSI.MultiMonitor.Tests\bin')
 Remove-RepositoryBuildTree (Join-Path $repoRoot 'tests\LoginVSI.MultiMonitor.Tests\obj')
 
-if (Test-Path -LiteralPath $distributionDll)
-{
-    Remove-Item -LiteralPath $distributionDll -Force
-}
-
 Invoke-DotNet @('restore', $testProject)
 Invoke-DotNet @('build', $testProject, '--configuration', 'Release', '--no-restore')
 Invoke-DotNet @('run', '--project', $testProject, '--configuration', 'Release', '--no-build')
@@ -64,4 +60,6 @@ if (-not (Test-Path -LiteralPath $builtDll -PathType Leaf))
 
 New-Item -ItemType Directory -Path $distributionDirectory -Force | Out-Null
 Copy-Item -LiteralPath $builtDll -Destination $distributionDll -Force
+$distributionHash = (Get-FileHash -LiteralPath $distributionDll -Algorithm SHA256).Hash.ToLowerInvariant()
+[System.IO.File]::WriteAllText($distributionChecksums, $distributionHash + '  LoginVSI.MultiMonitor.dll' + [Environment]::NewLine, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host "Build, tests, and distribution copy completed: $distributionDll" -ForegroundColor Green

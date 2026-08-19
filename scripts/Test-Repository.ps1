@@ -38,6 +38,7 @@ try {
     Write-Host '=== Static contracts ==='
     & (Join-Path $PSScriptRoot 'Test-DllContract.ps1')
     & (Join-Path $PSScriptRoot 'Test-WorkloadContracts.ps1')
+    & (Join-Path $PSScriptRoot 'Test-Documentation.ps1')
 
     if ($Fast) {
         Write-Host 'Fast mode skipped restore/build/unit execution.' -ForegroundColor Yellow
@@ -45,6 +46,8 @@ try {
     else {
         Write-Host '=== Restore, build, unit/pure-logic/source-contract tests ==='
         Invoke-RepositoryScript -Path (Join-Path $repoRoot 'build.ps1')
+        Write-Host '=== Post-build distributable contract ==='
+        & (Join-Path $PSScriptRoot 'Test-DllContract.ps1')
     }
 
     Write-Host 'Repository validation completed successfully.' -ForegroundColor Green

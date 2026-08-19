@@ -8,6 +8,7 @@
 - Do not claim a build or test passed without recorded evidence from that environment.
 - Update documentation when behavior, decisions, validation status, or limitations change.
 - Use public-safe, generic Preview language only.
+- For workload adaptation, follow `skills/login-enterprise-multimonitor/SKILL.md`; keep it aligned with `docs/adapt-your-own-workload.md` and `docs/agentic-workload-adaptation.md` rather than duplicating the full workflow here.
 
 ## API priority
 

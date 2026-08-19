@@ -12,8 +12,17 @@ public class OfficePreviewPlaceMicrosoftWord : ScriptBase
     private void Execute()
     {
         OfficePreviewPlacement placement = LoadPlacement();
-        START(mainWindowTitle: "*Word*", mainWindowClass: "Win32 Window:OpusApp", processName: "WINWORD", timeout: 60);
+        RequireNoExistingWordWindow();
+        START(mainWindowClass: "Win32 Window:OpusApp", processName: "WINWORD", timeout: 60);
         Place(placement, MainWindow, "Microsoft Word");
+    }
+
+    private void RequireNoExistingWordWindow()
+    {
+        int count = 0;
+        var windows = FindWindows(className: "Win32 Window:OpusApp", processName: "WINWORD", timeout: 2);
+        foreach (IWindow window in windows) { count++; }
+        if (count > 0) { ABORT("Microsoft Word already has a durable document window. Close existing Word windows before running this ownership-safe Preview example."); }
     }
 
     private OfficePreviewPlacement LoadPlacement()

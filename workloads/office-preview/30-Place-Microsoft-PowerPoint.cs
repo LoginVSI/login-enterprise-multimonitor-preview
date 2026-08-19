@@ -12,8 +12,17 @@ public class OfficePreviewPlaceMicrosoftPowerPoint : ScriptBase
     private void Execute()
     {
         OfficePreviewPlacement placement = LoadPlacement();
-        START(mainWindowTitle: "*PowerPoint*", mainWindowClass: "*PPTFrameClass*", processName: "POWERPNT", timeout: 60);
+        RequireNoExistingPowerPointWindow();
+        START(mainWindowClass: "*PPTFrameClass*", processName: "POWERPNT", timeout: 60);
         Place(placement, MainWindow, "Microsoft PowerPoint");
+    }
+
+    private void RequireNoExistingPowerPointWindow()
+    {
+        int count = 0;
+        var windows = FindWindows(className: "*PPTFrameClass*", processName: "POWERPNT", timeout: 2);
+        foreach (IWindow window in windows) { count++; }
+        if (count > 0) { ABORT("Microsoft PowerPoint already has a durable presentation window. Close existing PowerPoint windows before running this ownership-safe Preview example."); }
     }
 
     private OfficePreviewPlacement LoadPlacement()

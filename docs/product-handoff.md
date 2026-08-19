@@ -10,7 +10,7 @@ This public technical handoff accompanies, but does not replace, any separately 
 - Five-application Office Preview example set.
 - Complete ten-file minimal-delta Knowledge Worker/KW25 adaptation mapped to immutable originals.
 - One authoritative repository validation command and Windows GitHub Actions CI.
-- Public test-lab quickstart and explicit runtime-status boundaries.
+- Public manual and agentic adaptation pathways, test-lab quickstart, troubleshooting, checksum, and explicit runtime-status boundaries.
 
 ## Proven behavior
 
@@ -31,7 +31,7 @@ The Office Preview and Knowledge Worker sets are **generated/build-tested/static
 
 Use [test-lab-quickstart.md](test-lab-quickstart.md). Upload `dist/LoginVSI.MultiMonitor.dll`, run `workloads/dll-backed/00-Prepare-MultiMonitor.cs`, then choose the Office Preview or complete Knowledge Worker adaptations. Preserve the scenario transcription's order and lifecycle intent; do not modify preserved evidence.
 
-The Knowledge Worker `adaptation-manifest.json` records source, type, allocation, durable-window method, intentional changes, and reviewed line-delta budget. Static checks protect original hashes, timer names, targets, classes, allocation counts, and Close neutrality.
+The Knowledge Worker `adaptation-manifest.json` records source, type, allocation, durable-window method, intentional changes, public-safety substitutions, and reviewed line-delta budget. Static checks protect original hashes, ordered timer calls, targets, classes, allocation counts, Run maintenance, Close neutrality, and substitution disclosure.
 
 ## Remaining validation/product work
 

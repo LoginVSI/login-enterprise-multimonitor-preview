@@ -1,27 +1,22 @@
-# Known limitations and validation risks
+# Known limitations
 
-This unsupported Preview has no committed delivery date, support claim, or validated compatibility envelope.
+This is an unsupported, use-at-your-own-risk engineering Preview with no GA, support, compatibility, roadmap, or release commitment.
 
-- **Login Enterprise runtime scope:** Login Enterprise 6.8.6 Script Editor/Standalone Engine and Desktop Connector testing proved the generic DLL, delivery, round robin, state continuity, canonical Prepare -> Open/Place -> Close lifecycle, and cleanup in the recorded Console / NoRemote environment. This is not evidence for other releases, Office/Knowledge Worker adaptations, or VDI protocols.
-- **`FindWindows` named arguments:** actual 6.8.6 compiler evidence resolves the supplied documentation inconsistency: use `className` and `processName`. Lowercase `classname` and `processname` are rejected. The earlier compile gate is closed.
-- **Interactive desktop:** actual two-monitor movement and verification are proven for the generic Notepad/Paint/Edge flow. Mixed DPI, broader topologies, Office/Knowledge Worker applications, focus interactions, and VDI remain unvalidated.
-- **Durable-window identification:** generic Notepad/Paint/Edge durable-window behavior is proven. Office/Knowledge Worker adaptations have not been runtime-proven to exclude every splash, modal, temporary launcher, or replacement HWND. Title/class/process and same-HWND durability must be recorded per application.
-- **Raw launch process identity:** raw `ShellExecute` produced short-lived Notepad and Edge PIDs while their visible UIs lived elsewhere or reused another process. Do not treat the initial PID as durable-window ownership. `ShellExecute` remains usable only where the lifecycle is understood and handled.
-- **Combined-workload launch ownership:** a workload has one associated `TARGET`. The canonical combined workload uses `START`/`MainWindow` for Edge, compatible `.NET` launch plus unique discovery for Notepad, and the proven Paint path. This handoff is proven only for the recorded generic test.
-- **Terminal-host behavior:** the tested `cmd.exe /k title ...` UI was hosted visibly by Windows Terminal and was not discoverable as the requested standalone `cmd` top-level window. CMD is therefore not a deterministic generic Preview harness on that configuration; no CMD-specific product logic is planned.
-- **Edge:** existing instances, multiprocess behavior, delayed/new top-level windows, and later maximize/focus actions make it higher risk. Start aborts rather than selecting an indistinguishable existing window; Run assumes the authoritative Start/Run order.
-- **Persistent applications:** `PlaceLastUsed` requires valid prior state. A monitor-count reset between Start and Run leaves no prior target and fails safely.
-- **Focus:** the library does not force foreground focus; workloads do. Native placement and application actions may still affect focus.
-- **Fullscreen and later actions:** applications can relocate or replace windows after verification. Integrated code reasserts after known minimize/maximize points only.
-- **Scenario dependencies:** persistence must be deliberate. The canonical Application Test requires Prepare off/not relevant, Open/Place on, and Close off for `Leave application running`. Continuous Test and Load Test also expose `Run once`, whose intended semantics must be preserved.
-- **Bounded cleanup:** canonical Close acts only when exactly one matching base window exists. Zero is treated as already closed; multiple matches are logged and skipped to avoid closing unrelated applications. It does not persist handles, kill all matching processes, or change monitor state. Per-instance cleanup, especially with multiple Edge windows, remains a manual validation limitation.
-- **DPI/scaling:** mixed DPI and scaling behavior is unvalidated. Full monitor bounds are supplied before maximize.
-- **Negative coordinates:** represented and unit-tested, but not proven on a physical topology.
-- **State concurrency:** calls use a five-second exclusive file lock. Script-only and library implementations attempt best-effort marker deletion after releasing the stream; abrupt termination or deletion failure may leave a harmless zero-byte marker. Real concurrent workloads and non-local filesystems need validation.
-- **Atomic state replacement:** implemented with same-directory `File.Replace`/`File.Move`; target filesystem behavior must be validated in deployment.
-- **Monitor changes:** count changes reset state. Same-count topology or identity changes are not represented in the MVP schema.
-- **Timing:** restore, three stabilization intervals, movement, maximize, verification, locking, and I/O add overhead. Edge maintenance placement adds repeated cadence overhead.
-- **Preview DLL staging:** local-engine initial staging/refresh plus appliance delivery and missing/default-retain/forced-refresh platform paths are proven in the tested 6.8.6 environments. This remains an unsupported Preview mechanism, not formal distribution/update behavior.
-- **DLL refresh/versioning:** the default retains an existing target-local DLL. Updating the appliance copy alone does not update those targets; intentional refresh requires the workload toggle. There is no version comparison, integrity check, rollback, fleet orchestration, or automatic toggle reset.
-- **Media staging:** the adapted 4K Edge Start workload expects a generic local media file to be staged separately.
-- **Deployment/security:** binary provenance, signing, version selection, update, rollback, and trust policy remain deployment responsibilities.
+- Runtime evidence is specific to Login Enterprise 6.8.6 and the recorded Script Editor plus Desktop Connector Console / NoRemote two-monitor environment.
+- Office Preview and representative KW workloads are static/build validated only; partner-lab runtime validation is pending.
+- Office examples do not automate first-run, activation, sign-in, profile creation, Protected View, localization differences, or every replacement-window path.
+- Outlook scope is classic Win32 Outlook (`OUTLOOK` / `rctrl_renwnd32`). New Outlook is unsupported/unvalidated.
+- Word/Excel/PowerPoint examples abort when pre-existing durable windows create ownership ambiguity. Edge attempts new-window disambiguation and aborts when unique ownership cannot be established.
+- The adapted KW Edge workload intentionally substitutes `about:blank` for one customer-oriented target, reducing exact content fidelity. Its generic media path requires explicit staging.
+- Preserved supplied evidence remains verbatim, including historical corporate example addresses. They are not credentials and must not be used as active recipients; adapted public content uses reserved placeholders.
+- Mixed DPI, broader/negative physical topologies, 3+ displays, other Windows/Office/LE versions, and Citrix/Horizon/RDP/other protocols remain pending unless specifically recorded in [testing](testing.md).
+- A raw launch PID may not own modern durable UI. Existing instances, process reuse, delayed windows, and later app repositioning remain integration risks.
+- Maintenance requires a valid prior allocation. Missing/malformed state may be repaired without advancing; monitor-count change loses the prior target and maintenance fails safely.
+- State serializes through a five-second local file lock. Lock behavior is unit-tested; real concurrent platform workloads and non-local filesystems remain runtime pending.
+- State tracks monitor count/index, not display identity; same-count topology changes are not represented.
+- Placement restore/move/maximize/verification and maintenance add measurable overhead and may affect focus/cadence.
+- Canonical generic cleanup is bounded and skips ambiguous multiple-window matches. The Office examples avoid broad process-killing cleanup.
+- Preview staging has no version negotiation, signing policy, fleet update, rollback, or automatic refresh. Updating the appliance copy alone does not replace a retained target-local DLL.
+- The `FindWindows` casing issue is resolved: actual 6.8.6 compiler evidence requires `className` and `processName`; lowercase variants fail.
+
+See [troubleshooting](troubleshooting.md) and [testing](testing.md) before reporting a defect.
