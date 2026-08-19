@@ -20,7 +20,8 @@ The root README maps source and evidence. `build.ps1` produces `dist/LoginVSI.Mu
 - Current library build: passed locally with zero warnings/errors.
 - Current unit harness: 17 tests passed.
 - Login Enterprise 6.8.6 Script Editor/Standalone Engine on August 18, 2026: prepare compile/run, local ScriptContent initial staging and forced refresh, runtime DLL loading, `className`/`processName` compiler casing, durable `START`/`MainWindow` for the simple Notepad and Edge proofs, two-physical-monitor Notepad/Paint/Edge placement, file-state continuation across separate standalone executions, and missing-state recovery passed.
-- Appliance ScriptContent delivery, actual Login Enterprise serial workload orchestration, the complete scenario, integrated Knowledge Worker durable-window behavior, and VDI: not yet validated.
+- Login Enterprise 6.8.6 Desktop Connector Application Test: appliance ScriptContent delivery, all three Prepare paths, serial execution of the three independent DLL-backed workloads, platform state persistence, `Notepad -> 0`, `Paint -> 1`, `Edge -> 0`, final `MonitorCount=2` / `LastUsedIndex=0`, and all three AppExecutions passed.
+- Final Prepare -> Open/Place -> Close implementation, integrated Knowledge Worker durable-window behavior, complete scenario, and VDI: not yet validated.
 
 ## Scenario behavior
 
@@ -45,11 +46,11 @@ See `known-limitations.md`. Reflection boilerplate is intentionally duplicated i
 
 ## PRD relationship and AI skill
 
-The product-requirements context supplies implementation findings, not approved requirements. The repository AI skill documents the actual Preview workflow and August 18 runtime evidence but remains draft pending platform validation and API stabilization.
+The product-requirements context supplies implementation findings, not approved requirements. The repository AI skill documents the actual Preview workflow and runtime evidence but remains draft pending the final application flow, integrated validation, and API stabilization.
 
 ## Recommended engineering follow-up
 
-The next mini-project is a real Login Enterprise Desktop Connector Application Test on the physical multi-monitor machine. It should validate appliance ScriptContent delivery, Prepare -> Open/Place -> Close serial orchestration, cross-workload state, no automatic restart during development, and application results/events. Then continue with integrated Office/Edge, complete-sequence, repeated-run, timing, and VDI validation in `testing.md`.
+The next mini-project is the clean final three-workload Preview flow: Prepare; Open/resolve durable base windows and round-robin place; Close applications cleanly. Use scenario-controlled `Leave application running` between Open/Place and Close, explicitly close applications in the final workload, and preserve `Run once` intent for Continuous Test/Load Test adaptations. Do not confuse the proven simple harness with this still-unbuilt final flow.
 
 ## Support and release considerations
 

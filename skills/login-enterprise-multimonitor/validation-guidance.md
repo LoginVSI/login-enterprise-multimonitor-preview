@@ -4,18 +4,20 @@ Status: partially executed ladder. Record source commit/diff identity, Login Ent
 
 Runtime-proven on August 18, 2026 in Login Enterprise 6.8.6 Script Editor/Standalone Engine: prepare compile/run; local ScriptContent initial staging and forced refresh; DLL loading; `className`/`processName` compiler casing; durable `START`/`MainWindow` for simple Notepad and Edge; two-physical-monitor Notepad -> 0, Paint -> 1, later Edge -> 0 placement; state continuation across separate standalone executions; and missing-state recovery. This is not actual platform multi-workload orchestration.
 
+Runtime-proven in a real Login Enterprise 6.8.6 Desktop Connector Application Test in a Console / NoRemote session: appliance ScriptContent delivery; missing/default-retain/forced-refresh Prepare paths; serial execution of `00-Prepare-MultiMonitor`, `01-Initialize-Notepad-Paint`, and `02-Continue-Edge`; platform cross-workload state; two-monitor `0,1,0`; final `MonitorCount=2` / `LastUsedIndex=0`; and three successful AppExecutions.
+
 1. **Static/build validation** — run `build.ps1`, the unit harness, reference hashes, public-safety scan, and source review. This proves pure logic/build only.
 2. **Script Editor compile** — compile each individual script-only, DLL-backed, and integrated workload.
-3. **Preview DLL preparation** — for standalone development use the engine's local ScriptContent directory; for platform testing use appliance ScriptContent. Recheck missing and forced-refresh paths as needed, test existing/default-retain, verify the exact target-local path, and return the toggle to false.
+3. **Preview DLL preparation** — local and appliance ScriptContent plus missing/default-retain/forced-refresh paths are proven in the tested environments. Recheck when the environment or implementation changes and return the toggle to false.
 4. **Script Editor individual execution** — validate launch, durable/base `IWindow`, placement result, overhead log, and cleanup.
 5. **One display** — the three-application harness expects `0,0,0`.
-6. **Two displays** — the three-application harness expects `0,1,0`; this is runtime-proven for the DLL-backed standalone runs.
+6. **Two displays** — the three-application harness expects `0,1,0`; this is runtime-proven in standalone and Desktop Connector platform runs.
 7. **Three displays** — the three-application harness expects `0,1,2`.
 8. **Four displays where available** — add an intentional fourth allocation to verify `0,1,2,3`; do not infer index 3 from a three-application run.
 9. **Negative-coordinate topology** — include a display left of or above primary and verify signed bounds/order.
-10. **State persistence** — validate schema, verified-success-only advancement, and restart continuity.
+10. **State persistence** — schema and simple platform cross-workload continuity are proven; validate verified-success-only advancement and lifecycle-specific persistence in the final flow.
 11. **Separate workload files** — run `01-Initialize-Notepad-Paint.cs`, then `02-Continue-Edge.cs` as independent executions.
-12. **Actual sequential Login Enterprise scenario** — prove cross-file state; Script Editor alone cannot establish this.
+12. **Actual sequential Login Enterprise test** — simple serial execution and cross-file state are proven; repeat for the future final flow.
 13. **Monitor-count change** — change active display count and verify reset to primary-first allocation.
 14. **Missing/corrupt state** — missing-state recovery is proven in the standalone DLL-backed Edge run; verify corrupt-state recovery and diagnostics at runtime.
 15. **DLL loading** — validate target-local `Assembly.LoadFrom`, reflection contract, missing/corrupt DLL paths, consumer no-download behavior, and runtime compatibility.
@@ -24,11 +26,13 @@ Runtime-proven on August 18, 2026 in Login Enterprise 6.8.6 Script Editor/Standa
 18. **Browser integration** — test no existing Edge window and one or more existing windows; confirm the launched top-level window is not a splash/launcher and record later identity behavior.
 19. **Persistent Start/Run behavior** — confirm Run reuses the Start destination and maintenance calls do not advance state.
 20. **Repeated execution** — check cycling, locks, state integrity, application cleanup, and cadence.
-21. **Desktop Connector Application Test** — on the already-active physical multi-monitor desktop, with no Launcher or remote-access protocol and no automatic restart during development, prove appliance DLL delivery, serial workload execution, cross-workload state, Prepare -> Open/Place -> Close, and application results/events.
-22. **Complete Knowledge Worker sequence** — preserve the authoritative ordering/settings and capture end-to-end evidence.
+21. **Final three-workload Preview flow** — build and validate Prepare -> Open/resolve/place durable base windows -> Close, with deliberate `Leave application running`, explicit cleanup, and preserved `Run once` intent. This is the next mini-project, not part of the current evidence pass.
+22. **Complete Knowledge Worker sequence** — preserve the authoritative ordering/settings and capture end-to-end evidence after the final flow exists.
 23. **VDI/Horizon validation** — record platform/session/topology details; do not generalize one result to unsupported platforms.
 24. **Timing/measurement validation** — quantify placement/reassertion overhead and confirm timer boundaries, workload intent, and scenario cadence remain acceptable.
 
 For every allocating workload, prove that the selected HWND is the real durable application UI, not a splash; record whether it remains the same appropriate base window during later actions where expected; verify secondary windows never advance round-robin state; and confirm maintenance placement reports no advancement. If an application-specific readiness delay is necessary after correct HWND identification, record the observed race, configured value, and justification. Keep it distinct from placement stabilization.
+
+Non-blocking messages in the proven local Desktop Connector session included ICA/Blast/PCoIP probes before NoRemote resolution, unavailable latency, schedule-controlled `forceKillOnExit`, and an ARM `Microsoft.DiaSymReader.Native.amd64.dll` load message followed by successful compile/run. Record these as environment observations, not placement failures.
 
 Never report cross-workload, interactive placement, DLL runtime, complete-scenario, or VDI status from unit-test evidence.

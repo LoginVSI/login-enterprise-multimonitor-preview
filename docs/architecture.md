@@ -1,6 +1,6 @@
 # Architecture
 
-Status: implemented and locally build-tested; selected Login Enterprise 6.8.6 Script Editor/Standalone Engine paths and two-monitor placement were runtime-proven on August 18, 2026. Platform orchestration remains pending.
+Status: implemented and locally build-tested; selected Login Enterprise 6.8.6 Script Editor/Standalone Engine paths and a real three-workload Desktop Connector Application Test on two monitors are runtime-proven. Final Knowledge Worker orchestration remains pending.
 
 ## Problem and universal intent
 
@@ -104,4 +104,4 @@ The authoritative scenario order and settings remain in `reference/test-scenario
 
 Copying helper source into every workload remains useful for isolation but creates drift. The DLL centralizes behavior but adds staging and runtime compatibility requirements. A background session router remains a possible future alternative, not an implemented requirement or commitment.
 
-Open evidence areas include appliance ScriptContent delivery, serial Desktop Connector/platform orchestration, integrated durable-window identity and replacement, DPI/scaling, concurrency under real scenario load, display changes during placement, broader interactive/VDI behavior, and acceptable timing overhead.
+Open evidence areas include the final Prepare -> Open/Place -> Close flow, integrated durable-window identity and replacement, DPI/scaling, concurrency under representative scenario load, display changes during placement, broader interactive/VDI behavior, and acceptable timing overhead. Appliance ScriptContent delivery and simple serial Desktop Connector orchestration are proven for the tested 6.8.6 environment.

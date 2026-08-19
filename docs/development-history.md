@@ -16,7 +16,7 @@ The Preview now contains a dependency-free `netstandard2.0` implementation with 
 
 Script-only and DLL-backed Notepad/Paint then Edge pairs are generated. The DLL-backed proof used `START` for durable Notepad and Edge main windows and retained the existing successful Paint launch/`FindWindow` flow. CMD was removed because Windows Terminal hosted the visible command UI on the tested configuration and Login Enterprise could not find the requested standalone `cmd` window.
 
-A dedicated preparation workload stages the helper from ScriptContent to the target-local Preview path. Initial staging and explicit remove-and-copy refresh are runtime-proven using the Script Editor engine's local ScriptContent directory. Appliance ScriptContent delivery and retain-by-default runtime behavior remain separate validation items.
+A dedicated preparation workload stages the helper from ScriptContent to the target-local Preview path. Initial staging and explicit remove-and-copy refresh are runtime-proven using the Script Editor engine's local ScriptContent directory. The later Desktop Connector Application Test proved appliance ScriptContent delivery and the retain-by-default path.
 
 ## August 18, 2026 Script Editor evidence
 
@@ -30,4 +30,6 @@ Ten enabled-scenario derivatives are present. Their durable/base Outlook, Edge, 
 
 ## Complete scenario, VDI, and product handoff
 
-The authoritative sequence is preserved. The next mini-project is a real Login Enterprise Desktop Connector Application Test on the physical multi-monitor machine. Complete scenario and VDI validation remain planned.
+The authoritative sequence is preserved. A real Login Enterprise 6.8.6 Desktop Connector Application Test subsequently ran the three independent DLL-backed workloads serially in a Console / NoRemote session. Appliance ScriptContent delivery, missing/default-retain/forced-refresh Prepare paths, platform state continuity, the two-monitor `0,1,0` sequence, final `MonitorCount=2` / `LastUsedIndex=0` state, and successful AppExecutions are proven.
+
+The next mini-project is the clean final three-workload Preview flow: Prepare; Open/resolve durable base windows and round-robin place them; Close applications cleanly. It is not implemented in this evidence pass. Complete Knowledge Worker and VDI validation remain planned.

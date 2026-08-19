@@ -6,7 +6,7 @@
 - **Generated / not validated:** source exists without the required runtime evidence.
 - **Locally build-tested:** compiled and exercised by the dependency-free local test harness.
 - **Proven in Script Editor:** compiled and executed as an individual workload in Script Editor/standalone runner.
-- **Proven in full Login Enterprise test:** exercised across independent files in the actual sequential scenario.
+- **Proven in full Login Enterprise test:** exercised across independent files in an actual platform-managed test.
 - **Proven in VDI:** exercised in a documented VDI environment.
 
 ## Current evidence
@@ -34,24 +34,55 @@ This is local pure-logic/failure-path evidence only. Separately, actual Login En
 
 Notepad placement reported approximately 1.1 seconds elapsed in that run. Treat this as one observed result, not a performance guarantee. Corrupt-state and monitor-count-change recovery remain runtime validation items despite local unit coverage.
 
+The real Login Enterprise 6.8.6 Desktop Connector Application Test then proved in a Console / NoRemote session:
+
+- appliance delivery of `LoginVSI.MultiMonitor.dll` from ScriptContent;
+- missing-local-DLL initial staging, existing/default-retain, and existing/forced-refresh Prepare paths;
+- serial platform execution of `00-Prepare-MultiMonitor`, `01-Initialize-Notepad-Paint`, and `02-Continue-Edge` as three independent workloads;
+- platform cross-workload state persistence;
+- actual two-monitor placement `Notepad -> 0`, `Paint -> 1`, `Edge -> 0`;
+- final state `MonitorCount=2` and `LastUsedIndex=0`;
+- successful completion of all three AppExecutions.
+
 ## Script Editor versus actual scenario
 
 Script Editor/Standalone Engine validates individual workload compilation, launch, correct durable `IWindow`, local ScriptContent staging, DLL loading, placement, logs, and failure handling. It runs one workload at a time. Separate standalone runs can demonstrate that a state file survives and is consumed later, but they do not prove that the Login Enterprise platform serially orchestrates independent workload files.
 
 Repository files remain source of truth. Copy a workload to a disposable location before opening or running it in Script Editor. The editor may rewrite the working representation or line endings; deliberately apply validated changes back to repository source rather than testing directly against working-tree copies where avoidable.
 
-An actual Login Enterprise scenario is required for the platform-orchestrated two-file proof, state across platform-managed executions, Start/Run behavior, complete representative ordering, and end-to-end behavior. Preserve the scenario's enabled, `Run once`, and `Leave application running` settings.
+The simple platform-orchestrated three-workload proof and cross-workload state are now proven. The final application lifecycle, persistent Start/Run behavior, complete representative ordering, and end-to-end Knowledge Worker behavior still require the future final flow and later scenario validation.
+
+## Lifecycle and scenario settings
+
+- Application Test provides per-workload `Leave application running`; its default is off.
+- Continuous Test and Load Test provide per-workload `Leave application running` and `Run once`.
+- Persistence between workloads must be intentional and scenario-controlled. A process that happens to linger is not the persistence contract.
+- When applications opened and placed by a future Open/Place workload must survive into a later Close workload, enable `Leave application running` for Open/Place. The Close workload must explicitly close those applications.
+- Preserve intended `Run once` semantics when adapting the final flow to Continuous Test or Load Test.
+
+With `Leave application running` off in the proven Application Test, Login Enterprise stopped Notepad and Edge, both launched through `START`, at their workload boundaries. Paint, launched through `ShellExecute`, lingered. Treat Paint as a launch-lifecycle observation only, not as the model for cross-workload persistence.
+
+## Non-blocking environment observations
+
+The successful Desktop Connector run also emitted environment-specific messages that did not block compilation or execution:
+
+- ICA, Blast, and PCoIP probe warnings appeared before the session resolved as NoRemote.
+- Latency was not reported for this local Desktop Connector session.
+- A `forceKillOnExit` warning explained that the schedule action controls cleanup.
+- On ARM, a `Microsoft.DiaSymReader.Native.amd64.dll` load message appeared; compilation and execution succeeded afterward.
+
+Retain these as diagnostic context. Do not treat them as placement failures or generalize them beyond the tested environment without further evidence.
 
 ## Manual test order
 
 1. Run `build.ps1` and retain the console output.
 2. Use only the compiler-proven `FindWindows` named-argument casing: `className` and `processName`.
 3. For Script Editor/Standalone Engine development, place the DLL in that engine installation's local ScriptContent directory. Do not encode a particular developer installation path as a requirement.
-4. Recheck the already-proven prepare paths when relevant: missing local DLL initial staging and deliberate `ForceRefreshMultiMonitorDll = true` remove/copy refresh. Return the repository/default toggle to `false`.
-5. Still validate the existing/default-retain branch and confirm an updated source DLL does not replace an existing target-local DLL while the toggle is false.
+4. Recheck the proven Prepare paths only when environment or implementation changes: missing local DLL, existing/default-retain, and deliberate `ForceRefreshMultiMonitorDll = true` remove/copy refresh. Return the repository/default toggle to `false`.
+5. Confirm the scenario action settings before execution; do not rely on process linger for application persistence.
 6. Compile each script-only, DLL-backed, and integrated workload from disposable copies.
 7. Run the Notepad/Paint initializer independently. Confirm `START` supplies the durable Notepad `MainWindow`, the existing Paint flow finds its real window, and state/log results match the active topology. Paint may remain open while a `START`-owned Notepad is stopped by the Standalone Engine; record this as harness lifecycle behavior.
-8. Run `02-Continue-Edge.cs` independently for local behavior and state continuation. Do not label it platform cross-workload orchestration.
+8. Use the three DLL-backed workloads as the proven simple platform regression harness; their serial execution and cross-workload state are now established in Desktop Connector.
 9. For raw-launch workloads retained elsewhere, verify their explicit handoff/window-discovery logic. Do not assume the initially spawned PID owns the visible application UI.
 10. Repeat DLL loading negative tests: remove or rename the local staged DLL and verify consumers fail with prepare-workload guidance rather than downloading it.
 11. Validate one, three, then four displays where available; two-display physical placement is already proven for the simple DLL-backed harness.
@@ -59,23 +90,21 @@ An actual Login Enterprise scenario is required for the platform-orchestrated tw
 13. Validate corrupt state and a monitor-count change. Missing-state recovery is already proven in the DLL-backed Edge run.
 14. Compile and run each integrated Office adaptation in Script Editor, checking timer boundaries and the durable-window checklist below.
 15. Validate integrated Edge Start discovery success/failure timing against its configured launch timeout, then validate Edge Run including window identity and every later maximize/focus reassertion.
-16. Proceed to the Desktop Connector Application Test track below.
+16. Proceed to the final three-workload mini-project below.
 17. Repeat execution and inspect state, placement timing, logs, window identity, and application behavior.
 18. Validate in the intended VDI environment and test DPI/scaling/topology variants.
 
-## Next mini-project: Desktop Connector Application Test
+## Next mini-project: final three-workload Preview flow
 
-Run a real Login Enterprise Application Test on the physical multi-monitor machine through Desktop Connector. Desktop Connector operates inside an already-active interactive desktop, without a Launcher or remote-access protocol. During development, configure the test so it does not automatically restart.
+Build, in a separate implementation pass:
 
-The platform test must prove, without changing the preserved scenario transcription:
+1. Prepare the multi-monitor helper.
+2. Open applications, resolve their durable base windows, and round-robin place them.
+3. Close the applications cleanly.
 
-1. delivery of `LoginVSI.MultiMonitor.dll` from appliance `/loginvsi/content/scriptcontent/`;
-2. actual serial execution of independent workloads;
-3. state persistence across those platform-orchestrated workloads;
-4. the intended Preview flow: Prepare -> Open/find/place durable Knowledge Worker/Office application windows -> Close applications;
-5. application results and events in Login Enterprise.
+The Open/Place workload must use scenario-controlled `Leave application running` when the Close workload is expected to run later. The Close workload must own explicit cleanup. Preserve `Run once` intent when adapting the flow to Continuous Test or Load Test.
 
-This platform track is planned, not proven. The simple Preview harness remains a development proof and must not be expanded into the final Knowledge Worker three-workload flow in this corrective pass.
+Do not implement this final flow as part of the current evidence-only pass. After it exists, validate application results/events, durable-window identity, timer boundaries, cleanup, and the complete representative sequence.
 
 ## Durable-window runtime checklist
 

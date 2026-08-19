@@ -14,7 +14,7 @@ The implementation is deliberately application-neutral. Login Enterprise workloa
 - A Windows PowerShell 5.1-friendly build and distribution script.
 - A draft AI skill and technical Product/Development handoff material.
 
-The library and its 17 local tests build successfully in this repository. Login Enterprise 6.8.6 Script Editor/Standalone Engine testing on August 18, 2026 proved the DLL preparation workload, DLL loading, `START`-backed durable Notepad and Edge windows, two-display placement, state continuation across separate Standalone Engine executions, and missing-state recovery. This does not prove serial multi-workload execution in the Login Enterprise platform; the complete scenario and VDI behavior remain unvalidated.
+The library and its 17 local tests build successfully in this repository. Login Enterprise 6.8.6 Script Editor/Standalone Engine testing on August 18, 2026 proved individual compilation, loading, durable-window, placement, and state-recovery behavior. A subsequent real Desktop Connector Application Test in a Console / NoRemote session proved appliance ScriptContent delivery, all three Prepare branches, serial execution of the three independent DLL-backed workloads, and platform cross-workload state persistence. The complete Knowledge Worker scenario and VDI behavior remain unvalidated.
 
 ## Build
 
@@ -28,7 +28,7 @@ The script cleans known build outputs, restores and builds without third-party p
 
 ## Unsupported Preview DLL deployment
 
-The Preview uses the supplied Knowledge Worker ScriptContent pattern; it is not a formal product distribution or update mechanism. For a real Login Enterprise platform/Desktop Connector test, build or obtain `dist/LoginVSI.MultiMonitor.dll`, then upload that file with SFTP/WinSCP or equivalent to the Login Enterprise appliance at:
+The Preview uses the supplied Knowledge Worker ScriptContent pattern; it is not a formal product distribution or update mechanism. The Desktop Connector Application Test proved delivery after uploading `dist/LoginVSI.MultiMonitor.dll` to the Login Enterprise appliance at:
 
 ```text
 /loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll
@@ -42,7 +42,7 @@ Add `workloads/dll-backed/00-Prepare-MultiMonitor.cs` as a run-once preparation 
 
 `ForceRefreshMultiMonitorDll` defaults to `false`. A missing local DLL is always staged. An existing local DLL is retained by default, so merely replacing the ScriptContent copy does not update targets that already have one. Set the toggle to `true` for an intentional deployment refresh; the prepare workload removes the existing local file, copies the ScriptContent version, and verifies the destination. Return it to `false` afterward where appropriate. Consumer workloads only verify and load the target-local DLL; they do not repeatedly download or force-refresh it.
 
-In Script Editor/Standalone Engine development, ScriptContent is resolved from that engine's local ScriptContent directory. The August 18 test used a locally staged DLL there; it did not validate appliance delivery. Installation paths vary by environment and version and are not a product requirement. Appliance delivery from `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll` remains a Desktop Connector/platform validation item.
+In Script Editor/Standalone Engine development, ScriptContent is resolved from that engine's local ScriptContent directory. Installation paths vary by environment and version and are not a product requirement. Appliance delivery from `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll` is now proven for the tested Login Enterprise 6.8.6 Desktop Connector Application Test.
 
 State is stored separately in the same directory as `state.txt`:
 
@@ -71,11 +71,11 @@ The initial index is `-1`. State advances only after the target monitor verifies
 
 ## Validation model
 
-Script Editor and the Standalone Engine compile, run, and debug one workload at a time. They can validate individual launch, window identification, DLL loading, placement, and file state carried into a later standalone execution. They cannot prove Login Enterprise's serial multi-workload orchestration merely because separate standalone executions observed continuing state.
+Script Editor and the Standalone Engine compile, run, and debug one workload at a time. They validate individual launch, window identification, DLL loading, placement, and file behavior. The Desktop Connector Application Test separately proved real serial platform execution and state continuity across `00-Prepare-MultiMonitor`, `01-Initialize-Notepad-Paint`, and `02-Continue-Edge`.
 
 Keep repository files as source of truth. Copy a workload to a disposable location before opening it in Script Editor because the editor may rewrite the working representation or line endings; apply validated changes deliberately back to repository source.
 
-True platform-orchestrated cross-workload state, Start/Run relationships, complete Knowledge Worker ordering, and end-to-end behavior require an actual Login Enterprise test scenario. Actual movement also requires an interactive Windows session with the target display topology. See `docs/testing.md`.
+The simple three-workload platform proof is complete. The next mini-project is the clean final Preview flow: Prepare; Open and resolve/place durable base windows; then Close applications cleanly. That flow is planned, not implemented. Complete Knowledge Worker ordering and end-to-end behavior still require later scenario validation. See `docs/testing.md`.
 
 ## Timing and behavior
 
@@ -84,6 +84,8 @@ Placement is not zero-cost. Restore, stabilization, move, maximize, verification
 Only a correctly identified durable/base application window consumes a destination. Splash screens, setup and file dialogs, Outlook compose/read/reminder windows, popups, child interaction windows, and temporary launchers do not. When a workload owns startup and needs the durable main application window, prefer a sufficiently specific Login Enterprise `START`; the initially spawned PID from raw `ShellExecute` is not proof that it owns the visible UI. Otherwise resolve the durable `IWindow` with `FindWindow`/`FindWindows`, and only then pass its `NativeWindowHandle` to the helper. `ShellExecute` remains appropriate where the process/window lifecycle is understood and explicitly handled. An optional workload-level readiness delay may follow identification and defaults to zero; it is distinct from the helper's placement stabilization delay.
 
 The helper does not change the Windows primary monitor. It only orders the reported primary display first for round-robin selection. Edge remains the highest-risk integration because later browser actions repeatedly focus and maximize its persistent window; the adapted Run workload therefore reasserts the previously selected target without advancing state.
+
+Application persistence is scenario-controlled, not inferred from a process lingering. Application Test exposes per-workload `Leave application running`, defaulting to off. Continuous Test and Load Test expose both per-workload `Leave application running` and `Run once`. A future Open/Place workload must deliberately leave applications running when a later Close workload owns cleanup; the Close workload must explicitly close them.
 
 ## Reference protection and public safety
 

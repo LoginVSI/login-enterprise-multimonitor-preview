@@ -63,7 +63,17 @@ Its contract is:
 
 Updating the appliance file alone does not update targets that retain a local copy. Return the toggle to `false` after deliberate refresh where appropriate. Consumer workloads use `FileExists`, abort usefully when missing, then use `Assembly.LoadFrom` plus reflection. They never force-refresh or routinely download. This is an unsupported Preview mechanism, not a formal product distribution/update API. Re-check supplied API evidence before altering any staging behavior; never invent an LE file API.
 
-Initial staging and forced remove/copy refresh are runtime-proven through the local 6.8.6 engine ScriptContent surface. Appliance delivery remains unproven.
+Initial staging and forced remove/copy refresh are runtime-proven through the local 6.8.6 engine ScriptContent surface. A 6.8.6 Desktop Connector Application Test also proved appliance delivery and missing/default-retain/forced-refresh Prepare paths.
+
+## Scenario-controlled lifecycle
+
+- Application Test exposes per-workload `Leave application running` and defaults it off.
+- Continuous Test and Load Test expose per-workload `Leave application running` and `Run once`.
+- Treat persistence between workloads as an intentional scenario decision. Do not infer it from a `ShellExecute` process that happens to linger.
+- Configure the future Open/Place workload to leave applications running when a later Close workload owns cleanup. Make Close explicitly close those applications.
+- Preserve intended `Run once` behavior when adapting the flow to Continuous Test or Load Test.
+
+In the proven Application Test with `Leave application running` off, Login Enterprise stopped the `START`-launched Notepad and Edge at workload end; `ShellExecute`-launched Paint lingered. This establishes launch/cleanup behavior for the harness, not a persistence design.
 
 ## Application patterns
 
@@ -71,7 +81,7 @@ Initial staging and forced remove/copy refresh are runtime-proven through the lo
 - **Simple Edge proof:** use `START(processName: "msedge", timeout: 30)` and `MainWindow`; this supplied a durable window in the tested DLL-backed harness.
 - **Integrated Edge/browser:** preserve its application-specific new-window discovery and account for multiprocess/existing-instance ambiguity. Start allocates after original initialization; Run reuses and repeatedly reasserts the saved target after focus/maximize actions. Do not generalize the simplified harness into the Knowledge Worker flow without runtime evidence.
 - **CMD:** do not use it as a generic proof target on configurations where Windows Terminal owns the visible terminal UI.
-- **Persistent Start/Run:** state continuity and the long-lived window must be tested across independent workload files in an actual scenario.
+- **Persistent Start/Run:** file-state continuity is proven across the simple independent Desktop Connector workloads. Application-window persistence for the final Open/Place -> Close design must still be implemented and validated through scenario settings.
 
 ## Failure handling
 
