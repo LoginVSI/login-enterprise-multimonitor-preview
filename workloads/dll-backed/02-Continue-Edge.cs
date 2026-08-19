@@ -1,14 +1,13 @@
-// TARGET:notepad.exe
+// TARGET:msedge.exe
 // START_IN:
 
 using LoginPI.Engine.ScriptBase;
 using LoginPI.Engine.ScriptBase.Components;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-public class DllMultiMonitorPreviewContinueCmdEdge : ScriptBase
+public class DllMultiMonitorPreviewContinueEdge : ScriptBase
 {
     private const int WindowTimeoutSeconds = 30;
     private const int StabilizationDelayMilliseconds = 350;
@@ -26,21 +25,10 @@ public class DllMultiMonitorPreviewContinueCmdEdge : ScriptBase
 
         DllPreviewPlacement placement = new DllPreviewPlacement(assemblyPath);
 
-        ShellExecute("cmd.exe /k title Login Enterprise Multi-Monitor Preview Command", waitForProcessEnd: false, timeout: WindowTimeoutSeconds, forceKillOnExit: false);
-        IWindow commandPrompt = FindWindow(title: "*Login Enterprise Multi-Monitor Preview Command*", processName: "cmd", timeout: WindowTimeoutSeconds);
-        RequireSuccess(placement, placement.PlaceNext(commandPrompt.NativeWindowHandle, "Command Prompt", statePath, true, StabilizationDelayMilliseconds));
-
-        HashSet<IntPtr> existingEdgeHandles = CaptureEdgeWindowHandles();
-        ShellExecute("msedge.exe --new-window about:blank", waitForProcessEnd: false, timeout: WindowTimeoutSeconds, forceKillOnExit: false);
-        IWindow edge = FindNewEdgeWindow(existingEdgeHandles);
-        if (edge == null)
-        {
-            ABORT("A newly created Microsoft Edge window could not be distinguished from pre-existing Edge windows.");
-            return;
-        }
-
+        START(processName: "msedge", timeout: WindowTimeoutSeconds);
+        IWindow edge = MainWindow;
         RequireSuccess(placement, placement.PlaceNext(edge.NativeWindowHandle, "Microsoft Edge", statePath, true, StabilizationDelayMilliseconds));
-        Log("DLL-backed phase 2 complete. Applications and state are intentionally retained.");
+        Log("DLL-backed phase 2 complete. Round-robin state is retained.");
     }
 
     private void RequireSuccess(DllPreviewPlacement placement, object result)
@@ -50,37 +38,6 @@ public class DllMultiMonitorPreviewContinueCmdEdge : ScriptBase
         {
             ABORT("Multi-monitor Preview placement failed: " + placement.GetMessage(result));
         }
-    }
-
-    private HashSet<IntPtr> CaptureEdgeWindowHandles()
-    {
-        HashSet<IntPtr> handles = new HashSet<IntPtr>();
-        var windows = FindWindows(classname: "Win32 Window:Chrome_WidgetWin_1", processname: "msedge", timeout: 2);
-        foreach (var window in windows)
-        {
-            handles.Add(window.NativeWindowHandle);
-        }
-
-        return handles;
-    }
-
-    private IWindow FindNewEdgeWindow(HashSet<IntPtr> existingHandles)
-    {
-        for (int attempt = 0; attempt < 30; attempt++)
-        {
-            var windows = FindWindows(classname: "Win32 Window:Chrome_WidgetWin_1", processname: "msedge", timeout: 2);
-            foreach (var window in windows)
-            {
-                if (!existingHandles.Contains(window.NativeWindowHandle))
-                {
-                    return window;
-                }
-            }
-
-            Wait(0.5);
-        }
-
-        return null;
     }
 }
 

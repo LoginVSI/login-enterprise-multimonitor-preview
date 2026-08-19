@@ -19,9 +19,9 @@ This review found no repository evidence that proves a safer supported selector 
 
 The Edge Start adaptation replaces its fixed local video path with `%TEMP%\LoginPI\MultiMonitor\Big Buck Bunny Demo.mp4`; stage that generic media file if the 4K path is required. The workload retains its original cadence and tab count.
 
-## Monday Script Editor validation: `FindWindows` argument casing
+## `FindWindows` argument casing
 
-The supplied scripting reference is internally inconsistent: its `FindWindows` syntax example uses lowercase `classname` and `processname`, while the adjacent parameter table uses `className` and `processName`. No preserved known-good workload or proven POC calls `FindWindows`, and C# named arguments are case-sensitive. The generated Edge call sites remain unchanged and follow the syntax example; that casing is not proven. Compile the script-only phase 2, DLL-backed phase 2, and integrated Edge Start workloads in Script Editor before treating these call sites as valid, then record the actual signature evidence before changing them.
+Actual Login Enterprise 6.8.6 Script Editor compiler evidence resolves the supplied reference inconsistency. `FindWindows` accepts `className` and `processName`; it rejects lowercase `classname` and `processname`. All non-preserved repository call sites use the compiler-proven casing. Integrated Edge behavior itself remains unvalidated.
 
 The integrated Edge Start discovery loop measures elapsed time and uses short individual searches so its failure path remains approximately bounded by `waitTimeoutInSecondsMsedgeLaunch`. The initial pre-launch snapshot plus the final individual search or wait may add a small amount beyond that configured bound; this requires Script Editor timing validation.
 

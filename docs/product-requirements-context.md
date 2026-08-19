@@ -56,7 +56,7 @@ True continuity requires independent files in an actual scenario. The authoritat
 
 ## Compatibility
 
-The library targets `netstandard2.0`/C# 7.3. Compatibility remains unvalidated across Login Enterprise releases, Script Editor, standalone runner, Windows versions, Office/Edge versions, DPI modes, display topologies, VDI platforms, and deployment policies.
+The library targets `netstandard2.0`/C# 7.3. Loading and invocation are proven in Login Enterprise 6.8.6 Script Editor/Standalone Engine on the tested Windows machine. Compatibility remains unvalidated across other Login Enterprise releases, actual Desktop Connector/platform orchestration, other Windows and Office/Edge versions, DPI modes, display topologies beyond the tested physical pair, VDI platforms, and deployment policies.
 
 ## Measurement and timing expectations
 
@@ -80,7 +80,7 @@ See `known-limitations.md`. Key questions include runtime compatibility, correct
 
 ## Preview findings and validation evidence
 
-Local build and 17 pure-logic/failure-path tests pass. POCs are preserved successful evidence. New workloads and actual placement remain generated/not validated. Use `testing.md` statuses.
+Local build and 17 pure-logic/failure-path tests pass. POCs are preserved successful evidence. The August 18, 2026 6.8.6 standalone results prove the preparation/loading paths, named-argument casing, simple Notepad/Paint/Edge placement across two physical monitors, continued file state across separate runs, and missing-state recovery. Integrated workloads and actual platform orchestration remain generated/not validated. Use `testing.md` statuses.
 
 ## Architecture alternatives
 

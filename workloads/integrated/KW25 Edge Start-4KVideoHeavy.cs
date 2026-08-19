@@ -140,7 +140,7 @@ public class Edge_Start : ScriptBase
     private HashSet<IntPtr> CaptureEdgeWindowHandles()
     {
         HashSet<IntPtr> handles = new HashSet<IntPtr>();
-        var windows = FindWindows(classname: "Win32 Window:Chrome_WidgetWin_1", processname: "msedge", timeout: 2);
+        var windows = FindWindows(className: "Win32 Window:Chrome_WidgetWin_1", processName: "msedge", timeout: 2);
         foreach (var window in windows)
         {
             handles.Add(window.NativeWindowHandle);
@@ -155,7 +155,7 @@ public class Edge_Start : ScriptBase
         while (discoveryTimer.Elapsed.TotalSeconds < waitTimeoutInSecondsMsedgeLaunch)
         {
             // Keep each search short so the complete failure path remains close to the configured timeout.
-            var windows = FindWindows(classname: "Win32 Window:Chrome_WidgetWin_1", processname: "msedge", timeout: 1);
+            var windows = FindWindows(className: "Win32 Window:Chrome_WidgetWin_1", processName: "msedge", timeout: 1);
             foreach (var window in windows)
             {
                 if (!existingHandles.Contains(window.NativeWindowHandle))

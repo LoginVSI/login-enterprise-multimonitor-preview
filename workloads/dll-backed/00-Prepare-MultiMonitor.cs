@@ -3,7 +3,7 @@
 
 /////////////
 // Multi-Monitor Preview DLL preparation
-// Generated / not Login Enterprise-validated
+// Runtime-proven in Login Enterprise 6.8.6 Script Editor/Standalone Engine
 /////////////
 
 using LoginPI.Engine.ScriptBase;
@@ -46,7 +46,7 @@ public class PrepareMultiMonitorPreview : ScriptBase
             }
         }
 
-        Log("Staging multi-monitor Preview DLL from appliance ScriptContent to: " + destinationPath);
+        Log("Staging multi-monitor Preview DLL from ScriptContent to: " + destinationPath);
         CopyFile(sourcePath: sourcePath, destinationPath: destinationPath);
 
         if (!FileExists(destinationPath))

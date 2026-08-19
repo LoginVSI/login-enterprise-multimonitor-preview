@@ -2,10 +2,12 @@
 
 This unsupported Preview has no committed delivery date, support claim, or validated compatibility envelope.
 
-- **Login Enterprise runtime:** workload compilation and `netstandard2.0` reflection loading are not yet validated in Script Editor/runner.
-- **`FindWindows` signature:** supplied documentation conflicts on `classname`/`processname` versus `className`/`processName`, and no preserved known-good call resolves it. Generated lowercase call sites remain unvalidated and are a Monday Script Editor compile gate.
+- **Login Enterprise runtime scope:** Login Enterprise 6.8.6 Script Editor/Standalone Engine compiled the prepare workload and loaded/invoked the staged `netstandard2.0` DLL. This is not evidence for other releases, the appliance delivery path, Desktop Connector orchestration, or the complete scenario.
+- **`FindWindows` named arguments:** actual 6.8.6 compiler evidence resolves the supplied documentation inconsistency: use `className` and `processName`. Lowercase `classname` and `processname` are rejected. The earlier compile gate is closed.
 - **Interactive desktop:** local unit tests do not prove actual movement, maximize behavior, focus, or verification on a desktop.
-- **Durable-window identification:** allocation is restricted by contract to the application-specific durable/base window, but current generated workloads have not been runtime-proven to exclude every splash, modal, temporary launcher, or replacement HWND. Title/class/process and same-HWND durability must be recorded in Script Editor and scenario validation.
+- **Durable-window identification:** `START(processName: "notepad")` and `START(processName: "msedge")` supplied durable windows in the tested 6.8.6 standalone runs. Integrated workloads have not been runtime-proven to exclude every splash, modal, temporary launcher, or replacement HWND. Title/class/process and same-HWND durability must still be recorded for each integration.
+- **Raw launch process identity:** raw `ShellExecute` produced short-lived Notepad and Edge PIDs while their visible UIs lived elsewhere or reused another process. Do not treat the initial PID as durable-window ownership. `ShellExecute` remains usable only where the lifecycle is understood and handled.
+- **Terminal-host behavior:** the tested `cmd.exe /k title ...` UI was hosted visibly by Windows Terminal and was not discoverable as the requested standalone `cmd` top-level window. CMD is therefore not a deterministic generic Preview harness on that configuration; no CMD-specific product logic is planned.
 - **Edge:** existing instances, multiprocess behavior, delayed/new top-level windows, and later maximize/focus actions make it higher risk. Start aborts rather than selecting an indistinguishable existing window; Run assumes the authoritative Start/Run order.
 - **Persistent applications:** `PlaceLastUsed` requires valid prior state. A monitor-count reset between Start and Run leaves no prior target and fails safely.
 - **Focus:** the library does not force foreground focus; workloads do. Native placement and application actions may still affect focus.
@@ -17,7 +19,7 @@ This unsupported Preview has no committed delivery date, support claim, or valid
 - **Atomic state replacement:** implemented with same-directory `File.Replace`/`File.Move`; target filesystem behavior must be validated in deployment.
 - **Monitor changes:** count changes reset state. Same-count topology or identity changes are not represented in the MVP schema.
 - **Timing:** restore, three stabilization intervals, movement, maximize, verification, locking, and I/O add overhead. Edge maintenance placement adds repeated cadence overhead.
-- **Preview DLL staging:** the generated prepare workload follows the supplied ScriptContent `UrnBaseForFiles`/`CopyFile` pattern and uses documented `FileExists`/`RemoveFile`, but it is not yet validated in Script Editor or a Login Enterprise scenario. This is an unsupported Preview mechanism, not formal distribution/update behavior.
+- **Preview DLL staging:** initial staging and forced refresh through the engine's local ScriptContent directory are proven in 6.8.6 Script Editor/Standalone Engine. Appliance delivery and platform execution remain unvalidated. This is an unsupported Preview mechanism, not formal distribution/update behavior.
 - **DLL refresh/versioning:** the default retains an existing target-local DLL. Updating the appliance copy alone does not update those targets; intentional refresh requires the workload toggle. There is no version comparison, integrity check, rollback, fleet orchestration, or automatic toggle reset.
 - **Media staging:** the integrated 4K Edge Start workload expects a generic local media file to be staged separately.
 - **Deployment/security:** binary provenance, signing, version selection, update, rollback, and trust policy remain deployment responsibilities.

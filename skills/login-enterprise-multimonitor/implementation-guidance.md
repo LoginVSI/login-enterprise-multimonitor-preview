@@ -1,6 +1,6 @@
 # Implementation guidance
 
-Status: **DRAFT / NOT LOGIN ENTERPRISE-VALIDATED**. This describes the current Preview implementation, not a stable product contract.
+Status: **DRAFT / PARTIALLY LOGIN ENTERPRISE-VALIDATED**. This describes the current Preview implementation, not a stable product contract. See `validation-guidance.md` for the proven 6.8.6 scope and remaining platform work.
 
 ## API priority and boundary
 
@@ -14,11 +14,13 @@ Only the durable/base UI consumes a round-robin destination. Never call allocati
 
 Before adaptation, document process lifecycle, splash versus main UI, stable title/class/process criteria, whether the selected HWND survives for the workload/session, excluded dialogs/children, and the placement insertion point. Use this readiness hierarchy:
 
-1. Prefer documented `START` with sufficiently specific main title/class/process matching.
+1. When the workload owns application startup and needs a durable main window, prefer documented `START` with sufficiently specific main title/class/process matching. Actual Notepad and Edge tests showed that the raw `ShellExecute` PID may exit while visible UI exists in another or reused process.
 2. Otherwise resolve the intended durable `IWindow` through documented `FindWindow`/`FindWindows` behavior.
 3. Supply `NativeWindowHandle` only after identification.
 4. If empirical evidence shows that the correct window needs settling, expose `int PrePlacementReadinessDelayMilliseconds = 0;` at workload level and wait after identification only when positive.
-5. Use blind fixed startup sleeps only as a fallback.
+5. Use blind fixed startup sleeps only as a fallback. Keep `ShellExecute` when the process/window lifecycle is known and explicitly handled.
+
+Use `FindWindows(className: ..., processName: ...)`. Login Enterprise 6.8.6 compiler evidence rejects lowercase `classname` and `processname`; the earlier documentation ambiguity is resolved.
 
 The optional application readiness delay is not the DLL's placement stabilization delay. Readiness happens after durable HWND identification but before invoking placement. Stabilization is the existing helper delay during restore/move/maximize/verification of that already-correct HWND. Do not add a mandatory global wait.
 
@@ -51,20 +53,24 @@ Restore the HWND, allow stabilization, call `SetWindowPos` using full monitor bo
 
 ## Unsupported Preview loading and staging
 
-Build or obtain `dist/LoginVSI.MultiMonitor.dll` and upload it to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`. The run-once `workloads/dll-backed/00-Prepare-MultiMonitor.cs` uses the supplied Knowledge Worker pattern `UrnBaseForFiles.UrnBase + "LoginVSI.MultiMonitor.dll"` with documented `CopyFile` to stage `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`.
+For Script Editor/Standalone Engine development, put `LoginVSI.MultiMonitor.dll` in that engine's local ScriptContent directory. Do not hard-code an installation-specific developer path. For a real Login Enterprise platform/Desktop Connector test, upload it to appliance `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`. The run-once `workloads/dll-backed/00-Prepare-MultiMonitor.cs` uses `UrnBaseForFiles.UrnBase + "LoginVSI.MultiMonitor.dll"` with documented `CopyFile` to stage `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`.
 
 Its contract is:
 
-- missing local DLL: create the directory, copy from appliance ScriptContent, verify destination, fail clearly if absent;
+- missing local DLL: create the directory, copy from the configured ScriptContent source, verify destination, fail clearly if absent;
 - existing local DLL and default `ForceRefreshMultiMonitorDll = false`: retain it and log without copying;
 - existing local DLL and `true`: use documented `RemoveFile`, verify removal, copy the appliance file, verify destination, and log refresh.
 
 Updating the appliance file alone does not update targets that retain a local copy. Return the toggle to `false` after deliberate refresh where appropriate. Consumer workloads use `FileExists`, abort usefully when missing, then use `Assembly.LoadFrom` plus reflection. They never force-refresh or routinely download. This is an unsupported Preview mechanism, not a formal product distribution/update API. Re-check supplied API evidence before altering any staging behavior; never invent an LE file API.
 
+Initial staging and forced remove/copy refresh are runtime-proven through the local 6.8.6 engine ScriptContent surface. Appliance delivery remains unproven.
+
 ## Application patterns
 
 - **Office:** identify the durable document/main `IWindow` after open measurement stops; allocate there. Exclude first-run, file, confirmation, message, compose, reminder, and slideshow windows. Reassert the base window after later minimize/maximize behavior when needed.
-- **Edge/browser:** snapshot existing Edge windows before launch, prefer a newly observed window, and account for multiprocess/existing-instance ambiguity. Start allocates after original initialization; Run reuses and repeatedly reasserts the saved target after focus/maximize actions.
+- **Simple Edge proof:** use `START(processName: "msedge", timeout: 30)` and `MainWindow`; this supplied a durable window in the tested DLL-backed harness.
+- **Integrated Edge/browser:** preserve its application-specific new-window discovery and account for multiprocess/existing-instance ambiguity. Start allocates after original initialization; Run reuses and repeatedly reasserts the saved target after focus/maximize actions. Do not generalize the simplified harness into the Knowledge Worker flow without runtime evidence.
+- **CMD:** do not use it as a generic proof target on configurations where Windows Terminal owns the visible terminal UI.
 - **Persistent Start/Run:** state continuity and the long-lived window must be tested across independent workload files in an actual scenario.
 
 ## Failure handling

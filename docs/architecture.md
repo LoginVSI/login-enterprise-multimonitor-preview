@@ -1,6 +1,6 @@
 # Architecture
 
-Status: implemented and locally build-tested; Login Enterprise and interactive placement validation remain pending.
+Status: implemented and locally build-tested; selected Login Enterprise 6.8.6 Script Editor/Standalone Engine paths and two-monitor placement were runtime-proven on August 18, 2026. Platform orchestration remains pending.
 
 ## Problem and universal intent
 
@@ -18,17 +18,17 @@ One application consumes one round-robin destination only when its durable/base 
 
 Window readiness is application-specific and precedes the helper call:
 
-1. Prefer documented `START` matching that identifies and waits for the real main UI by appropriate title, class, and process.
+1. When the workload owns startup and needs a durable main application window, prefer documented `START` matching that identifies and waits for the real main UI by appropriate title, class, and process. A PID initially returned by raw `ShellExecute` does not prove ownership of the durable visible UI; modern applications may hand off or reuse another process.
 2. Otherwise explicitly resolve the intended durable `IWindow` with documented `FindWindow`/`FindWindows` behavior.
 3. Pass `NativeWindowHandle` only after that durable window is known.
 4. If empirical application evidence requires settling after identification, use a workload-level setting such as `int PrePlacementReadinessDelayMilliseconds = 0;` and wait only when it is greater than zero.
-5. Treat a blind fixed startup sleep as a fallback, not the primary identification mechanism.
+5. Treat a blind fixed startup sleep as a fallback, not the primary identification mechanism. Retain `ShellExecute` where application-specific evidence establishes and explicitly handles its process/window lifecycle.
 
 Application readiness delay and placement stabilization delay are separate. The former is an optional, default-zero workload wait after the correct HWND is known. The latter is the existing helper argument used around restore, move, maximize, and verification of that same HWND. There is no mandatory global readiness wait.
 
 ## Managed library
 
-The single dependency-free assembly targets `netstandard2.0` with C# 7.3. This is a conservative portability choice for mature .NET Framework-era consumers and modern .NET, without a LoginPI.Engine reference or third-party package. Actual Login Enterprise loader compatibility is not inferred from local SDK success.
+The single dependency-free assembly targets `netstandard2.0` with C# 7.3. This is a conservative portability choice for mature .NET Framework-era consumers and modern .NET, without a LoginPI.Engine reference or third-party package. Login Enterprise 6.8.6 Script Editor/Standalone Engine successfully loaded and invoked the staged assembly on August 18, 2026; broader release/platform compatibility is not inferred from that result or local SDK success.
 
 The reflection-friendly static API is:
 
@@ -82,13 +82,15 @@ The library does not force foreground focus. Workloads retain focus ownership.
 
 Script-only workloads embed the same core state and placement behavior while using `IWindow.Restore`/`Maximize`. They isolate Script Editor behavior before assembly loading.
 
-DLL-backed and integrated workloads use `FileExists`, ordinary `Assembly.LoadFrom`, and reflection. The unsupported Preview deployment uses the supplied ScriptContent file pattern, not a new distribution API:
+DLL-backed and integrated workloads use `FileExists`, ordinary `Assembly.LoadFrom`, and reflection. The unsupported Preview deployment uses the supplied ScriptContent file pattern, not a new distribution API. Script Editor/Standalone Engine testing resolves ScriptContent from the engine's local ScriptContent directory; the real platform path is a separate delivery surface:
 
 1. Upload `LoginVSI.MultiMonitor.dll` to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll` on the appliance.
 2. Run `workloads/dll-backed/00-Prepare-MultiMonitor.cs` once. It copies `UrnBaseForFiles.UrnBase + "LoginVSI.MultiMonitor.dll"` to `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`.
 3. Consumers verify that local path and load it; they never force-refresh or routinely copy it.
 
 The prepare workload always stages a missing local DLL. With the default `ForceRefreshMultiMonitorDll = false`, it retains an existing local DLL. With the toggle set to `true`, it removes the existing file with documented `RemoveFile`, confirms removal, copies from ScriptContent, and verifies the new local file. Updating only the appliance file therefore does not update an existing target-local copy while the toggle remains false.
+
+Initial staging and forced `RemoveFile` -> `CopyFile` refresh were runtime-proven with a locally staged ScriptContent DLL in Login Enterprise 6.8.6 Script Editor/Standalone Engine. Appliance delivery from `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll` is not yet proven.
 
 ## Integrated sequencing and measurement
 
@@ -102,4 +104,4 @@ The authoritative scenario order and settings remain in `reference/test-scenario
 
 Copying helper source into every workload remains useful for isolation but creates drift. The DLL centralizes behavior but adds staging and runtime compatibility requirements. A background session router remains a possible future alternative, not an implemented requirement or commitment.
 
-Open evidence areas include Script Editor language/runtime compatibility, ScriptContent preparation, DLL loading, durable-window identity and replacement, DPI/scaling, concurrency under real scenario load, display changes during placement, interactive/VDI behavior, and acceptable timing overhead.
+Open evidence areas include appliance ScriptContent delivery, serial Desktop Connector/platform orchestration, integrated durable-window identity and replacement, DPI/scaling, concurrency under real scenario load, display changes during placement, broader interactive/VDI behavior, and acceptable timing overhead.

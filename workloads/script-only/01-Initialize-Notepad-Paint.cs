@@ -24,15 +24,15 @@ public class MultiMonitorPreviewInitializeNotepadPaint : ScriptBase
         PreviewPlacementResult reset = placement.ResetState(statePath);
         RequireSuccess(reset);
 
-        ShellExecute("notepad.exe", waitForProcessEnd: false, timeout: WindowTimeoutSeconds, forceKillOnExit: false);
-        IWindow notepad = FindWindow(processName: "notepad", timeout: WindowTimeoutSeconds);
+        START(processName: "notepad", timeout: WindowTimeoutSeconds);
+        IWindow notepad = MainWindow;
         RequireSuccess(placement.PlaceNext(notepad, "Notepad", statePath, true, StabilizationDelayMilliseconds));
 
         ShellExecute("mspaint.exe", waitForProcessEnd: false, timeout: WindowTimeoutSeconds, forceKillOnExit: false);
         IWindow paint = FindWindow(processName: "mspaint", timeout: WindowTimeoutSeconds);
         RequireSuccess(placement.PlaceNext(paint, "Paint", statePath, true, StabilizationDelayMilliseconds));
 
-        Log("Phase 1 complete. Applications and round-robin state are intentionally retained for the next workload file.");
+        Log("Phase 1 complete. Round-robin state is retained for the next workload file.");
     }
 
     private void RequireSuccess(PreviewPlacementResult result)

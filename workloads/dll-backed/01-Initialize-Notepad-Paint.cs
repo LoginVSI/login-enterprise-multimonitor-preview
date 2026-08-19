@@ -27,15 +27,15 @@ public class DllMultiMonitorPreviewInitializeNotepadPaint : ScriptBase
 
         RequireSuccess(placement, placement.ResetState(statePath));
 
-        ShellExecute("notepad.exe", waitForProcessEnd: false, timeout: WindowTimeoutSeconds, forceKillOnExit: false);
-        IWindow notepad = FindWindow(processName: "notepad", timeout: WindowTimeoutSeconds);
+        START(processName: "notepad", timeout: WindowTimeoutSeconds);
+        IWindow notepad = MainWindow;
         RequireSuccess(placement, placement.PlaceNext(notepad.NativeWindowHandle, "Notepad", statePath, true, StabilizationDelayMilliseconds));
 
         ShellExecute("mspaint.exe", waitForProcessEnd: false, timeout: WindowTimeoutSeconds, forceKillOnExit: false);
         IWindow paint = FindWindow(processName: "mspaint", timeout: WindowTimeoutSeconds);
         RequireSuccess(placement, placement.PlaceNext(paint.NativeWindowHandle, "Paint", statePath, true, StabilizationDelayMilliseconds));
 
-        Log("DLL-backed phase 1 complete. Applications and state are intentionally retained for the next workload file.");
+        Log("DLL-backed phase 1 complete. Round-robin state is retained for the next workload file.");
     }
 
     private void RequireSuccess(DllPreviewPlacement placement, object result)
