@@ -48,6 +48,7 @@ $officeApps = @(
     '20-Place-Microsoft-Excel.cs',
     '30-Place-Microsoft-PowerPoint.cs',
     '40-Place-Microsoft-Outlook.cs',
+    '41-Place-Microsoft-Outlook-New.cs',
     '50-Place-Microsoft-Edge.cs'
 )
 foreach ($name in $officeApps) {
@@ -77,6 +78,16 @@ foreach ($name in $officePreflightContracts.Keys) {
 
 $officeOutlook = Get-Text (Join-Path $officeRoot '40-Place-Microsoft-Outlook.cs')
 Assert-True (-not $officeOutlook.Contains('Inbox*')) 'Generic Office Outlook example regressed to an English/folder-specific Inbox title.'
+foreach ($required in @('// TARGET:outlook.exe', 'className: "Win32 Window:rctrl_renwnd32"', 'processName: "OUTLOOK"', 'Microsoft Outlook (Classic)')) {
+    Assert-True $officeOutlook.Contains($required) "Classic Outlook Preview contract lacks '$required'."
+}
+$officeOutlookNew = Get-Text (Join-Path $officeRoot '41-Place-Microsoft-Outlook-New.cs')
+foreach ($required in @('// TARGET:olk', 'START();', 'MainWindow', 'Microsoft Outlook (New)')) {
+    Assert-True $officeOutlookNew.Contains($required) "New Outlook Preview contract lacks '$required'."
+}
+foreach ($forbidden in @('rctrl_renwnd32', 'processName: "OUTLOOK"', '// TARGET:outlook.exe', 'STOP(')) {
+    Assert-True (-not $officeOutlookNew.Contains($forbidden)) "New Outlook Preview contains a Classic Outlook or conflicting lifecycle assumption: $forbidden"
+}
 $officeEdge = Get-Text (Join-Path $officeRoot '50-Place-Microsoft-Edge.cs')
 foreach ($required in @('RequireNoExistingEdgeWindow', 'START(processName: "msedge"', 'IWindow edge = MainWindow', 'RequireUniqueEdgeWindow', 'edge.NativeWindowHandle != resolvedEdge.NativeWindowHandle', 'count != 1')) {
     Assert-True $officeEdge.Contains($required) "Office Edge durable START/MainWindow ownership contract lacks '$required'."
@@ -85,8 +96,22 @@ foreach ($forbidden in @('ShellExecute(', '--new-window about:blank', 'CaptureEd
     Assert-True (-not $officeEdge.Contains($forbidden)) "Office Edge regressed to the transient raw launch path: $forbidden"
 }
 $officeReadme = Get-Text (Join-Path $officeRoot 'README.md')
-Assert-True $officeReadme.Contains('corrected Edge workload is build/static-validated and awaiting runtime rerun') 'Office README does not preserve the corrected Edge runtime-pending status.'
-Assert-True (-not $officeReadme.Contains('corrected Edge workload is runtime-proven')) 'Office README incorrectly claims the corrected Edge workload is runtime-proven.'
+foreach ($required in @('Choose one Outlook flavor', 'Microsoft Outlook (Classic)', 'Microsoft Outlook (New)', 'Do not run both Outlook variants', 'launch/find/place only')) {
+    Assert-True $officeReadme.Contains($required) "Office README does not distinguish Outlook flavors: $required"
+}
+
+$adaptationSkill = Get-Text (Join-Path $repoRoot 'skills\login-enterprise-multimonitor\SKILL.md')
+foreach ($required in @('Classic Outlook and New Outlook', 'Do not silently substitute', 'substantive workload adaptation', 'launch success does not prove interaction compatibility')) {
+    Assert-True $adaptationSkill.Contains($required) "Repository skill lacks Outlook flavor guidance: $required"
+}
+$agenticGuide = Get-Text (Join-Path $repoRoot 'docs\agentic-workload-adaptation.md')
+foreach ($required in @('Classic Outlook or New Outlook', 'Merely changing `TARGET` or an executable is not a valid conversion', 'substantive adaptation')) {
+    Assert-True $agenticGuide.Contains($required) "Agentic adaptation guide lacks Outlook flavor guidance: $required"
+}
+$manualGuide = Get-Text (Join-Path $repoRoot 'docs\adapt-your-own-workload.md')
+foreach ($required in @('Classic Outlook and New Outlook', 'Do not silently substitute', 'launch success does not prove interaction compatibility')) {
+    Assert-True $manualGuide.Contains($required) "Manual adaptation guide lacks Outlook flavor guidance: $required"
+}
 
 $resetText = Get-Text (Join-Path $officeRoot '01-Reset-Placement-State.cs')
 Assert-True $resetText.Contains('"ResetState"') 'Office Preview reset workload does not invoke ResetState.'

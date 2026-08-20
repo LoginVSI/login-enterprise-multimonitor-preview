@@ -22,7 +22,7 @@ Runtime-proven in a real Login Enterprise 6.8.6 Desktop Connector Application Te
 14. **Missing/corrupt state** — missing-state recovery is proven in the standalone DLL-backed Edge run; verify corrupt-state recovery and diagnostics at runtime.
 15. **DLL loading** — validate target-local `Assembly.LoadFrom`, reflection contract, missing/corrupt DLL paths, consumer no-download behavior, and runtime compatibility.
 16. **DLL-backed workloads** — repeat the sequential proof through the reusable contract.
-17. **Office integration** — validate ownership-safe preflight for Word/Excel/PowerPoint, classic Outlook process/class matching without localized Inbox title, and Edge unique-new-window discovery. Record title/class/process/HWND; exclude dialogs, reminders, open/compose windows. New Outlook remains unsupported/unvalidated.
+17. **Office integration** — validate ownership-safe preflight for Word/Excel/PowerPoint, Classic Outlook process/class matching without localized Inbox title, the separate New Outlook `TARGET:olk`/`START()`/`MainWindow` path, and Edge unique-window discovery. Record title/class/process/HWND; exclude dialogs, reminders, open/compose windows. The recorded New Outlook evidence proves launch/find/place only; interaction automation and Classic-to-New adaptation remain unsupported/unvalidated.
 18. **Browser integration** — test no existing Edge window and one or more existing windows; confirm the launched top-level window is not a splash/launcher and record later identity behavior.
 19. **Persistent Start/Run behavior** — confirm Run reuses the Start destination and maintenance calls do not advance state.
 20. **Repeated execution** — check cycling, locks, state integrity, application cleanup, and cadence.

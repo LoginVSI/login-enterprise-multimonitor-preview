@@ -1,6 +1,5 @@
-// TARGET:outlook.exe
+// TARGET:olk
 // START_IN:
-// Microsoft Outlook (Classic) Preview example.
 
 using LoginPI.Engine.ScriptBase;
 using LoginPI.Engine.ScriptBase.Components;
@@ -8,22 +7,13 @@ using System;
 using System.IO;
 using System.Reflection;
 
-public class OfficePreviewPlaceMicrosoftOutlook : ScriptBase
+public class OfficePreviewPlaceMicrosoftOutlookNew : ScriptBase
 {
     private void Execute()
     {
         OfficePreviewPlacement placement = LoadPlacement();
-        RequireNoExistingClassicOutlookWindow();
-        START(mainWindowClass: "Win32 Window:rctrl_renwnd32", processName: "OUTLOOK", timeout: 60);
-        Place(placement, MainWindow, "Microsoft Outlook (Classic)");
-    }
-
-    private void RequireNoExistingClassicOutlookWindow()
-    {
-        int count = 0;
-        var windows = FindWindows(className: "Win32 Window:rctrl_renwnd32", processName: "OUTLOOK", timeout: 2);
-        foreach (IWindow window in windows) { count++; }
-        if (count > 0) { ABORT("Classic Microsoft Outlook already has a durable Explorer window. Close existing Outlook windows before running this ownership-safe Preview example."); }
+        START();
+        Place(placement, MainWindow, "Microsoft Outlook (New)");
     }
 
     private OfficePreviewPlacement LoadPlacement()

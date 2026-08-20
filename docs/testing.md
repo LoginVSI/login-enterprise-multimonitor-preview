@@ -36,17 +36,18 @@ CI deliberately does not fake Login Enterprise end-to-end tests.
 | 3+ monitors | Algorithmically covered; physical runtime pending |
 | Negative coordinates / mixed DPI / high resolution | Logic covered where stated; runtime pending |
 | Office Preview Word/Excel/PowerPoint | Runtime-passed on one local Login Enterprise 6.8.6 Application Test machine; broader validation pending |
-| Office Preview Edge | Prior raw `ShellExecute` attempt failed before placement on transient-PID tracking; corrected `START` implementation is build/static-validated and awaiting rerun |
-| Office Preview classic Outlook | Not tested on the local machine because it has New Outlook; classic Outlook remains pending |
+| Office Preview Edge | Prior raw `ShellExecute` attempt failed before placement on transient-PID tracking; corrected `START`/`MainWindow` implementation runtime-passed on the same local 6.8.6 machine |
+| Office Preview Classic Outlook | Not tested on the local machine because it has New Outlook; Classic Outlook remains pending |
+| Office Preview New Outlook launch/find/place | Runtime-proven locally on LE 6.8.6 through `TARGET:olk` -> `START()` -> `MainWindow` -> `PlaceNext`; broader validation pending |
 | Representative ten-file KW adaptation | Generated/build-tested/static-validated; partner-lab pending |
-| New Outlook | Unsupported/unvalidated |
+| New Outlook interaction automation / Classic-to-New workload adaptation | Unsupported/unvalidated; launch/find/place evidence does not prove interaction compatibility |
 | Other Login Enterprise/Office/Windows versions and VDI protocols | Pending |
 
 ## Partner-lab runtime validation
 
 Follow [test-lab-quickstart.md](test-lab-quickstart.md). For each workload record the selected durable title/class/process/HWND, structured result, state before/after, application events, scenario settings, and timing. Verify:
 
-1. Word, Excel, PowerPoint, classic Outlook, and Edge Office examples in order, including existing-instance failure behavior.
+1. Word, Excel, PowerPoint, one chosen Outlook flavor, and Edge Office examples in order, including documented existing-instance behavior.
 2. All ten adapted files in the preserved scenario order and lifecycle settings.
 3. Outlook secondary compose/read/reminder windows never allocate.
 4. Edge Start owns one new base window; Edge Run reports `StateAdvanced=false` and never allocates.
@@ -61,4 +62,6 @@ Recorded non-blocking Desktop Connector observations include ICA/Blast/PCoIP pro
 
 ## Office Preview local evidence
 
-In a Login Enterprise 6.8.6 Application Test, Office Preview Word, Excel, and PowerPoint launched and placed successfully. Edge launched, but Login Enterprise's raw `ShellExecute` path tracked a short-lived Edge bootstrap PID and threw before the script reached `FindWindows` or `PlaceNext`; this is not a DLL-placement failure. The corrected zero-existing-window plus `START`/`MainWindow` implementation remains unproven until rerun. Classic Outlook was unavailable because the machine uses New Outlook, which this Preview does not support.
+On one Login Enterprise 6.8.6 machine, Office Preview Word, Excel, PowerPoint, and the corrected zero-existing-window plus `START`/`MainWindow` Edge implementation launched and placed successfully. The earlier raw Edge `ShellExecute` path failed before placement because it tracked a short-lived bootstrap PID; that remains useful root-cause evidence, not a DLL-placement failure.
+
+On that two-monitor machine, Engine `6.8.6+74b852306a2fd77748ec08dd50898af41e5e2b88` also proved New Outlook `TARGET:olk` -> `START()` -> `MainWindow` -> `NativeWindowHandle` -> `PlaceNext` -> `STOP()`. The recorded placement was `Success=True`, `MonitorCount=2`, `Target=0`, `Verified=0`, `StateAdvanced=True`, `ElapsedMs=1127`, with message `Placement verified and state advanced.` The repository example omits `STOP()` to follow scenario-controlled Office Preview lifecycle. This proves launch/find/place on that machine only; it does not prove New Outlook interaction automation or compatibility with Classic Outlook workloads. Classic Outlook was unavailable and remains pending.

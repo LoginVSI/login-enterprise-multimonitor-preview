@@ -38,7 +38,7 @@ Start/open workloads allocate exactly once. Later Run workloads use non-allocati
 | Physical two-monitor round robin and cross-workload state | Runtime-proven |
 | Generic Prepare -> Open/Place -> Close and cleanup | Runtime-proven in Desktop Connector Console / NoRemote |
 | Generic Notepad / Paint / Edge flow | Runtime-proven |
-| Office Preview workloads | Word/Excel/PowerPoint passed on one LE 6.8.6 machine; corrected Edge and classic Outlook runtime validation pending |
+| Office Preview workloads | Word/Excel/PowerPoint, corrected Edge, and New Outlook launch/find/place passed on one LE 6.8.6 machine; Classic Outlook remains pending |
 | Representative Knowledge Worker adaptations | Generated/build-tested/static-validated; partner-lab runtime validation pending |
 | Other LE/Office/Windows versions, VDI protocols, 3+ physical displays, mixed DPI | Pending unless specifically recorded in [testing](docs/testing.md) |
 

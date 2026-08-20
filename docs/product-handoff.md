@@ -7,7 +7,7 @@ This public technical handoff accompanies, but does not replace, any separately 
 - Generic dependency-free `netstandard2.0` placement DLL and reflection-friendly API.
 - Persistent primary-first round robin with verified-success advancement and recovery.
 - Runtime-proven ScriptContent preparation and canonical generic three-workload lifecycle.
-- Five-application Office Preview example set.
+- Office Preview examples for Word, Excel, PowerPoint, Edge, and a choice of Classic or New Outlook.
 - Complete ten-file minimal-delta Knowledge Worker/KW25 adaptation mapped to immutable originals.
 - One authoritative repository validation command and Windows GitHub Actions CI.
 - Public manual and agentic adaptation pathways, test-lab quickstart, troubleshooting, checksum, and explicit runtime-status boundaries.
@@ -16,7 +16,7 @@ This public technical handoff accompanies, but does not replace, any separately 
 
 Login Enterprise 6.8.6 evidence covers Script Editor/Standalone Engine loading, appliance delivery, all Prepare branches, physical two-monitor placement, serial Desktop Connector execution, cross-workload state, missing-state recovery, canonical scenario-controlled Open/Place-to-Close handoff, and generic cleanup.
 
-Office Preview Word/Excel/PowerPoint passed on one local Login Enterprise 6.8.6 machine. Corrected Edge and classic Outlook remain runtime-pending. Knowledge Worker remains generated/build-tested/static-validated with partner-lab validation pending. Automated checks do not establish untested application/window compatibility.
+Office Preview Word/Excel/PowerPoint, corrected Edge, and New Outlook launch/find/place passed on one local Login Enterprise 6.8.6 machine. Classic Outlook and New Outlook interaction automation remain runtime-pending. Knowledge Worker remains generated/build-tested/static-validated with partner-lab validation pending. Automated checks do not establish untested application/window compatibility.
 
 ## Architecture decisions
 
@@ -35,7 +35,7 @@ The Knowledge Worker `adaptation-manifest.json` records source, type, allocation
 
 ## Remaining validation/product work
 
-- Partner-lab runtime evidence for Word, Excel, PowerPoint, Outlook, Edge Start/Run, and all Close behavior.
+- Partner-lab runtime evidence for the representative Word, Excel, PowerPoint, Classic Outlook, Edge Start/Run, and all Close behavior.
 - Application/version/localization/first-run and existing-instance behavior.
 - Mixed DPI, broader/negative physical topologies, concurrency, cadence overhead, VDI protocols, and other Login Enterprise releases.
 - Supported compatibility, signing, distribution/update ownership, state versioning, diagnostics policy, and support posture.

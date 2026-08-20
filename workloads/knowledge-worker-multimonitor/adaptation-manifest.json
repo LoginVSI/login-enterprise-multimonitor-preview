@@ -48,8 +48,8 @@
       "file": "(KW) Microsoft Outlook.cs",
       "type": "run/allocating",
       "allocates": true,
-      "window": "START MainWindow matching Inbox*, rctrl_renwnd32, OUTLOOK",
-      "change": "Loads Preview DLL, allocates the original Inbox MainWindow once, reasserts after minimize/maximize, and substitutes reserved public-safe recipients as disclosed above",
+      "window": "Classic Outlook START MainWindow matching Inbox*, rctrl_renwnd32, OUTLOOK",
+      "change": "Retains the Classic Outlook target and interactions, loads the Preview DLL, allocates the original Inbox MainWindow once, reasserts after minimize/maximize, and substitutes reserved public-safe recipients as disclosed above; it is not a New Outlook adaptation",
       "maxAddedLines": 70
     },
     {

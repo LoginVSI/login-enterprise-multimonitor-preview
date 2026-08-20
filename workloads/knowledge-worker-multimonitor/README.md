@@ -13,13 +13,15 @@ Upload/stage the Preview DLL with [`00-Prepare-MultiMonitor.cs`](../dll-backed/0
 | File/lifecycle | Placement behavior |
 | --- | --- |
 | Office preparation | Neutral; no state or placement |
-| Outlook | Allocates its original durable Inbox Explorer once; compose/read/reminder windows do not allocate |
+| Microsoft Outlook (Classic) | Allocates its original durable Inbox Explorer once; compose/read/reminder windows do not allocate |
 | Edge Start | Distinguishes a newly opened durable Edge window and allocates once |
 | Edge Run | `PlaceLastUsed`/`PlaceOnMonitor` maintenance only; never allocates |
 | Excel, PowerPoint, Word | Allocate the durable document window once after the original open timer; later maximize/reposition points reassert without allocation |
 | Excel, PowerPoint, Word Close | Neutral cleanup; no state or placement |
 
 All consumers load the staged real DLL. No HWND or monitor handle crosses workload files. Placement remains outside original response timers wherever practical. The manifest and contracts protect `TARGET`, primary class, ordered timer calls, allocation count, neutral files, and reviewed line-delta budgets.
+
+The preserved Outlook source and this adaptation target **Classic Outlook** (`outlook.exe` / `OUTLOOK` / `rctrl_renwnd32`) and its Classic-specific controls. They are not a New Outlook (`olk`) workload. Converting those interactions to New Outlook would be a separate substantive adaptation requiring New Outlook-specific control/navigation evidence and runtime validation; changing only the target is insufficient.
 
 ## Deliberate minimal deltas and public-safety substitutions
 

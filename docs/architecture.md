@@ -1,6 +1,6 @@
 # Architecture
 
-Status: generic library and canonical Prepare -> Open/Place -> Close behavior are runtime-proven in the recorded Login Enterprise 6.8.6 two-monitor environment. Office Preview Word/Excel/PowerPoint passed on one local 6.8.6 machine; corrected Edge and classic Outlook remain runtime-pending. Knowledge Worker adaptations are generated/build-tested/static-validated; partner-lab validation is pending.
+Status: generic library and canonical Prepare -> Open/Place -> Close behavior are runtime-proven in the recorded Login Enterprise 6.8.6 two-monitor environment. Office Preview Word/Excel/PowerPoint, corrected Edge, and New Outlook launch/find/place passed on one local 6.8.6 machine; Classic Outlook and New Outlook interaction automation remain runtime-pending. Knowledge Worker adaptations are generated/build-tested/static-validated; partner-lab validation is pending.
 
 ## Problem and universal intent
 
@@ -100,9 +100,9 @@ Application Test leaves Open/Place running into Close while Prepare and Close re
 
 ## Knowledge Worker sequencing and measurement
 
-The small Office Preview preflights Word, Excel, PowerPoint, and classic Outlook by stable process/class identity so it fails rather than moving a pre-existing base window. Classic Outlook avoids an English folder-title dependency. Edge requires zero existing base windows, uses the runtime-proven generic `START`/`MainWindow` launch path, independently requires one durable Edge window, and compares HWNDs before allocation. The corrected Edge implementation remains runtime-pending.
+The small Office Preview preflights Word, Excel, PowerPoint, and Classic Outlook by stable process/class identity so it fails rather than moving a pre-existing base window. Classic Outlook avoids an English folder-title dependency. New Outlook is a separate `TARGET:olk` example using the runtime-proven `START()`/`MainWindow` path; it proves launch/find/place only, not Classic Outlook interaction compatibility. Edge requires zero existing base windows, uses the runtime-proven generic `START`/`MainWindow` launch path, independently requires one durable Edge window, and compares HWNDs before allocation. The corrected Edge implementation has one-machine runtime evidence.
 
-Representative Office document workloads are placed after their existing open-document timers stop. The selected workbook, presentation, or document window is the base window; open/save and other dialogs do not allocate. Outlook allocates only its original Inbox `MainWindow`; open-message, compose, reminder, and first-run windows do not. Later base-window minimize/maximize actions reassert the same target without advancing state. Preparation and close workloads do not consume targets.
+Representative Office document workloads are placed after their existing open-document timers stop. The selected workbook, presentation, or document window is the base window; open/save and other dialogs do not allocate. The representative Classic Outlook adaptation allocates only its original Inbox `MainWindow`; open-message, compose, reminder, and first-run windows do not. Later base-window minimize/maximize actions reassert the same target without advancing state. Preparation and close workloads do not consume targets.
 
 Edge Start snapshots existing top-level Edge HWNDs, identifies a newly observed `Chrome_WidgetWin_1` Edge window, ends `Browser_Start`, preserves its existing initialization wait, then allocates that browser base window. Edge Run resolves the expected persistent browser window, uses the last verified target from Start, and reasserts it after repeated maximize/focus operations. This adds cadence overhead but avoids treating a Start/Run pair as two applications. Same-HWND continuity and ambiguity with multiple matching Edge windows remain runtime validation gates.
 

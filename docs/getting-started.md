@@ -12,4 +12,4 @@ The Multi-Monitor Preview separates application knowledge from generic monitor p
 
 The appliance DLL source is `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`. Prepare stages it to `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`; state lives beside it as `state.txt`.
 
-The generic framework is runtime-proven in the recorded Login Enterprise 6.8.6 environment. Office Word/Excel/PowerPoint passed on one local 6.8.6 machine; corrected Edge, classic Outlook, and representative Knowledge Worker workloads still require the runtime evidence identified in [testing](testing.md).
+The generic framework is runtime-proven in the recorded Login Enterprise 6.8.6 environment. Office Word/Excel/PowerPoint, corrected Edge, and New Outlook launch/find/place passed on one local 6.8.6 machine; Classic Outlook, New Outlook interaction automation, and representative Knowledge Worker workloads still require the runtime evidence identified in [testing](testing.md).

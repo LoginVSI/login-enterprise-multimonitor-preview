@@ -4,6 +4,8 @@
 
 Identify whether the file prepares, starts/opens, runs an already-open application, closes it, or contains the full lifecycle. Preserve its `TARGET`, application actions, URLs/content, timers, EUX measurements, cadence, and scenario intent.
 
+For Outlook, first identify the flavor. Classic Outlook and New Outlook use different executable, durable-window, control, navigation, and lifecycle models. Do not silently substitute one for the other: changing only `TARGET` or the executable is insufficient, and launch success does not prove interaction compatibility. Treat a requested Classic-to-New conversion as a substantive workload adaptation. Preserve timers, content, and measurements only around evidence-supported equivalent New Outlook interactions; otherwise surface the gap and require runtime validation.
+
 ## 2. Identify the durable/base window
 
 Trace launch handoff, process reuse, title, top-level class, process name, and replacement-window behavior. Prefer documented `START` when the workload owns startup and can identify the durable main UI. Otherwise use documented `FindWindow` or `FindWindows` with compiler-proven named arguments `className` and `processName`.
