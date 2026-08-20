@@ -35,7 +35,9 @@ CI deliberately does not fake Login Enterprise end-to-end tests.
 | Corrupt state and topology-change recovery | Automated only; runtime pending |
 | 3+ monitors | Algorithmically covered; physical runtime pending |
 | Negative coordinates / mixed DPI / high resolution | Logic covered where stated; runtime pending |
-| Office Preview Word/Excel/PowerPoint/classic Outlook/Edge | Generated/build-tested/static-validated; partner-lab pending |
+| Office Preview Word/Excel/PowerPoint | Runtime-passed on one local Login Enterprise 6.8.6 Application Test machine; broader validation pending |
+| Office Preview Edge | Prior raw `ShellExecute` attempt failed before placement on transient-PID tracking; corrected `START` implementation is build/static-validated and awaiting rerun |
+| Office Preview classic Outlook | Not tested on the local machine because it has New Outlook; classic Outlook remains pending |
 | Representative ten-file KW adaptation | Generated/build-tested/static-validated; partner-lab pending |
 | New Outlook | Unsupported/unvalidated |
 | Other Login Enterprise/Office/Windows versions and VDI protocols | Pending |
@@ -56,3 +58,7 @@ Follow [test-lab-quickstart.md](test-lab-quickstart.md). For each workload recor
 Repository files remain source of truth. Test disposable copies in Script Editor because it may rewrite working representation/line endings. Never publish raw Engine logs.
 
 Recorded non-blocking Desktop Connector observations include ICA/Blast/PCoIP probes before NoRemote resolution, unavailable latency, schedule-controlled `forceKillOnExit`, and an ARM DIA symbol-reader load message followed by successful compile/run. They were not placement failures.
+
+## Office Preview local evidence
+
+In a Login Enterprise 6.8.6 Application Test, Office Preview Word, Excel, and PowerPoint launched and placed successfully. Edge launched, but Login Enterprise's raw `ShellExecute` path tracked a short-lived Edge bootstrap PID and threw before the script reached `FindWindows` or `PlaceNext`; this is not a DLL-placement failure. The corrected zero-existing-window plus `START`/`MainWindow` implementation remains unproven until rerun. Classic Outlook was unavailable because the machine uses New Outlook, which this Preview does not support.

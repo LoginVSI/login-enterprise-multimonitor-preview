@@ -5,7 +5,7 @@ description: Adapt and validate compatible Login Enterprise C# workloads with th
 
 # Login Enterprise Multi-Monitor Preview
 
-Status: **PREVIEW / PARTIALLY RUNTIME-VALIDATED**. The generic library, staging, physical placement, state continuity, and canonical Prepare -> Open/Place -> Close lifecycle are runtime-proven in the recorded Login Enterprise 6.8.6 environment. Office Preview and Knowledge Worker adaptations are generated/build-tested/static-validated; partner-lab runtime validation is pending. Treat repository evidence and recorded status as authoritative.
+Status: **PREVIEW / PARTIALLY RUNTIME-VALIDATED**. The generic library, staging, physical placement, state continuity, and canonical Prepare -> Open/Place -> Close lifecycle are runtime-proven in the recorded Login Enterprise 6.8.6 environment. Office Preview Word/Excel/PowerPoint passed on one local 6.8.6 machine; corrected Edge and classic Outlook remain runtime-pending. Knowledge Worker adaptations are generated/build-tested/static-validated; partner-lab validation is pending. Treat repository evidence and recorded status as authoritative.
 
 ## Workflow
 

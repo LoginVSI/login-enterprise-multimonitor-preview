@@ -26,7 +26,7 @@ Notepad started through `START` was stopped by the Standalone Engine. Paint, lau
 
 ## Office and Knowledge Worker workloads
 
-A five-application Office Preview set provides simple Word, Excel, PowerPoint, Outlook, and Edge examples. Ten complete preserved-scenario adaptations live under `workloads/knowledge-worker-multimonitor/` with a mapping manifest and static minimal-delta checks. Their durable/base windows receive placement; splash, setup, dialogs, Outlook message/reminder windows, transient preparation, and cleanup workloads do not consume state by contract. These new sets remain partner-lab runtime validation pending.
+A five-application Office Preview set provides simple Word, Excel, PowerPoint, Outlook, and Edge examples. Word, Excel, and PowerPoint later passed on one local Login Enterprise 6.8.6 machine. The first Office Edge attempt failed before placement because raw `ShellExecute` tracked a transient bootstrap PID; the corrected proven-pattern `START` handoff remains pending rerun. Classic Outlook was unavailable on that machine. Ten complete preserved-scenario adaptations live under `workloads/knowledge-worker-multimonitor/` with a mapping manifest and static minimal-delta checks; those adaptations remain partner-lab runtime validation pending.
 
 ## Complete scenario, VDI, and product handoff
 

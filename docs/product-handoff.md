@@ -16,7 +16,7 @@ This public technical handoff accompanies, but does not replace, any separately 
 
 Login Enterprise 6.8.6 evidence covers Script Editor/Standalone Engine loading, appliance delivery, all Prepare branches, physical two-monitor placement, serial Desktop Connector execution, cross-workload state, missing-state recovery, canonical scenario-controlled Open/Place-to-Close handoff, and generic cleanup.
 
-The Office Preview and Knowledge Worker sets are **generated/build-tested/static-validated; partner-lab runtime validation pending**. Automated checks do not establish application/window compatibility.
+Office Preview Word/Excel/PowerPoint passed on one local Login Enterprise 6.8.6 machine. Corrected Edge and classic Outlook remain runtime-pending. Knowledge Worker remains generated/build-tested/static-validated with partner-lab validation pending. Automated checks do not establish untested application/window compatibility.
 
 ## Architecture decisions
 

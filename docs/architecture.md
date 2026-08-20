@@ -1,6 +1,6 @@
 # Architecture
 
-Status: generic library and canonical Prepare -> Open/Place -> Close behavior are runtime-proven in the recorded Login Enterprise 6.8.6 two-monitor environment. Office Preview and Knowledge Worker adaptations are generated/build-tested/static-validated; partner-lab runtime validation is pending.
+Status: generic library and canonical Prepare -> Open/Place -> Close behavior are runtime-proven in the recorded Login Enterprise 6.8.6 two-monitor environment. Office Preview Word/Excel/PowerPoint passed on one local 6.8.6 machine; corrected Edge and classic Outlook remain runtime-pending. Knowledge Worker adaptations are generated/build-tested/static-validated; partner-lab validation is pending.
 
 ## Problem and universal intent
 
@@ -100,7 +100,7 @@ Application Test leaves Open/Place running into Close while Prepare and Close re
 
 ## Knowledge Worker sequencing and measurement
 
-The small Office Preview preflights Word, Excel, PowerPoint, and classic Outlook by stable process/class identity so it fails rather than moving a pre-existing base window. Classic Outlook avoids an English folder-title dependency. Edge snapshots existing qualifying handles and binds only to a uniquely new durable window. These examples are static-validated and still require runtime proof.
+The small Office Preview preflights Word, Excel, PowerPoint, and classic Outlook by stable process/class identity so it fails rather than moving a pre-existing base window. Classic Outlook avoids an English folder-title dependency. Edge requires zero existing base windows, uses the runtime-proven generic `START`/`MainWindow` launch path, independently requires one durable Edge window, and compares HWNDs before allocation. The corrected Edge implementation remains runtime-pending.
 
 Representative Office document workloads are placed after their existing open-document timers stop. The selected workbook, presentation, or document window is the base window; open/save and other dialogs do not allocate. Outlook allocates only its original Inbox `MainWindow`; open-message, compose, reminder, and first-run windows do not. Later base-window minimize/maximize actions reassert the same target without advancing state. Preparation and close workloads do not consume targets.
 

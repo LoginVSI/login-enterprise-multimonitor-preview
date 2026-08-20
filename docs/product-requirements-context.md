@@ -80,7 +80,7 @@ See `known-limitations.md`. Key questions include runtime compatibility, correct
 
 ## Preview findings and validation evidence
 
-POCs are preserved successful evidence. The August 2026 standalone and Desktop Connector results prove preparation/loading, named-argument casing, physical placement, state recovery/continuity, appliance delivery, serial execution, and the canonical generic Open/Place/Close lifecycle. Office Preview and Knowledge Worker adaptations remain generated/build-tested/static-validated with partner-lab runtime validation pending. Use `testing.md` for current evidence status.
+POCs are preserved successful evidence. The August 2026 standalone and Desktop Connector results prove preparation/loading, named-argument casing, physical placement, state recovery/continuity, appliance delivery, serial execution, and the canonical generic Open/Place/Close lifecycle. Office Preview Word/Excel/PowerPoint have one-machine 6.8.6 runtime evidence; corrected Edge and classic Outlook remain pending. Knowledge Worker adaptations remain generated/build-tested/static-validated with partner-lab runtime validation pending. Use `testing.md` for current evidence status.
 
 ## Architecture alternatives
 

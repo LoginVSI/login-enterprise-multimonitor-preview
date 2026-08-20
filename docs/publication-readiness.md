@@ -23,4 +23,4 @@ License selection remains pending owner/organization approval. Making the reposi
 
 ## Runtime status
 
-The generic framework retains its recorded Login Enterprise 6.8.6 runtime-proven status. Office Preview and Knowledge Worker adaptations remain generated/build-tested/static-validated with partner-lab runtime validation pending.
+The generic framework retains its recorded Login Enterprise 6.8.6 runtime-proven status. Office Preview Word/Excel/PowerPoint have one-machine 6.8.6 runtime evidence; corrected Edge and classic Outlook remain pending. Knowledge Worker adaptations remain generated/build-tested/static-validated with partner-lab runtime validation pending.

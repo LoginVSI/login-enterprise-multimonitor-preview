@@ -1,6 +1,6 @@
 # Office Preview examples
 
-These five small workloads demonstrate the DLL pattern; they are not full Office application workloads and contain no EUX measurements. They are **generated/build-tested/static-validated; partner-lab runtime validation pending**.
+These five small workloads demonstrate the DLL pattern; they are not full Office application workloads and contain no EUX measurements. Word, Excel, and PowerPoint passed on one Login Enterprise 6.8.6 machine. The corrected Edge workload is build/static-validated and awaiting runtime rerun. Classic Outlook remains untested in that environment.
 
 ## Run order
 
@@ -18,9 +18,13 @@ From a fresh state, the application indices are `0,1,0,1,0` on two displays and 
 
 Word, Excel, and PowerPoint preflight their durable class/process identities and abort if an existing base window could be moved accidentally. They then use documented `START` without absolute install paths or localized title matching. Outlook targets **classic Win32 Outlook** by `OUTLOOK` process and `rctrl_renwnd32` Explorer class, not by an English folder title. New Outlook is not supported or validated. Outlook profile/sign-in/first-run/setup UI must already be resolved.
 
-Edge snapshots qualifying `Chrome_WidgetWin_1`/`msedge` top-level handles before launch, opens a new window, polls for a uniquely new durable window, and aborts rather than binding an arbitrary existing window. Each workload calls `PlaceNext` exactly once only after resolving its base window.
+Edge requires zero existing `Chrome_WidgetWin_1`/`msedge` base windows, uses the runtime-proven `START(processName: "msedge")`/`MainWindow` path, independently requires exactly one durable Edge window, and verifies that both HWNDs match before allocation. Testers must close existing Edge windows first. Each workload calls `PlaceNext` exactly once only after resolving its base window.
 
-These heuristics still require lab validation across Office versions, localization, first-run/activation/sign-in, Protected View, application reuse, replacement windows, and session technology. Close existing Word/Excel/PowerPoint/classic Outlook instances before testing. Existing Edge windows may remain, but ownership must resolve uniquely.
+These heuristics still require broader lab validation across Office versions, localization, first-run/activation/sign-in, Protected View, application reuse, replacement windows, and session technology. Close existing Word/Excel/PowerPoint/classic Outlook/Edge durable windows before testing.
+
+## Recorded local runtime evidence
+
+On one Login Enterprise 6.8.6 Application Test machine, Word, Excel, and PowerPoint launched and placed successfully. The first Edge attempt launched Edge but failed before durable-window discovery or placement because Login Enterprise `ShellExecute` tracked Edge's short-lived bootstrap PID and threw after that process exited. The corrected `START`/`MainWindow` implementation has not yet been rerun. Classic Outlook was not tested because that machine provides New Outlook; this Preview intentionally targets classic Outlook only.
 
 ## Lifecycle and cleanup
 

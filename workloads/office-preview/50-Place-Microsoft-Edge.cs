@@ -4,8 +4,6 @@
 using LoginPI.Engine.ScriptBase;
 using LoginPI.Engine.ScriptBase.Components;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -16,38 +14,44 @@ public class OfficePreviewPlaceMicrosoftEdge : ScriptBase
     private void Execute()
     {
         OfficePreviewPlacement placement = LoadPlacement();
-        HashSet<IntPtr> existingHandles = CaptureEdgeWindowHandles();
-        ShellExecute("msedge.exe --new-window about:blank", waitForProcessEnd: false, continueOnError: false, forceKillOnExit: false);
-        IWindow edge = FindUniqueNewEdgeWindow(existingHandles);
-        if (edge == null) { ABORT("A unique new durable Microsoft Edge window could not be distinguished from pre-existing Edge windows. Close extra Edge windows and retry."); }
+        RequireNoExistingEdgeWindow();
+
+        // Runtime-proven in the generic Login Enterprise 6.8.6 flow: START
+        // resolves the durable application UI instead of tracking Edge's
+        // short-lived raw launch PID.
+        START(processName: "msedge", timeout: WindowTimeoutSeconds);
+        IWindow edge = MainWindow;
+        IWindow resolvedEdge = RequireUniqueEdgeWindow(WindowTimeoutSeconds);
+        if (edge.NativeWindowHandle != resolvedEdge.NativeWindowHandle)
+        {
+            ABORT("Microsoft Edge MainWindow did not match the sole durable Edge base window. No Edge destination was consumed.");
+            return;
+        }
+
         Place(placement, edge, "Microsoft Edge");
     }
 
-    private HashSet<IntPtr> CaptureEdgeWindowHandles()
+    private void RequireNoExistingEdgeWindow()
     {
-        HashSet<IntPtr> handles = new HashSet<IntPtr>();
+        int count = 0;
         var windows = FindWindows(className: "Win32 Window:Chrome_WidgetWin_1", processName: "msedge", timeout: 2);
-        foreach (IWindow window in windows) { handles.Add(window.NativeWindowHandle); }
-        return handles;
+        foreach (IWindow window in windows) { count++; }
+        if (count > 0) { ABORT("Microsoft Edge already has a durable base window. Close existing Edge windows before running this ownership-safe Preview example."); }
     }
 
-    private IWindow FindUniqueNewEdgeWindow(HashSet<IntPtr> existingHandles)
+    private IWindow RequireUniqueEdgeWindow(int timeoutSeconds)
     {
-        Stopwatch timer = Stopwatch.StartNew();
-        while (timer.Elapsed.TotalSeconds < WindowTimeoutSeconds)
+        IWindow candidate = null;
+        int count = 0;
+        var windows = FindWindows(className: "Win32 Window:Chrome_WidgetWin_1", processName: "msedge", timeout: timeoutSeconds);
+        foreach (IWindow window in windows)
         {
-            IWindow candidate = null;
-            int newWindowCount = 0;
-            var windows = FindWindows(className: "Win32 Window:Chrome_WidgetWin_1", processName: "msedge", timeout: 1);
-            foreach (IWindow window in windows)
-            {
-                if (!existingHandles.Contains(window.NativeWindowHandle)) { candidate = window; newWindowCount++; }
-            }
-            if (newWindowCount == 1) { return candidate; }
-            if (newWindowCount > 1) { return null; }
-            Wait(0.5);
+            candidate = window;
+            count++;
         }
-        return null;
+
+        if (count != 1) { ABORT("Expected exactly one durable Microsoft Edge base window after START, but found " + count + ". No Edge destination was consumed."); }
+        return candidate;
     }
 
     private OfficePreviewPlacement LoadPlacement()

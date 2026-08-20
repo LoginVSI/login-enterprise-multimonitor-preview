@@ -3,7 +3,7 @@
 This is an unsupported, use-at-your-own-risk engineering Preview with no GA, support, compatibility, roadmap, or release commitment.
 
 - Runtime evidence is specific to Login Enterprise 6.8.6 and the recorded Script Editor plus Desktop Connector Console / NoRemote two-monitor environment.
-- Office Preview and representative KW workloads are static/build validated only; partner-lab runtime validation is pending.
+- Office Preview Word/Excel/PowerPoint passed on one local Login Enterprise 6.8.6 machine. Corrected Edge and classic Outlook remain runtime-pending; representative KW workloads remain static/build validated only.
 - Office examples do not automate first-run, activation, sign-in, profile creation, Protected View, localization differences, or every replacement-window path.
 - Outlook scope is classic Win32 Outlook (`OUTLOOK` / `rctrl_renwnd32`). New Outlook is unsupported/unvalidated.
 - Word/Excel/PowerPoint examples abort when pre-existing durable windows create ownership ambiguity. Edge attempts new-window disambiguation and aborts when unique ownership cannot be established.

@@ -78,9 +78,15 @@ foreach ($name in $officePreflightContracts.Keys) {
 $officeOutlook = Get-Text (Join-Path $officeRoot '40-Place-Microsoft-Outlook.cs')
 Assert-True (-not $officeOutlook.Contains('Inbox*')) 'Generic Office Outlook example regressed to an English/folder-specific Inbox title.'
 $officeEdge = Get-Text (Join-Path $officeRoot '50-Place-Microsoft-Edge.cs')
-foreach ($required in @('CaptureEdgeWindowHandles', 'FindUniqueNewEdgeWindow', 'HashSet<IntPtr>', '--new-window about:blank', 'Stopwatch.StartNew()', 'existingHandles.Contains', 'newWindowCount == 1')) {
-    Assert-True $officeEdge.Contains($required) "Office Edge new-window disambiguation lacks '$required'."
+foreach ($required in @('RequireNoExistingEdgeWindow', 'START(processName: "msedge"', 'IWindow edge = MainWindow', 'RequireUniqueEdgeWindow', 'edge.NativeWindowHandle != resolvedEdge.NativeWindowHandle', 'count != 1')) {
+    Assert-True $officeEdge.Contains($required) "Office Edge durable START/MainWindow ownership contract lacks '$required'."
 }
+foreach ($forbidden in @('ShellExecute(', '--new-window about:blank', 'CaptureEdgeWindowHandles', 'FindUniqueNewEdgeWindow', 'HashSet<IntPtr>')) {
+    Assert-True (-not $officeEdge.Contains($forbidden)) "Office Edge regressed to the transient raw launch path: $forbidden"
+}
+$officeReadme = Get-Text (Join-Path $officeRoot 'README.md')
+Assert-True $officeReadme.Contains('corrected Edge workload is build/static-validated and awaiting runtime rerun') 'Office README does not preserve the corrected Edge runtime-pending status.'
+Assert-True (-not $officeReadme.Contains('corrected Edge workload is runtime-proven')) 'Office README incorrectly claims the corrected Edge workload is runtime-proven.'
 
 $resetText = Get-Text (Join-Path $officeRoot '01-Reset-Placement-State.cs')
 Assert-True $resetText.Contains('"ResetState"') 'Office Preview reset workload does not invoke ResetState.'
