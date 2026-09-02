@@ -32,7 +32,6 @@ $criticalPaths = @(
     'docs\evidence-status.md',
     'docs\adapt-your-own-workload.md',
     'docs\agentic-workload-adaptation.md',
-    'docs\product-handoff.md',
     'skills\login-enterprise-multimonitor\implementation-guidance.md',
     'skills\login-enterprise-multimonitor\validation-guidance.md',
     'skills\login-enterprise-multimonitor\product-context.md'
@@ -48,8 +47,7 @@ foreach ($required in @(
     'docs/test-lab-quickstart.md',
     'docs/adapt-your-own-workload.md',
     'docs/agentic-workload-adaptation.md',
-    'docs/evidence-status.md',
-    'docs/product-handoff.md'
+    'docs/evidence-status.md'
 )) {
     if (-not $readme.Contains($required)) { throw "README lacks required customer path: $required" }
 }
@@ -74,7 +72,7 @@ foreach ($required in @(
     if (-not $agentGuide.Contains($required)) { throw "Agentic adaptation prompt lacks required contract: $required" }
 }
 
-foreach ($relativePath in @('README.md', 'docs\getting-started.md', 'docs\test-lab-quickstart.md', 'docs\architecture.md', 'docs\product-handoff.md', 'skills\login-enterprise-multimonitor\SKILL.md', 'workloads\README.md', 'workloads\knowledge-worker-multimonitor\README.md')) {
+foreach ($relativePath in @('README.md', 'docs\getting-started.md', 'docs\test-lab-quickstart.md', 'docs\architecture.md', 'skills\login-enterprise-multimonitor\SKILL.md', 'workloads\README.md', 'workloads\knowledge-worker-multimonitor\README.md')) {
     $content = [System.IO.File]::ReadAllText((Join-Path $repoRoot $relativePath))
     if ($content -match 'Knowledge Worker.{0,80}partner-lab (runtime validation )?pending') {
         throw "Obsolete blanket Knowledge Worker partner-lab pending claim remains in $relativePath"

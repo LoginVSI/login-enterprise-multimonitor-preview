@@ -116,4 +116,4 @@ Copying helper source into every workload remains useful for isolation but creat
 
 Open evidence areas include Office/Knowledge Worker durable-window identity and replacement, DPI/scaling, concurrency under representative scenario load, display changes during placement, broader interactive/VDI behavior, and acceptable timing overhead. Appliance ScriptContent delivery, generic serial orchestration, state continuity, and canonical cleanup are proven for the tested 6.8.6 environment.
 
-One product optimization remains intentionally outside the Preview DLL. If the selected durable window is already on the target monitor and already has the desired state, a future supported implementation could skip redundant restore/move/maximize operations while still verifying the destination, consuming the allocation, advancing round-robin state after success, and returning diagnostics. The current behavior is not considered a defect on that basis.
+The current Preview performs the normal restore/move/maximize/verify sequence even when the selected durable window is already on the target monitor. This is intentional Preview behavior.
