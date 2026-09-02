@@ -1,5 +1,5 @@
 {
-  "status": "generated/build-tested/static-validated; partner-lab runtime validation pending",
+  "status": "build/static validated; external partner-lab two-monitor single-user Application Test passed 7/7; multi-loop resilience pending",
   "sourceDirectory": "reference/original-workloads",
   "adaptedDirectory": "workloads/knowledge-worker-multimonitor",
   "reviewedInvariants": [

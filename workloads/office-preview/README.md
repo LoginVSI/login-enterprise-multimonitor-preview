@@ -1,6 +1,6 @@
 # Office Preview examples
 
-These small workloads demonstrate the DLL pattern; they are not full Office application workloads and contain no EUX measurements. Word, Excel, PowerPoint, corrected Edge, and New Outlook launch/find/place have one-machine Login Enterprise 6.8.6 runtime evidence. Classic Outlook remains runtime-pending in that environment.
+These small workloads demonstrate the DLL pattern; they are not full Office application workloads and contain no EUX measurements. Word, Excel, PowerPoint, corrected Edge, and New Outlook launch/find/place have one-machine Login Enterprise 6.8.6 runtime evidence. The simple Classic Outlook example was not proven locally because that machine did not initially match the configured Classic Outlook partner environment. See the central [evidence status](../../docs/evidence-status.md).
 
 ## Run order
 
@@ -24,6 +24,8 @@ Word, Excel, and PowerPoint preflight their durable class/process identities and
 - **Microsoft Outlook (New):** `TARGET:olk`, documented `START()`, and the resulting `MainWindow`. This runtime-proven example covers launch/find/place only; it does not establish New Outlook interaction automation or compatibility with the Classic Outlook/KW workload.
 
 Classic Outlook and New Outlook are separate workload targets. Changing only `TARGET` or the executable is not a valid interaction-workload conversion.
+
+The Classic Outlook file is intentionally minimal. It assumes Outlook is installed, configured, and past profile/first-run setup; preflights existing windows; starts Classic Outlook; resolves the durable Explorer/MainWindow; and places it. It does not reproduce the representative KW workload's PRF/PST staging, PRF TEMP rewrite, `/importprf`, first-run handling, or Inbox/message/compose interactions. That full adapted flow passed in the recorded external-partner two-monitor Application Test. The difference is application/profile lifecycle coverage, not a different generic placement algorithm.
 
 Edge requires zero existing `Chrome_WidgetWin_1`/`msedge` base windows, uses the runtime-proven `START(processName: "msedge")`/`MainWindow` path, independently requires exactly one durable Edge window, and verifies that both HWNDs match before allocation. Testers must close existing Edge windows first. Each workload calls `PlaceNext` exactly once only after resolving its base window.
 

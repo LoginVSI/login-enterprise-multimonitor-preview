@@ -1,67 +1,65 @@
 # Testing and validation
 
-Run the authoritative gate:
+Current runtime claims and their boundaries live in [evidence status](evidence-status.md). This page defines how repository and runtime evidence is produced. Do not copy the full status matrix into another document.
+
+Run the authoritative repository gate:
 
 ```powershell
 .\scripts\Test-Repository.ps1
 ```
 
-`-Fast` runs repository integrity and static/source contracts without restore/build/unit execution. CI runs the full command on Windows for pushes and pull requests to `main`.
+`-Fast` runs integrity and static/source contracts without restore, build, or unit execution. CI runs the full command on Windows for pushes and pull requests to `main`.
 
 ## Test taxonomy
 
 | Category | Automated coverage | It does not prove |
 | --- | --- | --- |
-| Smoke | Restore, clean Release build, executable test harness, distributable copy | Login Enterprise compilation/UI behavior |
+| Smoke | Restore, clean Release build, executable harness, distributable copy | Login Enterprise compilation or UI behavior |
 | Unit | Round robin, bounds, parsing, duplicate keys, serialization, repair | Interactive placement |
-| Functional/pure logic | Primary-first ordering, negative coordinates, atomic replacement, lock serialization/timeout, invalid-HWND failure | Real multi-display behavior |
-| Source-contract/static | DLL paths/API casing, allocation lifecycle, Office ownership/Edge/Outlook rules, KW mapping/deltas/timer sequence/substitutions, action SHA pins | Durable application identity at runtime |
-| Repository integrity | Git whitespace, immutable hashes, public safety, artifact hygiene, DLL target/dependency/checksum, expected public paths | Legal approval or Login Enterprise behavior |
-| Runtime/manual | Script Editor and actual platform evidence | Untested versions/topologies/protocols |
+| Functional/pure logic | Primary-first order, negative coordinates, atomic replacement, lock serialization/timeout, invalid-HWND failure | Real multi-display behavior |
+| Source-contract/static | DLL path/API casing, lifecycle allocation, Office ownership, Edge/Outlook rules, KW mappings/deltas/timers/substitutions | Durable application identity at runtime |
+| Repository integrity | Whitespace, immutable hashes, public safety, artifact hygiene, DLL target/dependencies/checksum, Markdown links and critical paths | Legal approval or Login Enterprise behavior |
+| Script Editor | Individual workload compile and execution | Platform sequencing or cross-file state |
+| Actual Login Enterprise scenario | Named workload order, lifecycle, application behavior, placement, state, and cleanup in one environment | Untested versions, topologies, applications, or protocols |
 
-CI deliberately does not fake Login Enterprise end-to-end tests.
+CI deliberately does not fake Login Enterprise end-to-end testing.
 
-## Validation matrix
+## Runtime validation ladder
 
-| Dimension | Evidence |
-| --- | --- |
-| Login Enterprise 6.8.6 generic framework | Runtime-proven |
-| Script Editor/Standalone Engine loading/staging | Runtime-proven |
-| Appliance ScriptContent and all Prepare branches | Runtime-proven |
-| Desktop Connector Console / NoRemote | Runtime-proven |
-| Physical two-monitor generic flow | Runtime-proven (`Notepad 0`, `Paint 1`, `Edge 0`) |
-| Cross-workload state and generic Prepare/Open/Close | Runtime-proven |
-| Missing-state recovery | Runtime-proven |
-| Corrupt state and topology-change recovery | Automated only; runtime pending |
-| 3+ monitors | Algorithmically covered; physical runtime pending |
-| Negative coordinates / mixed DPI / high resolution | Logic covered where stated; runtime pending |
-| Office Preview Word/Excel/PowerPoint | Runtime-passed on one local Login Enterprise 6.8.6 Application Test machine; broader validation pending |
-| Office Preview Edge | Prior raw `ShellExecute` attempt failed before placement on transient-PID tracking; corrected `START`/`MainWindow` implementation runtime-passed on the same local 6.8.6 machine |
-| Office Preview Classic Outlook | Not tested on the local machine because it has New Outlook; Classic Outlook remains pending |
-| Office Preview New Outlook launch/find/place | Runtime-proven locally on LE 6.8.6 through `TARGET:olk` -> `START()` -> `MainWindow` -> `PlaceNext`; broader validation pending |
-| Representative ten-file KW adaptation | Generated/build-tested/static-validated; partner-lab pending |
-| New Outlook interaction automation / Classic-to-New workload adaptation | Unsupported/unvalidated; launch/find/place evidence does not prove interaction compatibility |
-| Other Login Enterprise/Office/Windows versions and VDI protocols | Pending |
+1. Record the source commit/diff, Login Enterprise and Engine versions, Windows/application versions, Connector/session, display topology/scaling, scenario type, and scenario settings.
+2. Verify the distributable checksum and stage it through the intended ScriptContent/Prepare path. Exercise missing, retain-existing, and forced-refresh branches when deployment behavior is in scope.
+3. Compile disposable copies of every workload in Script Editor. Do not let Script Editor rewrite protected repository evidence.
+4. Execute each workload individually. Record the durable/base title, class, process, HWND strategy, placement result, application result, overhead, and cleanup.
+5. Run the actual Application Test, Continuous Test, or Load Test in authoritative order. Record `Run once`, `Leave application running`, Start/Run/Close handoff, and final state.
+6. On one monitor, expect every allocation at `0`. On two monitors, three fresh allocations expect `0,1,0`. On three, they expect `0,1,2`.
+7. Confirm `TargetMonitorIndex == VerifiedMonitorIndex`. `PlaceNext` advances only after verified success. Maintenance reports `StateAdvanced=False`.
+8. Prove that splash/setup/dialog/popup/compose/read/reminder/child windows do not consume an allocation.
+9. Validate application-specific process handoff, existing-instance ambiguity, base-window replacement, self-repositioning, first-run/profile readiness, localization, and content/media prerequisites.
+10. Repeat enough complete loops to support the claimed resilience level. One successful loop is not Continuous/Load resilience evidence.
+11. Exercise missing/corrupt state, monitor-count change, negative-coordinate layouts, mixed DPI, topology changes, concurrency, and additional Connectors where those claims are intended.
+12. Confirm placement remains outside existing EUX/application-response timers wherever practical and quantify added overhead/cadence effects.
 
-## Partner-lab runtime validation
+## Application-specific review points
 
-Follow [test-lab-quickstart.md](test-lab-quickstart.md). For each workload record the selected durable title/class/process/HWND, structured result, state before/after, application events, scenario settings, and timing. Verify:
+- **Classic Outlook:** verify configured profile/import lifecycle, durable Inbox Explorer, and non-allocating compose/read/reminder windows. Keep it distinct from New Outlook.
+- **New Outlook:** local evidence covers `TARGET:olk` launch/find/place only. Interaction automation needs its own controls and runtime evidence.
+- **Edge/Chromium:** do not assume the spawned PID owns the durable UI. Test zero, one, and multiple existing windows, Start/Run identity, and later self-repositioning.
+- **Word/Excel/PowerPoint:** allocate the durable document window after the source open timer and use non-allocating maintenance after later state changes.
+- **Prepare/Close:** verify they leave allocation state untouched and cleanup remains bounded.
 
-1. Word, Excel, PowerPoint, one chosen Outlook flavor, and Edge Office examples in order, including documented existing-instance behavior.
-2. All ten adapted files in the preserved scenario order and lifecycle settings.
-3. Outlook secondary compose/read/reminder windows never allocate.
-4. Edge Start owns one new base window; Edge Run reports `StateAdvanced=false` and never allocates.
-5. Word/Excel/PowerPoint allocation occurs after original open timers, with maintenance rather than reallocation later.
-6. Preparation and Close remain state-neutral; cleanup and final state are correct.
-7. Content/media prerequisites, original interactions, first-run/profile/localization, and failure diagnostics.
-8. Relevant Windows/Office/LE/VDI/topology/scaling dimensions.
+## Evidence record
 
-Repository files remain source of truth. Test disposable copies in Script Editor because it may rewrite working representation/line endings. Never publish raw Engine logs.
+For every runtime claim capture:
 
-Recorded non-blocking Desktop Connector observations include ICA/Blast/PCoIP probes before NoRemote resolution, unavailable latency, schedule-controlled `forceKillOnExit`, and an ARM DIA symbol-reader load message followed by successful compile/run. They were not placement failures.
+- commit and uncommitted diff identity;
+- environment and display topology;
+- workload files, order, and lifecycle settings;
+- durable/base window evidence;
+- structured placement result and state before/after;
+- application events/results, timer placement, and cleanup;
+- iteration/loop count and observed failures;
+- reviewed screenshots or minimized log excerpts when useful.
 
-## Office Preview local evidence
+Keep raw Engine logs private because they can contain authentication, session, infrastructure, or personal information. Record environment observations separately from placement failures. In particular, do not attribute an EUX or metrics interruption to the Preview without causal evidence.
 
-On one Login Enterprise 6.8.6 machine, Office Preview Word, Excel, PowerPoint, and the corrected zero-existing-window plus `START`/`MainWindow` Edge implementation launched and placed successfully. The earlier raw Edge `ShellExecute` path failed before placement because it tracked a short-lived bootstrap PID; that remains useful root-cause evidence, not a DLL-placement failure.
-
-On that two-monitor machine, Engine `6.8.6+74b852306a2fd77748ec08dd50898af41e5e2b88` also proved New Outlook `TARGET:olk` -> `START()` -> `MainWindow` -> `NativeWindowHandle` -> `PlaceNext` -> `STOP()`. The recorded placement was `Success=True`, `MonitorCount=2`, `Target=0`, `Verified=0`, `StateAdvanced=True`, `ElapsedMs=1127`, with message `Placement verified and state advanced.` The repository example omits `STOP()` to follow scenario-controlled Office Preview lifecycle. This proves launch/find/place on that machine only; it does not prove New Outlook interaction automation or compatibility with Classic Outlook workloads. Classic Outlook was unavailable and remains pending.
+Update [evidence status](evidence-status.md) only after review. Clearly label build/static validation, local runtime evidence, partner-lab runtime evidence, pending multi-loop work, and broader untested compatibility.

@@ -72,6 +72,7 @@ public class Edge_Start : ScriptBase
         Log("Constructed local PDF URL: " + pdfUrl);
 
         // Build the URL list.
+        // Configurable optional demo media. Stage here or change this path for the test image.
         string videoPath = Path.Combine(tempPath, "LoginPI", "MultiMonitor", "Big Buck Bunny Demo.mp4");
         string videoUrl = "file:///" + videoPath.Replace("\\", "/").Replace(" ", "%20");
         string urlsDefined =
@@ -84,7 +85,7 @@ public class Edge_Start : ScriptBase
             "https://www.bing.com/images/search?q=login%20vsi&lq=0&ghsh=0&ghacc=0&first=1;" +
             "https://www.microsoft.com;";
         Log("URL list constructed.");
-        // The local 4K video must be staged at videoPath before running this workload.
+        // The optional demo video must be staged at videoPath before this media interaction.
 
         // Split the defined URLs into an array using semicolon as the delimiter.
         string[] urlArray = urlsDefined.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries);

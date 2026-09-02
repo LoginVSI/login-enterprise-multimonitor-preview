@@ -24,10 +24,67 @@ foreach ($file in $markdownFiles) {
     }
 }
 
+$criticalPaths = @(
+    'dist\LoginVSI.MultiMonitor.dll',
+    'dist\SHA256SUMS.txt',
+    'workloads\dll-backed\00-Prepare-MultiMonitor.cs',
+    'workloads\office-preview\01-Reset-Placement-State.cs',
+    'docs\evidence-status.md',
+    'docs\adapt-your-own-workload.md',
+    'docs\agentic-workload-adaptation.md',
+    'docs\product-handoff.md',
+    'skills\login-enterprise-multimonitor\implementation-guidance.md',
+    'skills\login-enterprise-multimonitor\validation-guidance.md',
+    'skills\login-enterprise-multimonitor\product-context.md'
+)
+foreach ($relativePath in $criticalPaths) {
+    if (-not (Test-Path -LiteralPath (Join-Path $repoRoot $relativePath))) {
+        throw "Critical documented path is missing: $relativePath"
+    }
+}
+
+$readme = [System.IO.File]::ReadAllText((Join-Path $repoRoot 'README.md'))
+foreach ($required in @(
+    'docs/test-lab-quickstart.md',
+    'docs/adapt-your-own-workload.md',
+    'docs/agentic-workload-adaptation.md',
+    'docs/evidence-status.md',
+    'docs/product-handoff.md'
+)) {
+    if (-not $readme.Contains($required)) { throw "README lacks required customer path: $required" }
+}
+
+$quickstart = [System.IO.File]::ReadAllText((Join-Path $repoRoot 'docs\test-lab-quickstart.md'))
+foreach ($required in @('00-Prepare-MultiMonitor.cs', '01-Reset-Placement-State.cs', 'MonitorCount', 'StateAdvanced')) {
+    if (-not $quickstart.Contains($required)) { throw "Quickstart lacks required setup/result guidance: $required" }
+}
+
+$agentGuide = [System.IO.File]::ReadAllText((Join-Path $repoRoot 'docs\agentic-workload-adaptation.md'))
+foreach ($required in @(
+    'Copy/paste prompt for a coding agent',
+    'docs/adapt-your-own-workload.md',
+    'skills/login-enterprise-multimonitor/SKILL.md',
+    'workloads/source/MyWordWorkload.cs',
+    'workloads/custom/MyWordWorkload-MultiMonitor.cs',
+    'PlaceNext exactly once',
+    'PlaceLastUsed or PlaceOnMonitor',
+    '.\scripts\Test-Repository.ps1',
+    'Do not claim runtime proof'
+)) {
+    if (-not $agentGuide.Contains($required)) { throw "Agentic adaptation prompt lacks required contract: $required" }
+}
+
+foreach ($relativePath in @('README.md', 'docs\getting-started.md', 'docs\test-lab-quickstart.md', 'docs\architecture.md', 'docs\product-handoff.md', 'skills\login-enterprise-multimonitor\SKILL.md', 'workloads\README.md', 'workloads\knowledge-worker-multimonitor\README.md')) {
+    $content = [System.IO.File]::ReadAllText((Join-Path $repoRoot $relativePath))
+    if ($content -match 'Knowledge Worker.{0,80}partner-lab (runtime validation )?pending') {
+        throw "Obsolete blanket Knowledge Worker partner-lab pending claim remains in $relativePath"
+    }
+}
+
 $skillPath = Join-Path $repoRoot 'skills\login-enterprise-multimonitor\SKILL.md'
 $skill = [System.IO.File]::ReadAllText($skillPath)
 foreach ($required in @('Classify every supplied file', 'PlaceNext', 'PlaceLastUsed', 'mapping/delta record', 'scripts/Test-Repository.ps1', 'not runtime-proven')) {
     if (-not $skill.Contains($required)) { throw "Repository adaptation skill lacks required guidance: $required" }
 }
 
-Write-Host "Documentation contracts passed for $($markdownFiles.Count) Markdown files and $checkedLinks local links; adaptation skill guidance is aligned." -ForegroundColor Green
+Write-Host "Documentation contracts passed for $($markdownFiles.Count) Markdown files, $checkedLinks local links, customer paths, evidence status, and adaptation guidance." -ForegroundColor Green

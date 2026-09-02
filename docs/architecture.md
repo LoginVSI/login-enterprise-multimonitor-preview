@@ -1,6 +1,6 @@
 # Architecture
 
-Status: generic library and canonical Prepare -> Open/Place -> Close behavior are runtime-proven in the recorded Login Enterprise 6.8.6 two-monitor environment. Office Preview Word/Excel/PowerPoint, corrected Edge, and New Outlook launch/find/place passed on one local 6.8.6 machine; Classic Outlook and New Outlook interaction automation remain runtime-pending. Knowledge Worker adaptations are generated/build-tested/static-validated; partner-lab validation is pending.
+Status: the generic library and canonical Prepare -> Open/Place -> Close behavior are runtime-proven in the recorded local Login Enterprise 6.8.6 environment. External partner testing passed the representative two-monitor Knowledge Worker Application Test 7/7 and demonstrated Office placement across three monitor indices. Multi-loop resilience and broader compatibility remain pending. See the authoritative [evidence status](evidence-status.md).
 
 ## Problem and universal intent
 
@@ -104,12 +104,16 @@ The small Office Preview preflights Word, Excel, PowerPoint, and Classic Outlook
 
 Representative Office document workloads are placed after their existing open-document timers stop. The selected workbook, presentation, or document window is the base window; open/save and other dialogs do not allocate. The representative Classic Outlook adaptation allocates only its original Inbox `MainWindow`; open-message, compose, reminder, and first-run windows do not. Later base-window minimize/maximize actions reassert the same target without advancing state. Preparation and close workloads do not consume targets.
 
-Edge Start snapshots existing top-level Edge HWNDs, identifies a newly observed `Chrome_WidgetWin_1` Edge window, ends `Browser_Start`, preserves its existing initialization wait, then allocates that browser base window. Edge Run resolves the expected persistent browser window, uses the last verified target from Start, and reasserts it after repeated maximize/focus operations. This adds cadence overhead but avoids treating a Start/Run pair as two applications. Same-HWND continuity and ambiguity with multiple matching Edge windows remain runtime validation gates.
+Edge Start snapshots existing top-level Edge HWNDs, identifies a newly observed `Chrome_WidgetWin_1` Edge window, ends `Browser_Start`, preserves its existing initialization wait, then allocates that browser base window. Edge Run resolves the expected persistent browser window, uses the last verified target from Start, and reasserts it after repeated maximize/focus operations. This adds cadence overhead but avoids treating a Start/Run pair as two applications. The recorded partner flow passed after profile and Edge first-run preparation. Broader existing-window ambiguity and replacement behavior remain validation gates.
 
-The complete adaptations live under `workloads/knowledge-worker-multimonitor/`; the authoritative scenario order and settings remain in `reference/test-scenario/workload-sequence.txt`. The mapping manifest and static contracts enforce minimal deltas, but partner-lab runtime validation remains pending.
+The complete adaptations live under `workloads/knowledge-worker-multimonitor/`; the authoritative scenario order and settings remain in `reference/test-scenario/workload-sequence.txt`. The mapping manifest and static contracts enforce minimal deltas. The representative two-monitor partner-lab Application Test passed 7/7 actions, including the adapted Classic Outlook and Edge Start/Run flow. Repeated multi-loop Load/Continuous resilience remains under validation.
+
+The simple Office Preview Classic Outlook workload assumes an installed, clean, configured environment and only launches, resolves, and places its durable Explorer/MainWindow. The representative adaptation retains the source PRF/PST staging, TEMP rewrite, `/importprf` launch, relevant first-run handling, Inbox/message/compose activity, single durable Inbox allocation, and later non-allocating reassertion. Application/profile readiness stays in workload code; generic discovery, state, movement, verification, and results stay in the helper.
 
 ## Alternatives and open questions
 
 Copying helper source into every workload remains useful for isolation but creates drift. The DLL centralizes behavior but adds staging and runtime compatibility requirements. A background session router remains a possible future alternative, not an implemented requirement or commitment.
 
 Open evidence areas include Office/Knowledge Worker durable-window identity and replacement, DPI/scaling, concurrency under representative scenario load, display changes during placement, broader interactive/VDI behavior, and acceptable timing overhead. Appliance ScriptContent delivery, generic serial orchestration, state continuity, and canonical cleanup are proven for the tested 6.8.6 environment.
+
+One product optimization remains intentionally outside the Preview DLL. If the selected durable window is already on the target monitor and already has the desired state, a future supported implementation could skip redundant restore/move/maximize operations while still verifying the destination, consuming the allocation, advancing round-robin state after success, and returning diagnostics. The current behavior is not considered a defect on that basis.

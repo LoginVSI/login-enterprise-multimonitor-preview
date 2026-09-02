@@ -26,7 +26,7 @@ Notepad started through `START` was stopped by the Standalone Engine. Paint, lau
 
 ## Office and Knowledge Worker workloads
 
-The Office Preview provides simple Word, Excel, PowerPoint, Edge, and separate Classic/New Outlook examples. Word, Excel, PowerPoint, and the corrected Edge `START` handoff passed on one local Login Enterprise 6.8.6 machine. New Outlook launch/find/place also passed there through `TARGET:olk`, `START()`, and `MainWindow`; Classic Outlook was unavailable. New Outlook interaction automation remains a separate future adaptation problem. Ten complete preserved-scenario adaptations live under `workloads/knowledge-worker-multimonitor/` with a mapping manifest and static minimal-delta checks; those Classic-Outlook-based adaptations remain partner-lab runtime validation pending.
+The Office Preview provides simple Word, Excel, PowerPoint, Edge, and separate Classic/New Outlook examples. Word, Excel, PowerPoint, and the corrected Edge `START` handoff passed on one local Login Enterprise 6.8.6 machine. New Outlook launch/find/place also passed there through `TARGET:olk`, `START()`, and `MainWindow`; Classic Outlook was unavailable. New Outlook interaction automation remains a separate future adaptation problem. Ten complete preserved-scenario adaptations live under `workloads/knowledge-worker-multimonitor/` with a mapping manifest and static minimal-delta checks. A later external partner two-monitor Application Test passed the representative flow 7/7, including adapted Classic Outlook and Edge Start/Run, while repeated-loop resilience remained under validation.
 
 ## Complete scenario, VDI, and product handoff
 

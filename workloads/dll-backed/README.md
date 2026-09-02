@@ -6,7 +6,7 @@
 2. `01-Open-Place-Applications.cs` verifies and reflection-loads that DLL, resets state once for a fresh demonstration run, resolves one durable/base window each for Notepad, Paint, and Microsoft Edge, and calls `PlaceNext` exactly once per application.
 3. `02-Close-Applications.cs` closes only a sole matching base window for each application. It skips ambiguous matches and does not load the DLL, allocate, reset, or touch `%TEMP%\LoginPI\MultiMonitor\state.txt`.
 
-This new flow is implemented/generated and has not yet passed Script Editor or Desktop Connector runtime validation. Do not infer runtime compatibility from the local build.
+This canonical flow passed in the recorded Login Enterprise 6.8.6 Desktop Connector Application Test, including serial Prepare -> Open/Place -> Close execution, two-monitor placement/state, scenario-controlled handoff, and bounded cleanup. Do not infer broader runtime compatibility from that named result.
 
 For its next Application Test, configure `Leave application running` as follows:
 
@@ -16,7 +16,7 @@ For its next Application Test, configure `Leave application running` as follows:
 
 Continuous Test and Load Test also provide per-workload `Run once`. Preserve the scenario's intended one-time preparation/open/cleanup behavior instead of blindly copying Application Test settings.
 
-One workload has one associated `TARGET`. Edge uses the runtime-proven `START(processName: "msedge")`/`MainWindow` path. Modern Notepad's raw `ShellExecute` PID was not durable, so this combined demonstration uses the compatible `.NET Process.Start` pattern already preserved in repository evidence, then independently requires one durable Notepad window. Paint retains its proven `ShellExecute` plus `FindWindows(className: "Win32 Window:MSPaintApp", processName: "mspaint")` path. All three applications must be absent at preflight so later cleanup can be bounded; this ownership model and cross-workload survival require runtime validation.
+One workload has one associated `TARGET`. Edge uses the runtime-proven `START(processName: "msedge")`/`MainWindow` path. Modern Notepad's raw `ShellExecute` PID was not durable, so this combined demonstration uses the compatible `.NET Process.Start` pattern already preserved in repository evidence, then independently requires one durable Notepad window. Paint retains its proven `ShellExecute` plus `FindWindows(className: "Win32 Window:MSPaintApp", processName: "mspaint")` path. All three applications must be absent at preflight so later cleanup can be bounded. This ownership and cross-workload survival model passed in the recorded canonical test; other environments still require validation.
 
 ## Proven regression harness
 

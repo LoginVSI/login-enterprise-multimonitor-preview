@@ -24,7 +24,7 @@ The generic helper accepts only an HWND, application label, state path, maximize
 
 ## Representative Knowledge Worker validation
 
-Office and Edge derivatives exercise different patterns: replaced document windows, persistent Start/Run windows, later minimize/maximize/focus actions, timers, and cleanup. They validate the generic mechanism; they do not define application-specific core architecture.
+Office and Edge derivatives exercise different patterns: replaced document windows, persistent Start/Run windows, later minimize/maximize/focus actions, timers, and cleanup. The representative two-monitor partner Application Test passed 7/7, and three-monitor Office placement demonstrated indices `0,1,2`. These flows validate the generic mechanism in named environments; they do not define application-specific core architecture or broad compatibility.
 
 ## Candidate base requirements
 
@@ -80,7 +80,7 @@ See `known-limitations.md`. Key questions include runtime compatibility, correct
 
 ## Preview findings and validation evidence
 
-POCs are preserved successful evidence. The August 2026 standalone and Desktop Connector results prove preparation/loading, named-argument casing, physical placement, state recovery/continuity, appliance delivery, serial execution, and the canonical generic Open/Place/Close lifecycle. Office Preview Word/Excel/PowerPoint, corrected Edge, and New Outlook launch/find/place have one-machine 6.8.6 runtime evidence; Classic Outlook and New Outlook interaction automation remain pending. Knowledge Worker adaptations remain generated/build-tested/static-validated with partner-lab runtime validation pending. Use `testing.md` for current evidence status.
+POCs are preserved successful evidence. The August 2026 standalone and Desktop Connector results prove preparation/loading, named-argument casing, physical placement, state recovery/continuity, appliance delivery, serial execution, and the canonical generic Open/Place/Close lifecycle. The recorded Office Preview and external partner results now include the representative adapted Classic Outlook/Edge/Office flow. Multi-loop resilience remains in progress. Use [evidence status](evidence-status.md) for the current detailed record and [testing](testing.md) for the validation method.
 
 ## Architecture alternatives
 

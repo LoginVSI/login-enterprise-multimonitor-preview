@@ -26,8 +26,8 @@ Runtime-proven in a real Login Enterprise 6.8.6 Desktop Connector Application Te
 18. **Browser integration** — test no existing Edge window and one or more existing windows; confirm the launched top-level window is not a splash/launcher and record later identity behavior.
 19. **Persistent Start/Run behavior** — confirm Run reuses the Start destination and maintenance calls do not advance state.
 20. **Repeated execution** — check cycling, locks, state integrity, application cleanup, and cadence.
-21. **Office and Knowledge Worker flows** — follow `docs/test-lab-quickstart.md`; validate every application, Start/Run maintenance, secondary-window non-allocation, cleanup, state, events, and timing. These sets remain partner-lab pending.
-22. **Complete Knowledge Worker sequence** — preserve the authoritative ordering/settings and capture end-to-end evidence after the final flow exists.
+21. **Office and Knowledge Worker flows** — follow `docs/test-lab-quickstart.md`; validate every application, Start/Run maintenance, secondary-window non-allocation, cleanup, state, events, and timing. The recorded external-partner two-monitor representative Application Test passed 7/7, and three-monitor Office placement demonstrated indices `0,1,2`; do not generalize beyond `docs/evidence-status.md`.
+22. **Complete Knowledge Worker sequence** — preserve the authoritative ordering/settings. Repeated-loop Load/Continuous resilience remains pending and requires monitored complete-loop evidence.
 23. **VDI/Horizon validation** — record platform/session/topology details; do not generalize one result to unsupported platforms.
 24. **Timing/measurement validation** — quantify placement/reassertion overhead and confirm timer boundaries, workload intent, and scenario cadence remain acceptable.
 

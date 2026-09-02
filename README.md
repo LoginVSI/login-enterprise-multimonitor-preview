@@ -1,59 +1,50 @@
 # Login Enterprise Multi-Monitor Preview
 
-Login Enterprise workloads can run in sessions with multiple displays, but workload authors need an intentional, reusable way to distribute durable application windows across them. This repository provides that mechanism as a functional engineering Preview.
+Login Enterprise workloads often keep durable application windows on one display even when the test session exposes several. This repository provides an unsupported engineering Preview that distributes those windows across active monitors in a deterministic, primary-first round robin.
 
-> This Preview explores reusable multi-monitor workload placement for Login Enterprise. It is not generally available or officially supported, and it carries no support, compatibility, roadmap, or release commitment. It may inform future Login Enterprise capabilities, but no future product inclusion is implied. Evaluate it at your own risk.
+The Preview discovers monitors, selects the next target, moves and optionally maximizes the durable/base application window, verifies the destination, and advances file-backed state only after success. The workload still owns application launch, profile readiness, correct window identification, business interactions, timers, and cleanup.
+
+> **Preview status:** This is not generally available or officially supported. It carries no support, compatibility, roadmap, release, or productization commitment. Use it in a controlled test environment and review the recorded evidence before relying on it.
+
+It is useful when a multi-display Login Enterprise session should exercise Word, Excel, PowerPoint, Outlook, Edge, or another compatible application on more than the primary display. It does not configure Windows displays, create application profiles, automate first-run setup, guarantee every application/version/session combination, or provide a supported DLL distribution channel.
 
 ## Choose your path
 
-- **I just want to test it:** start with the [test-lab quickstart](docs/test-lab-quickstart.md).
-- **I want to understand the basics:** read [getting started](docs/getting-started.md).
-- **I want to adapt my own workload manually:** use [adapt your own workload](docs/adapt-your-own-workload.md).
-- **I want an AI/coding agent to adapt workloads:** use the [agentic adaptation guide](docs/agentic-workload-adaptation.md) and repository [skill](skills/login-enterprise-multimonitor/SKILL.md).
-- **I want implementation details:** read the [architecture](docs/architecture.md).
-- **I want to know what is proven:** read [testing and validation](docs/testing.md).
-- **I want simple Office examples:** browse [Office Preview](workloads/office-preview/README.md).
-- **I want the representative Knowledge Worker adaptations:** browse [Knowledge Worker Multi-Monitor](workloads/knowledge-worker-multimonitor/README.md).
+- **Quick evaluation:** [test-lab quickstart](docs/test-lab-quickstart.md)
+- **From-zero setup and concepts:** [getting started](docs/getting-started.md)
+- **Manual workload adaptation:** [adapt your own workload](docs/adapt-your-own-workload.md)
+- **AI-assisted adaptation:** [copy/paste agent prompt and guide](docs/agentic-workload-adaptation.md)
+- **Implementation and architecture:** [architecture](docs/architecture.md)
+- **Testing and current evidence:** [evidence status](docs/evidence-status.md) and [validation method](docs/testing.md)
+- **Product/Development evaluation:** [product handoff](docs/product-handoff.md)
+- **Examples:** [Office Preview](workloads/office-preview/README.md) and [representative Knowledge Worker adaptations](workloads/knowledge-worker-multimonitor/README.md)
 
-## What the Preview does
+## Runtime evidence at a glance
 
-The dependency-free `netstandard2.0` DLL discovers active monitors, orders the primary first, allocates durable/base application windows round robin, moves and optionally maximizes them, verifies the destination, and advances persistent state only after success. Workloads keep ownership of application launch, correct window identification, interaction, timing, and cleanup.
+Local Login Enterprise 6.8.6 testing proved DLL staging/loading, two-monitor placement and state, the canonical Prepare -> Open/Place -> Close lifecycle, Word/Excel/PowerPoint, corrected Edge, and New Outlook launch/find/place.
 
-The reflection-friendly API is:
+In an external partner lab, the representative two-monitor Knowledge Worker Application Test passed 7/7 actions with zero failures. Its allocating sequence was Classic Outlook `0`, Edge `1`, Excel `0`, PowerPoint `1`, and Word `0`; Edge Run maintained the existing Edge target. Partner testing also demonstrated Word `0`, Excel `1`, and PowerPoint `2` across three monitors. Multi-loop Load/Continuous resilience and the external session-metrics comparison remain in progress.
 
-- `PlaceNext` — allocate the next monitor, verify placement, then advance state;
-- `PlaceLastUsed` — reapply the last allocated monitor without advancing;
-- `PlaceOnMonitor` — reapply a specified monitor index without advancing;
-- `ResetState` — deliberately initialize a fresh sequence.
+These are bounded results, not broad compatibility claims. [Evidence status](docs/evidence-status.md) is the source of truth, including the Outlook environment distinction and the observed EUX reporting interruption that has not been tied to this Preview.
 
-State is stored at `%TEMP%\LoginPI\MultiMonitor\state.txt` as `MonitorCount` and `LastUsedIndex`. No HWND or monitor handle is persisted. A **durable/base window** is the long-lived top-level application window the workload actually intends to exercise. Splash screens, setup UI, dialogs, Outlook compose/read/reminder windows, popups, child windows, and temporary launchers never allocate.
+## Allocation contract
 
-Start/open workloads allocate exactly once. Later Run workloads use non-allocating maintenance only when justified. Preparation and Close workloads do not touch placement state. Placement belongs outside EUX/application-response timers wherever practical.
+The reflection-friendly API exposes `PlaceNext`, `PlaceLastUsed`, `PlaceOnMonitor`, and `ResetState`.
 
-## Validation status
+- A Start/open workload calls `PlaceNext` once after it identifies the long-lived durable/base window.
+- A later Run workload may call `PlaceLastUsed` or `PlaceOnMonitor` to maintain that same target without allocating again.
+- Preparation and Close workloads do not allocate or reset placement state.
+- Splash screens, setup UI, dialogs, Classic Outlook compose/read/reminder windows, popups, child windows, and temporary launchers do not allocate.
 
-| Capability | Evidence |
-| --- | --- |
-| Generic DLL loading, ScriptContent delivery, all Prepare branches | Runtime-proven in Login Enterprise 6.8.6 |
-| Physical two-monitor round robin and cross-workload state | Runtime-proven |
-| Generic Prepare -> Open/Place -> Close and cleanup | Runtime-proven in Desktop Connector Console / NoRemote |
-| Generic Notepad / Paint / Edge flow | Runtime-proven |
-| Office Preview workloads | Word/Excel/PowerPoint, corrected Edge, and New Outlook launch/find/place passed on one LE 6.8.6 machine; Classic Outlook remains pending |
-| Representative Knowledge Worker adaptations | Generated/build-tested/static-validated; partner-lab runtime validation pending |
-| Other LE/Office/Windows versions, VDI protocols, 3+ physical displays, mixed DPI | Pending unless specifically recorded in [testing](docs/testing.md) |
+State is stored at `%TEMP%\LoginPI\MultiMonitor\state.txt` as `MonitorCount` and `LastUsedIndex`. No window or monitor handle is persisted. Keep placement outside EUX, application-response, and performance timers wherever practical.
 
-Automated checks do not simulate Login Enterprise or prove durable application behavior.
+## Preview files
 
-## Partner/Test Lab Files
-
-- [Preview DLL](dist/LoginVSI.MultiMonitor.dll)
-- [DLL SHA-256](dist/SHA256SUMS.txt)
+- [Distributable DLL](dist/LoginVSI.MultiMonitor.dll) and [SHA-256 manifest](dist/SHA256SUMS.txt)
 - [Prepare workload](workloads/dll-backed/00-Prepare-MultiMonitor.cs)
-- [Office Preview workloads](workloads/office-preview/)
-- [Knowledge Worker adaptations](workloads/knowledge-worker-multimonitor/)
-- [Test-lab quickstart](docs/test-lab-quickstart.md)
+- [Quickstart](docs/test-lab-quickstart.md)
 
-Upload the DLL to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`; Prepare stages it to `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`. The repository is directly usable, or `scripts/New-TestLabBundle.ps1 -Zip` can create an ignored convenience bundle under `artifacts/`.
+The Preview uses existing Login Enterprise ScriptContent. Upload the DLL to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`; Prepare copies it to `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`. This is a Preview staging pattern, not a new product distribution mechanism.
 
 ## Validate the repository
 
@@ -61,10 +52,6 @@ Upload the DLL to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`; P
 .\scripts\Test-Repository.ps1
 ```
 
-Use `-Fast` during editing for integrity and static contracts. The full command restores, builds, runs all tests, verifies protected evidence, checks public safety and workload contracts, and validates the distributable checksum. See [testing](docs/testing.md).
+Use `-Fast` while editing. The full command restores, builds, runs unit and source-contract tests, verifies protected evidence, checks documentation links and public safety, and validates the committed DLL checksum. Automated success does not establish Login Enterprise runtime proof.
 
-## Safety, support, and license
-
-Never publish raw Login Enterprise Engine logs; they can contain authentication, session, infrastructure, or personal material. See [SECURITY.md](SECURITY.md) and [troubleshooting](docs/troubleshooting.md).
-
-License selection is pending. Public visibility does not grant an open-source license or reuse rights; see [LICENSE.md](LICENSE.md). Product/engineering handoff facts are in [product-handoff.md](docs/product-handoff.md), without private roadmap or planning commitments.
+Never publish raw Login Enterprise Engine logs. See [security](SECURITY.md), [troubleshooting](docs/troubleshooting.md), and [known limitations](docs/known-limitations.md). License selection is pending; public visibility does not grant open-source reuse rights. See [LICENSE.md](LICENSE.md).

@@ -10,7 +10,7 @@ The authoritative repository validation entry point is:
 
 It runs whitespace/integrity checks, both preserved-reference verifiers, the public-safety scan, DLL and workload source contracts, restore/build, and all unit/pure-logic/source-contract tests. `-Fast` runs repository integrity and static checks without restore/build/unit execution; it is useful during editing but does not replace the full publication gate.
 
-`Test-WorkloadContracts.ps1` validates the generic, Office Preview, and Knowledge Worker workload invariants and mapping manifest. `Test-DllContract.ps1` enforces the reusable DLL target/dependency/checksum boundary. `Test-Documentation.ps1` verifies local Markdown links and the core agentic-adaptation skill contract. These are static checks, not Login Enterprise runtime tests.
+`Test-WorkloadContracts.ps1` validates the generic, Office Preview, and Knowledge Worker workload invariants and mapping manifest. `Test-DllContract.ps1` enforces the reusable DLL target/dependency/checksum boundary. `Test-Documentation.ps1` verifies local Markdown links, critical setup files, README customer paths, quickstart result fields, the copy/paste agent prompt, supporting skill files, and the current evidence-status contract. These are static checks, not Login Enterprise runtime tests.
 
 ## New-TestLabBundle.ps1
 

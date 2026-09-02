@@ -1,6 +1,6 @@
 # Publication readiness review
 
-Review date: August 19, 2026.
+Review date: September 1, 2026.
 
 ## Current tracked tree
 
@@ -23,4 +23,4 @@ License selection remains pending owner/organization approval. Making the reposi
 
 ## Runtime status
 
-The generic framework retains its recorded Login Enterprise 6.8.6 runtime-proven status. Office Preview Word/Excel/PowerPoint, corrected Edge, and New Outlook launch/find/place have one-machine 6.8.6 runtime evidence; Classic Outlook and New Outlook interaction automation remain pending. Knowledge Worker adaptations remain generated/build-tested/static-validated with partner-lab runtime validation pending.
+The generic framework retains its recorded Login Enterprise 6.8.6 runtime-proven status. Office Preview Word/Excel/PowerPoint, corrected Edge, and New Outlook launch/find/place have local runtime evidence. The representative external-partner two-monitor Knowledge Worker Application Test passed 7/7, including adapted Classic Outlook and Edge Start/Run, and three-monitor Office placement demonstrated indices `0,1,2`. Multi-loop resilience and broader compatibility remain pending. [Evidence status](evidence-status.md) is the authoritative detailed record.

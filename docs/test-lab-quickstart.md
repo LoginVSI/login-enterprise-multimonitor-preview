@@ -1,46 +1,86 @@
 # Test-lab quickstart
 
-The generic framework is runtime-proven in the recorded Login Enterprise 6.8.6 Desktop Connector environment. Office Word, Excel, PowerPoint, corrected Edge, and New Outlook launch/find/place passed on one local 6.8.6 machine. Classic Outlook, New Outlook interaction automation, and the Knowledge Worker adaptations still require runtime validation as described in [testing](testing.md).
+This is the shortest from-zero path for an unsupported customer evaluation. It assumes a standard-user Windows interactive session where two or more displays are visible to the Login Enterprise session. Application installation, licensing, profile readiness, first-run setup, and test content remain your responsibility.
 
-## 1. Get and verify the files
+The proven baseline and partner results are bounded. Read [evidence status](evidence-status.md) before interpreting a pass or failure.
 
-Download or clone:
+## 1. Get and verify the Preview
 
-- [`dist/LoginVSI.MultiMonitor.dll`](../dist/LoginVSI.MultiMonitor.dll) and [`SHA256SUMS.txt`](../dist/SHA256SUMS.txt);
-- [`00-Prepare-MultiMonitor.cs`](../workloads/dll-backed/00-Prepare-MultiMonitor.cs);
-- the [Office examples](../workloads/office-preview/) or [Knowledge Worker adaptations](../workloads/knowledge-worker-multimonitor/).
-
-Verify the DLL:
+Clone or download the repository. The required binary is [`dist/LoginVSI.MultiMonitor.dll`](../dist/LoginVSI.MultiMonitor.dll). SHA verification is optional but recommended:
 
 ```powershell
-(Get-FileHash .\LoginVSI.MultiMonitor.dll -Algorithm SHA256).Hash.ToLowerInvariant()
-Get-Content .\SHA256SUMS.txt
+(Get-FileHash .\dist\LoginVSI.MultiMonitor.dll -Algorithm SHA256).Hash.ToLowerInvariant()
+Get-Content .\dist\SHA256SUMS.txt
 ```
 
-The hashes must match. Optional: `.\scripts\New-TestLabBundle.ps1 -Zip` creates an ignored convenience bundle under `artifacts/`.
+The values must match. `.\scripts\New-TestLabBundle.ps1 -Zip` can create an ignored convenience bundle under `artifacts/`.
 
-## 2. Upload and stage
+## 2. Upload and stage the DLL
 
-Upload the DLL to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`. Run Prepare before consumers. It stages `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll`; missing copies stage automatically, existing copies retain by default, and `ForceRefreshMultiMonitorDll=true` performs the proven remove/copy/verify refresh. Return the toggle to `false` after deliberate refresh.
+Upload the DLL to:
 
-For Script Editor development, use its local engine ScriptContent directory and disposable workload copies; no installation-specific path is a product requirement.
+```text
+/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll
+```
 
-## 3. Configure the session and scenario
+This is the existing Login Enterprise ScriptContent surface, not a new product distribution mechanism.
 
-Use an Application Test with a normal Connector/test-lab interactive desktop that exposes the intended monitor topology. Console / NoRemote is the proven generic baseline, not proof of other protocols.
+Import and run [`00-Prepare-MultiMonitor.cs`](../workloads/dll-backed/00-Prepare-MultiMonitor.cs). It copies the ScriptContent DLL to:
 
-Office order: Prepare, Reset, Word, Excel, PowerPoint, choose either Classic Outlook or New Outlook if desired, then Edge. Do not run both Outlook flavors in the standard sequence. Close pre-existing durable windows where the selected workload requires it. With one Outlook flavor included, the examples expect `0,1,0,1,0` on two monitors and `0,1,2,0,1` on three.
+```text
+%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll
+```
 
-To confirm the committed New Outlook integration in isolation, use a clean configured New Outlook session, run Prepare if the staged DLL is not current, run Reset, then run only `41-Place-Microsoft-Outlook-New.cs`. Expect `TARGET:olk` to launch, one usable `MainWindow`, one verified placement at index `0`, and `StateAdvanced=True`. The repository workload deliberately does not call `STOP()`; use scenario lifecycle cleanup after inspecting the result. This test does not validate New Outlook mail/calendar interactions. Classic Outlook remains a separate test on a machine where it is installed and configured.
+A missing file stages automatically. An existing file is retained while `ForceRefreshMultiMonitorDll=false`. To replace it deliberately, upload the new appliance copy, set the Prepare toggle to `true`, run Prepare once, confirm remove/copy/verify success, then return the toggle to `false`. Consumer workloads only verify and load the staged DLL.
 
-Knowledge Worker: add Prepare, then use adapted files in the immutable scenario order with original enabled/`Run once`/`Leave application running` intent. Classic Outlook, Edge Start, Excel, PowerPoint, and Word allocate; Edge Run maintains without allocation; preparation/Close are neutral. The representative Outlook adaptation is not a New Outlook workload.
+## 3. Initialize state only when intended
 
-Application Test defaults `Leave application running` off. Turn it on for a Start/Open workload that must hand an app to Run/Close, then explicitly close it later. Continuous/Load Tests also expose `Run once`; preserve the original one-time intent. Never use incidental process linger as persistence.
+Placement state is `%TEMP%\LoginPI\MultiMonitor\state.txt`. Run [`01-Reset-Placement-State.cs`](../workloads/office-preview/01-Reset-Placement-State.cs) for a fresh Office demonstration. Do not reset between Start and Run, between applications in one round-robin sequence, or on every Continuous/Load loop.
 
-## 4. Inspect results
+## 4. Choose a workload set
 
-Confirm the intended durable base window, target/verified monitor, `StateAdvanced`, final state, application events/results, and cleanup. Secondary/transient windows must not allocate. Capture environment dimensions listed in [troubleshooting](troubleshooting.md).
+For the smallest evaluation, import the [Office Preview workloads](../workloads/office-preview/README.md) in this order:
 
-Keep raw Engine logs only under ignored `artifacts/` and never publish them. Use a reviewed, minimized excerpt through an approved private channel.
+1. Prepare
+2. Reset
+3. Word
+4. Excel
+5. PowerPoint
+6. optionally one Outlook flavor
+7. Edge
 
-Passing build, static contracts, or GitHub Actions does not change runtime status. Record partner-lab evidence per workload before marking it proven.
+Do not run both Classic Outlook and New Outlook in the standard sequence. Close ambiguous pre-existing durable windows first. The simple Classic Outlook example assumes an installed, clean, configured profile. It does not perform the PRF/PST/profile bootstrap found in the representative Knowledge Worker workload.
+
+For the representative flow, add Prepare and import the [Knowledge Worker adaptations](../workloads/knowledge-worker-multimonitor/README.md) in the immutable [`workload-sequence.txt`](../reference/test-scenario/workload-sequence.txt) order, preserving its enabled, `Run once`, and `Leave application running` intent. Classic Outlook, Edge Start, Excel, PowerPoint, and Word allocate. Edge Run performs non-allocating maintenance. Preparation and Close are state-neutral.
+
+## 5. Configure lifecycle settings
+
+In an Application Test, a Start/Open workload that hands an application to a later Run or Close needs `Leave application running: ON`. Prepare and Close do not. Application Test defaults may be off, so check them explicitly.
+
+Continuous Tests and Load Tests also expose `Run once`. Preserve deliberate one-time preparation, startup, and cleanup behavior. Do not use incidental process linger as the application-persistence contract.
+
+## 6. Run and inspect results
+
+For every allocation, confirm the intended durable/base window and inspect:
+
+- `MonitorCount`
+- `Target`
+- `Verified`
+- `StateAdvanced`
+- `Message`
+
+Starting from fresh state, five allocating applications should use `0,1,0,1,0` on two monitors and `0,1,2,0,1` on three. `Verified` should equal `Target`. A successful `PlaceNext` should report `StateAdvanced=True`; `PlaceLastUsed` or `PlaceOnMonitor` maintenance should report `False`. Secondary windows must not consume another index.
+
+Keep placement outside application-response, EUX, and performance timers wherever practical. Passing build/static checks or GitHub Actions does not prove this runtime behavior.
+
+## 7. Common failures
+
+- **First-run, profile, sign-in, or activation UI:** prepare the application lifecycle before judging placement. The helper does not create profiles or dismiss arbitrary setup dialogs.
+- **Ambiguous pre-existing windows:** close them or adapt the workload to identify ownership safely. Do not move an unrelated window.
+- **Transient launch process:** the spawned PID may hand the durable UI to another process. Resolve the real `MainWindow` or stable class/process combination.
+- **Self-repositioning application:** place once after the durable window exists, then use non-allocating maintenance after known restore/maximize/focus changes.
+- **Wrong scenario lifecycle:** verify `Leave application running`, `Run once`, Start/Run/Close order, and explicit cleanup.
+- **Stale staged DLL:** use the Prepare force-refresh procedure, then return its toggle to `false`.
+- **Missing demo media:** the representative Edge video is optional content. Point the workload to an already staged file or copy it to `%TEMP%\LoginPI\MultiMonitor\Big Buck Bunny Demo.mp4`.
+
+See [troubleshooting](troubleshooting.md) for environment capture and deeper diagnosis. Use [manual adaptation](adapt-your-own-workload.md) or the [AI-assisted adaptation guide](agentic-workload-adaptation.md) for your own workload. Keep raw Engine logs under ignored `artifacts/` and never publish them.
