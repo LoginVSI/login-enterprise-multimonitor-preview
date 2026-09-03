@@ -4,7 +4,9 @@ Login Enterprise workloads often keep durable application windows on one display
 
 The Preview discovers monitors, selects the next target, moves and optionally maximizes the durable/base application window, verifies the destination, and advances file-backed state only after success. The workload still owns application launch, profile readiness, correct window identification, business interactions, timers, and cleanup.
 
-> **Preview status:** This is not generally available or officially supported. It carries no support, compatibility, roadmap, release, or productization commitment. Use it in a controlled test environment and review the recorded evidence before relying on it.
+> **Preview expectations:** This unsupported engineering Preview is intended for evaluation and feedback. Workloads generated or adapted with the included guidance or AI skill still need review and validation in your own Login Enterprise environment. Application and window behavior, profiles, first-run state, display topology, and other environment-specific factors can affect results. Static validation is useful, but it does not make an AI-assisted adaptation automatically correct or supported.
+>
+> During the Preview, please share issues, unexpected behavior, and feedback with the Login VSI product team in the [Login VSI Customer Slack](https://join.slack.com/t/lvsi-customers/shared_invite/zt-3acoc4xmq-NcLJT33APZwrZrcppl8YQw) so the approach can be improved. There is currently no committed date for this capability to become a supported native Login Enterprise feature.
 
 It is useful when a multi-display Login Enterprise session should exercise Word, Excel, PowerPoint, Outlook, Edge, or another compatible application on more than the primary display. It does not configure Windows displays, create application profiles, automate first-run setup, guarantee every application/version/session combination, or provide a supported DLL distribution channel.
 

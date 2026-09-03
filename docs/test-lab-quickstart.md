@@ -23,6 +23,8 @@ Upload the DLL to:
 /loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll
 ```
 
+Connect to the Login Enterprise appliance over SFTP using its local admin account. Use any suitable SFTP client, such as WinSCP.
+
 This is the existing Login Enterprise ScriptContent surface, not a new product distribution mechanism.
 
 Import and run [`00-Prepare-MultiMonitor.cs`](../workloads/dll-backed/00-Prepare-MultiMonitor.cs). It copies the ScriptContent DLL to:

@@ -2,6 +2,8 @@
 
 Codex, Claude Code, or another capable coding agent can adapt a Login Enterprise C# workload when it has the complete source, this repository, and clear lifecycle constraints. Human review is still required for application ownership, Login Enterprise syntax, timer placement, scenario settings, content changes, and runtime proof. For an Outlook source, the agent must first classify it as Classic Outlook or New Outlook. Merely changing `TARGET` or an executable is not a valid conversion; changing Outlook flavors is a substantive adaptation.
 
+An agent can accelerate adaptation, but its output is not automatically correct or supported. Review the generated workload and validate it in the intended Login Enterprise scenario before relying on it.
+
 When the tool supports repository skills, [`skills/login-enterprise-multimonitor/SKILL.md`](../skills/login-enterprise-multimonitor/SKILL.md) is the authoritative reusable workflow. It routes the agent to focused implementation, validation, and product-context guidance rather than duplicating a large instruction set in one file.
 
 ## Copy/paste prompt for a coding agent
