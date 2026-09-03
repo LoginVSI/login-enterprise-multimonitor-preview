@@ -33,7 +33,7 @@ These are bounded results, not broad compatibility claims. [Evidence status](doc
 The reflection-friendly API exposes `PlaceNext`, `PlaceLastUsed`, `PlaceOnMonitor`, and `ResetState`.
 
 - A Start/open workload calls `PlaceNext` once after it identifies the long-lived durable/base window.
-- A later Run workload may call `PlaceLastUsed` or `PlaceOnMonitor` to maintain that same target without allocating again.
+- A later Run workload may call `PlaceLastUsed` or `PlaceOnMonitor` to maintain that same target without allocating again. `PlaceLastUsed` reapplies the single global `LastUsedIndex`, so it equals the Start target only while no other application has allocated in between.
 - Preparation and Close workloads do not allocate or reset placement state.
 - Splash screens, setup UI, dialogs, Classic Outlook compose/read/reminder windows, popups, child windows, and temporary launchers do not allocate.
 

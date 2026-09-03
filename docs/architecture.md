@@ -37,7 +37,7 @@ The reflection-friendly static API is:
 - `PlaceOnMonitor(..., int targetMonitorIndex, ...)`
 - `PlaceLastUsed(...)`
 
-`PlaceNext` advances round-robin state after verified success. `PlaceOnMonitor` reasserts a known target without advancing. `PlaceLastUsed` supports persistent Start/Run pairs by reading the last verified target without consuming another destination.
+`PlaceNext` advances round-robin state after verified success. `PlaceOnMonitor` reasserts a known target without advancing. `PlaceLastUsed` supports persistent Start/Run pairs by reading the last verified target without consuming another destination. That target is the global `LastUsedIndex`, not a per-application record: it equals the Start allocation only when no other application allocated between Start and Run.
 
 `PlacementResult` reports success, application, monitor count, initial/target/verified indices, elapsed milliseconds, state advancement, Win32 error code, and a message.
 

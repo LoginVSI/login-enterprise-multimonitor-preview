@@ -7,7 +7,7 @@ Dependency-free application-neutral Multi-Monitor Preview library targeting `net
 - `MultiMonitorPlacer.ResetState(stateFilePath)`
 - `MultiMonitorPlacer.PlaceNext(windowHandle, applicationName, stateFilePath, maximize, stabilizationDelayMilliseconds)`
 - `MultiMonitorPlacer.PlaceOnMonitor(...)` for maintenance placement without state advancement.
-- `MultiMonitorPlacer.PlaceLastUsed(...)` for persistent Start/Run pairs.
+- `MultiMonitorPlacer.PlaceLastUsed(...)` for persistent Start/Run pairs; it reapplies the global `LastUsedIndex`, which is the caller's own Start target only when no other allocation occurred in between.
 - `RoundRobinLogic`, `StateFileStore`, `MonitorDescriptor`, `PlacementState`, and `PlacementResult` expose testable logic and reflection-friendly data.
 
 `PlaceNext` rediscovers displays, orders the primary first then secondaries by signed X/Y with deterministic tie-breakers, repairs state, selects the next index, restores and moves the current HWND, optionally maximizes it, verifies with `MonitorFromWindow`, reports elapsed time, and advances state only after verification.

@@ -10,6 +10,8 @@ The authoritative repository validation entry point is:
 
 It runs whitespace/integrity checks, both preserved-reference verifiers, the public-safety scan, DLL and workload source contracts, restore/build, and all unit/pure-logic/source-contract tests. `-Fast` runs repository integrity and static checks without restore/build/unit execution; it is useful during editing but does not replace the full publication gate.
 
+The full run rebuilds `dist/` through `build.ps1`. The DLL embeds its build path, so a build from another checkout path or SDK produces a different checksum; the script warns when `dist/` no longer matches the committed files. Restore it with `git checkout -- dist` unless you intend to publish a rebuilt DLL and checksum together.
+
 `Test-WorkloadContracts.ps1` validates the generic, Office Preview, and Knowledge Worker workload invariants and mapping manifest. `Test-DllContract.ps1` enforces the reusable DLL target/dependency/checksum boundary. `Test-Documentation.ps1` verifies local Markdown links, critical setup files, README customer paths, quickstart result fields, the copy/paste agent prompt, supporting skill files, and the current evidence-status contract. These are static checks, not Login Enterprise runtime tests.
 
 ## New-TestLabBundle.ps1

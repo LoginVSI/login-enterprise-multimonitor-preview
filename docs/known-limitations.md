@@ -13,6 +13,7 @@ This is an unsupported, use-at-your-own-risk engineering Preview with no GA, sup
 - A two-monitor one-user Load Test initially followed the expected pattern, but monitored multi-loop resilience is still in progress. An observed EUX reporting interruption has no established causal link to placement.
 - A raw launch PID may not own modern durable UI. Existing instances, process reuse, delayed windows, and later app repositioning remain integration risks.
 - Maintenance requires a valid prior allocation. Missing/malformed state may be repaired without advancing; monitor-count change loses the prior target and maintenance fails safely.
+- `PlaceLastUsed` reapplies the global `LastUsedIndex`, not a per-application allocation. If another application allocates between a Start and its Run, Run follows that most recent allocation. In the representative Knowledge Worker sequence this happens from the second Continuous/Load loop onward, because Edge Start is `Run once` while Classic Outlook allocates every loop: on two monitors the indices coincide, on three or more monitors Edge Run moves Edge onto the monitor Outlook just received.
 - State serializes through a five-second local file lock. Lock behavior is unit-tested; real concurrent platform workloads and non-local filesystems remain runtime pending.
 - State tracks monitor count/index, not display identity; same-count topology changes are not represented.
 - Placement restore/move/maximize/verification and maintenance add measurable overhead and may affect focus/cadence.

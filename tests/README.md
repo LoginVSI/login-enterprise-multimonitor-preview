@@ -1,6 +1,6 @@
 # Tests
 
-`LoginVSI.MultiMonitor.Tests/` is a dependency-free `net8.0` console harness. Its 21 tests cover round-robin sequences for one through four displays, synthetic primary-first ordering, negative coordinates, valid/invalid/missing state, repair persistence, monitor-count changes, serialization, round trips, replacement writes, the safe zero-HWND failure result, canonical workload source contracts, and the compiled reusable-DLL framework/dependency contract.
+`LoginVSI.MultiMonitor.Tests/` is a dependency-free `net8.0` console harness. Its 30 tests cover round-robin sequences for one through four displays, synthetic primary-first ordering, negative coordinates, valid/invalid/missing state, repair persistence, monitor-count changes, serialization, round trips, replacement writes, the safe zero-HWND failure result, canonical workload source contracts, and the compiled reusable-DLL framework/dependency contract.
 
 Run through `build.ps1` or, from the repository root, run:
 

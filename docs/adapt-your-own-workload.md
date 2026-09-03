@@ -148,7 +148,7 @@ Treat this as a minimal pattern, not a drop-in replacement for application-speci
 
 A secondary window should not allocate unless it is intentionally the independently exercised durable application surface. Most dialogs and transient windows should stay under application and Windows placement control.
 
-For a Start/Run pair, keep the monitor index returned by Start only within the same workload if useful. Across independent files, reacquire the durable window and use `PlaceLastUsed`; never persist an HWND or monitor handle. Reassert after a known application restore, maximize, focus, or replacement behavior only when runtime evidence justifies it.
+For a Start/Run pair, keep the monitor index returned by Start only within the same workload if useful. Across independent files, reacquire the durable window and use `PlaceLastUsed`; never persist an HWND or monitor handle. `PlaceLastUsed` reapplies the global `LastUsedIndex`, so it matches the Start target only when no other application allocated in between; otherwise the Run workload needs its own record of the Start index for `PlaceOnMonitor`. Reassert after a known application restore, maximize, focus, or replacement behavior only when runtime evidence justifies it.
 
 ## 6. Scenario lifecycle
 

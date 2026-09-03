@@ -15,7 +15,7 @@ Upload/stage the Preview DLL with [`00-Prepare-MultiMonitor.cs`](../dll-backed/0
 | Office preparation | Neutral; no state or placement |
 | Microsoft Outlook (Classic) | Allocates its original durable Inbox Explorer once; compose/read/reminder windows do not allocate |
 | Edge Start | Distinguishes a newly opened durable Edge window and allocates once |
-| Edge Run | `PlaceLastUsed`/`PlaceOnMonitor` maintenance only; never allocates |
+| Edge Run | `PlaceLastUsed`/`PlaceOnMonitor` maintenance only; never allocates. `PlaceLastUsed` follows the global last allocation, so from the second loop onward (Edge Start is `Run once`, Outlook allocates every loop) Edge Run tracks Outlook's monitor; the indices coincide on two monitors but not on three or more |
 | Excel, PowerPoint, Word | Allocate the durable document window once after the original open timer; later maximize/reposition points reassert without allocation |
 | Excel, PowerPoint, Word Close | Neutral cleanup; no state or placement |
 

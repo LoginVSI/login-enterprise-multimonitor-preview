@@ -5,13 +5,29 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 
 # Keep this list short and high-confidence. Add narrowly scoped patterns with a clear public-safety reason.
-$identityTerms = @(
-    ('NVI' + 'DIA'),
-    ('Perf' + 'Labs'),
-    ('Poo' + 'rna')
-)
+# Restricted identity terms are matched as whole words by the SHA-256 of their lowercase form, so this
+# public script does not carry the names it screens for. To add one, hash the lowercase term and record
+# the hash with the term length.
+$restrictedTermHashes = @{
+    '8d4321d936320802386311d254c4af52951abb880b47fb077edf3d89c150b289' = 6
+    '65ce5d19b20696b1e744bd629bd5f59debb28f4f18b69c2a06cba0f200a84af0' = 8
+    '5a8d31f7ddd32b1f7e5c3e711571af3ad120b9359bca2d41751db8e69075a7aa' = 6
+}
+$restrictedTermLengths = @($restrictedTermHashes.Values | Sort-Object -Unique)
+$sha256 = [System.Security.Cryptography.SHA256]::Create()
+
+function Test-RestrictedTerm {
+    param([string]$Line)
+    foreach ($token in [regex]::Matches($Line, '\w+')) {
+        if ($restrictedTermLengths -notcontains $token.Length) { continue }
+        $hash = ($sha256.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($token.Value.ToLowerInvariant())) | ForEach-Object { $_.ToString('x2') }) -join ''
+        if ($restrictedTermHashes.ContainsKey($hash)) { return $true }
+    }
+
+    return $false
+}
+
 $rules = @(
-    @{ Name = 'Restricted identity term'; Pattern = '(?i)\b(' + (($identityTerms | ForEach-Object { [regex]::Escape($_) }) -join '|') + ')\b' },
     @{ Name = 'Machine-specific user profile path'; Pattern = '(?i)\bC:\\Users\\[^\\\s"'']+' },
     @{ Name = 'Credential-like assignment'; Pattern = '(?i)\b(api[_-]?key|access[_-]?token|client[_-]?secret|password)\s*[:=]\s*["''][^"'']{8,}["'']' },
     @{ Name = 'GitHub token-like value'; Pattern = '\bgh[pousr]_[A-Za-z0-9]{20,}\b' },
@@ -54,6 +70,14 @@ foreach ($relativePath in @($gitOutput | Sort-Object -Unique)) {
     $lineNumber = 0
     foreach ($line in (Get-Content -LiteralPath $fullPath)) {
         $lineNumber++
+        if (Test-RestrictedTerm $line) {
+            $findings.Add([pscustomobject]@{
+                Rule = 'Restricted identity term'
+                Path = $normalized
+                Line = $lineNumber
+            })
+        }
+
         foreach ($rule in $rules) {
             if ($line -match $rule.Pattern) {
                 $findings.Add([pscustomobject]@{

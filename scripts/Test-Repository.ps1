@@ -48,6 +48,14 @@ try {
         Invoke-RepositoryScript -Path (Join-Path $repoRoot 'build.ps1')
         Write-Host '=== Post-build distributable contract ==='
         & (Join-Path $PSScriptRoot 'Test-DllContract.ps1')
+
+        # build.ps1 always rewrites dist/. The DLL embeds its build path, so a build from another
+        # checkout path or SDK legitimately differs from the committed distributable; surface that
+        # instead of leaving a silently modified binary in the working tree.
+        $distributionDrift = @(git -C $repoRoot status --porcelain -- dist)
+        if ($distributionDrift.Count -gt 0) {
+            Write-Warning 'build.ps1 rewrote dist/ and it no longer matches the committed distributable. Run "git checkout -- dist" unless you intend to publish the rebuilt DLL and checksum together.'
+        }
     }
 
     Write-Host 'Repository validation completed successfully.' -ForegroundColor Green

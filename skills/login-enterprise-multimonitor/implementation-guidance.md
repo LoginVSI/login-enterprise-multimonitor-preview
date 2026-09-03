@@ -42,7 +42,7 @@ The dependency-free `netstandard2.0` assembly exposes reflection-friendly static
 
 - `ResetState(string stateFilePath)` initializes state deliberately.
 - `PlaceNext(IntPtr, string, string, bool, int)` allocates, places, verifies, then advances.
-- `PlaceLastUsed(IntPtr, string, string, bool, int)` reapplies the persisted target without advancing.
+- `PlaceLastUsed(IntPtr, string, string, bool, int)` reapplies the persisted global `LastUsedIndex` without advancing; it is not a per-application record.
 - `PlaceOnMonitor(IntPtr, string, string, int, bool, int)` reapplies a specified target without advancing.
 
 `PlacementResult` exposes success, application, monitor count, initial/target/verified indices, state advancement, elapsed milliseconds, Win32 error, and message. Callers must inspect `Success`; reflection invocation success alone does not prove placement.
