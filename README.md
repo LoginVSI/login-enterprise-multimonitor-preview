@@ -18,7 +18,7 @@ It is useful when a multi-display Login Enterprise session should exercise Word,
 - **AI-assisted adaptation:** [copy/paste agent prompt and guide](docs/agentic-workload-adaptation.md)
 - **Implementation and architecture:** [architecture](docs/architecture.md)
 - **Testing and current evidence:** [evidence status](docs/evidence-status.md) and [validation method](docs/testing.md)
-- **Examples:** [Office Preview](workloads/office-preview/README.md) and [representative Knowledge Worker adaptations](workloads/knowledge-worker-multimonitor/README.md)
+- **Examples:** [Script Editor visual demo](workloads/script-editor-visual-demo/README.md), [Office Preview](workloads/office-preview/README.md), and [representative Knowledge Worker adaptations](workloads/knowledge-worker-multimonitor/README.md)
 
 ## Runtime evidence at a glance
 
