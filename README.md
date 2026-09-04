@@ -56,4 +56,3 @@ The Preview uses existing Login Enterprise ScriptContent. Upload the DLL to `/lo
 Use `-Fast` while editing. The full command restores, builds, runs unit and source-contract tests, verifies protected evidence, checks documentation links and public safety, and validates the committed DLL checksum. Automated success does not establish Login Enterprise runtime proof.
 
 Never publish raw Login Enterprise Engine logs. See [security](SECURITY.md), [troubleshooting](docs/troubleshooting.md), and [known limitations](docs/known-limitations.md). License selection is pending; public visibility does not grant open-source reuse rights. See [LICENSE.md](LICENSE.md).
-
