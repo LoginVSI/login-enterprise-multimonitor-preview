@@ -75,6 +75,8 @@ public class MyWordWorkload : ScriptBase
         // Allocate once, after the durable base window exists and after the timer.
         PlaceAndRequireSuccess("PlaceNext", word, "Microsoft Word", null);
 
+        // The next interaction expects Word in the foreground.
+        word.Focus();
         word.TypeText("Existing business interaction");
         STOP();
     }
@@ -134,6 +136,10 @@ public class MyWordWorkload : ScriptBase
 ```
 
 Treat this as a minimal pattern, not a drop-in replacement for application-specific window discovery. Current repository workloads contain compiler-checked reflection examples and more defensive application ownership handling.
+
+Placement determines where the application window is located. Focus determines which application the workload is actively using. After successful placement, the workload may call `<window>.Focus()` on the already-resolved durable/main `IWindow` when the next action expects that application in the foreground or when foreground visibility is intentionally required. Prefer Login Enterprise `IWindow.Focus()` over custom Win32 foreground-management code.
+
+Focus is workload behavior, not part of placement success or the DLL's responsibility. It is not required after every placement, and focus failure or absence must not be reported as monitor placement failure. Preserve the original workload's focus, application lifecycle, and interaction semantics. Transient dialogs, splash screens, popups, and unrelated child windows must not consume placement allocations.
 
 ## 5. Choose allocation or maintenance
 

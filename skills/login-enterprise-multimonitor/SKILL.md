@@ -29,6 +29,7 @@ Status: **PREVIEW / PARTIALLY RUNTIME-VALIDATED**. Local Login Enterprise 6.8.6 
 
 ## Guardrails
 
+- Placement determines where the application window is located. Focus determines which application the workload is actively using. After successful placement, use Login Enterprise `IWindow.Focus()` on the already-resolved durable/main window when the next interaction needs it foreground or foreground visibility is intentional. Prefer this over custom Win32 foreground-management code. Focus is optional workload behavior, not a DLL responsibility or part of placement success; do not add it after every placement or classify focus failure/absence as placement failure. Preserve the original focus, lifecycle, and interaction semantics.
 - Keep launch, correct-window discovery, application sequencing, and timing in the workload; keep monitor discovery, ordering, state, placement, verification, and results in reusable code.
 - Never persist HWND or monitor handles, change the configured Windows primary monitor, add third-party runtime dependencies, or require administrator rights.
 - Never describe a meaningful public-safety substitution as exact content preservation; keep the preserved original immutable and disclose reduced fidelity.

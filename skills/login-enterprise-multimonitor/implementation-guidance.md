@@ -8,6 +8,8 @@ Use documented Login Enterprise operations for launch, `FindWindow`/`FindWindows
 
 The workload owns launch, durable/base `IWindow` discovery, application behavior, insertion point, and measurement boundaries. `LoginVSI.MultiMonitor.dll` owns monitor/state/placement mechanics and has no LoginPI.Engine reference.
 
+Placement determines where the application window is located. Focus determines which application the workload is actively using. After successful placement, the workload may call `<window>.Focus()` on the already-resolved durable/main `IWindow` when the next interaction requires foreground focus or foreground visibility is intentional. Prefer Login Enterprise `IWindow.Focus()` over custom Win32 foreground-management code. Preserve existing focus, lifecycle, and interaction semantics. Focus is not required after every placement, belongs outside the DLL, and is not part of placement success; focus failure or absence must not be classified as monitor placement failure.
+
 ## Durable/base-window contract and readiness
 
 Only the durable/base UI consumes a round-robin destination. Never call allocating placement for a splash, first-run/setup dialog, open/save dialog, Outlook compose/read/reminder window, popup, child/secondary interaction window, or temporary launcher. Leave secondary placement to the application and Windows unless a separate evidence-backed requirement says otherwise.

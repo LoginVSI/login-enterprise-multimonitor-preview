@@ -88,6 +88,14 @@ Implementation requirements:
    reflection API. Do not invent a different placement or distribution implementation.
 4. PlaceNext exactly once in Start/Open, and only after the durable/base window is
    known. Treat verified success as consuming the allocation.
+   Placement determines where the application window is located. Focus determines
+   which application the workload is actively using. After successful placement,
+   use IWindow.Focus() on that already-resolved durable/main window when the next
+   interaction requires it in the foreground or foreground visibility is intentional.
+   Prefer this Login Enterprise method over custom Win32 foreground-management code.
+   Focus is optional workload behavior, not a DLL responsibility or a condition of
+   placement success. Do not treat focus failure/absence as placement failure or add
+   focus after every placement. Preserve original focus/lifecycle/interaction semantics.
 5. Keep splash screens, first-run/setup UI, dialogs, popups, compose/read/reminder
    windows, child windows, and other secondary/transient windows non-allocating.
 6. For Run or later maintenance, reacquire the durable/base window and use

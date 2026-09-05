@@ -27,6 +27,7 @@ public class OfficeMultiMonitorVisualDemo : ScriptBase
         IWindow word = LaunchOfficeApplication(
             "winword.exe", "Win32 Window:OpusApp", "WINWORD", "Microsoft Word");
         PlaceNext(placement, word, "Microsoft Word", statePath);
+        word.Focus();
         Wait(BetweenApplicationsSeconds);
 
         // Edge owns this workload's TARGET so it can retain the proven
@@ -42,16 +43,19 @@ public class OfficeMultiMonitorVisualDemo : ScriptBase
         }
 
         PlaceNext(placement, edge, "Microsoft Edge", statePath);
+        edge.Focus();
         Wait(BetweenApplicationsSeconds);
 
         IWindow excel = LaunchOfficeApplication(
             "excel.exe", "*XLMAIN*", "EXCEL", "Microsoft Excel");
         PlaceNext(placement, excel, "Microsoft Excel", statePath);
+        excel.Focus();
         Wait(BetweenApplicationsSeconds);
 
         IWindow powerPoint = LaunchOfficeApplication(
             "powerpnt.exe", "*PPTFrameClass*", "POWERPNT", "Microsoft PowerPoint");
         PlaceNext(placement, powerPoint, "Microsoft PowerPoint", statePath);
+        powerPoint.Focus();
 
         Log("All demo applications are open. Holding the layout for recording.");
         Wait(FinalHoldSeconds);

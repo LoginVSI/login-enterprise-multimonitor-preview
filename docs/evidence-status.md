@@ -2,7 +2,7 @@
 
 This page is the source of truth for Multi-Monitor Preview validation claims. Other pages should summarize and link here instead of maintaining separate detailed status tables.
 
-Last reconciled: September 1, 2026.
+Last reconciled: September 4, 2026.
 
 The repository is an unsupported engineering Preview. A result applies only to the named environment and flow. Static validation does not establish Login Enterprise runtime behavior, and one successful application or topology does not establish broad compatibility.
 
@@ -13,6 +13,7 @@ The repository is an unsupported engineering Preview. A result applies only to t
 | Repository build, unit tests, contracts, protected hashes, public safety, DLL contract | Build/static validated | The repository validation command covers these checks. It does not simulate Login Enterprise or a desktop session. |
 | Generic DLL loading and target-local staging | Local runtime proven | Login Enterprise 6.8.6 Script Editor/Standalone Engine and the recorded Desktop Connector Application Test loaded the generic DLL. Missing, retain-existing, and forced-refresh Prepare paths passed. |
 | Monitor discovery, two-monitor placement, and round-robin state | Local runtime proven | Physical placement and state advancement passed, including the generic `Notepad 0`, `Paint 1`, `Edge 0` sequence. |
+| Workload foreground focus after placement | Runtime validated in Script Editor, tester-reported | Calling Login Enterprise `IWindow.Focus()` on the resolved application window after successful placement brought it to the foreground. This validates the focus pattern in the reported Script Editor environment, not the complete updated visual demo or cross-workload behavior. Focus remains optional workload behavior, separate from DLL placement success. |
 | Canonical Prepare -> Open/Place -> Close | Local runtime proven | The recorded Login Enterprise 6.8.6 Desktop Connector Console / NoRemote Application Test passed serial execution, cross-workload state, scenario-controlled application handoff, and bounded cleanup. |
 | Office Preview Word, Excel, PowerPoint | Local runtime proven | Each launch/find/place flow passed on one Login Enterprise 6.8.6 machine. Broader Office, Windows, locale, and session coverage is not implied. |
 | Office Preview Edge | Local runtime proven | The corrected `START(processName: "msedge")` -> `MainWindow` flow passed locally. The earlier transient-PID failure occurred before placement and is application-lifecycle evidence, not a placement-library failure. |
