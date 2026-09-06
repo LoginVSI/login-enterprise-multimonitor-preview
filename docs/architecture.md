@@ -8,9 +8,9 @@ Compatible Login Enterprise workloads commonly interact primarily with the prima
 
 ## API priority and responsibility boundary
 
-Workloads use documented Login Enterprise APIs first: launch through `START` or `ShellExecute`, find the correct `IWindow` through `FindWindow`/`FindWindows`, use `Restore`/`Maximize` where script-contained, log through `Log`, and bridge through `IWindow.NativeWindowHandle`. Ordinary .NET provides reflection, state, timing, collections, and files. Win32 is limited to display enumeration, HWND validation/movement, and monitor verification.
+Workloads use documented Login Enterprise APIs first: launch through `START` or `ShellExecute`, find the correct `IWindow` through `FindWindow`/`FindWindows` where that API is available, use `Restore`/`Maximize` where script-contained, log through `Log`, and bridge through `IWindow.NativeWindowHandle`. Ordinary .NET provides reflection, state, timing, collections, files, and the tested Playwright browser-window correlation fallback. Win32 is limited to display enumeration, HWND validation/movement, and monitor verification.
 
-Application-specific code owns launch, correct durable/base-window identification, sequencing, business actions, timers, and the placement insertion point. `LoginVSI.MultiMonitor` owns discovery, ordering, state, selection, native restore/move/maximize for DLL calls, verification, locking, and structured results. It never changes Windows primary-monitor configuration.
+Application-specific code owns launch, correct durable/base-window identification, sequencing, business actions, timers, and the placement insertion point. This includes framework-specific browser ownership correlation. `LoginVSI.MultiMonitor` owns discovery, ordering, state, selection, native restore/move/maximize for DLL calls, verification, locking, and structured results. It accepts an HWND and remains unaware of whether that window belongs to a desktop application, Playwright browser, or Selenium browser. It never changes Windows primary-monitor configuration.
 
 ## Durable-window allocation contract
 
@@ -25,6 +25,18 @@ Window readiness is application-specific and precedes the helper call:
 5. Treat a blind fixed startup sleep as a fallback, not the primary identification mechanism. Retain `ShellExecute` where application-specific evidence establishes and explicitly handles its process/window lifecycle.
 
 Application readiness delay and placement stabilization delay are separate. The former is an optional, default-zero workload wait after the correct HWND is known. The latter is the existing helper argument used around restore, move, maximize, and verification of that same HWND. There is no mandatory global readiness wait.
+
+## Browser workload boundary
+
+Browser automation and native placement are separate. The source framework starts, interacts with, and stops its browser session. The workload identifies the native top-level window attributable to that session and passes its HWND to the existing placement API. No Playwright, Selenium, browser-launch, browser-detection, or focus logic belongs in the DLL.
+
+Three workload-side paths are recognized:
+
+1. Desktop/WinApp-style `ScriptBase` workloads resolve a durable `IWindow` with Login Enterprise APIs.
+2. Current Playwright Web Recorder workloads retain `WebScriptBase`, async lifecycle calls, browser magic comments, and recorded actions. In the tested 6.8.6 environment, the validated Chrome pattern used standard .NET process inspection because the tested `WebScriptBase` surface did not expose `FindWindows` or `MainWindow`. It snapshots pre-existing top-level HWNDs and accepts one new non-zero `MainWindowHandle` after `await StartBrowser()`.
+3. Legacy Selenium `ScriptBase` workloads retain synchronous `StartBrowser()`/`StopBrowser()` and use Login Enterprise `FindWindows()`/`IWindow` where available. `IWindow.Focus()` may be used when the next action needs foreground interaction.
+
+These paths must not be converted or combined. A browser process name, newest process, or process start time alone is insufficient ownership evidence. Pre-existing windows must be accounted for, and discovery fails safely if no single new native top-level window can be attributed to the workload.
 
 ## Managed library
 

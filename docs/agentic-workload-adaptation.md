@@ -1,6 +1,6 @@
 # AI-assisted workload adaptation
 
-Codex, Claude Code, or another capable coding agent can adapt a Login Enterprise C# workload when it has the complete source, this repository, and clear lifecycle constraints. Human review is still required for application ownership, Login Enterprise syntax, timer placement, scenario settings, content changes, and runtime proof. For an Outlook source, the agent must first classify it as Classic Outlook or New Outlook. Merely changing `TARGET` or an executable is not a valid conversion; changing Outlook flavors is a substantive adaptation.
+Codex, Claude Code, or another capable coding agent can adapt a Login Enterprise C# workload when it has the complete source, this repository, and clear lifecycle constraints. Human review is still required for application ownership, Login Enterprise syntax, timer placement, scenario settings, content changes, and runtime proof. The agent must first classify the workload as desktop/WinApp-style, current Playwright Web Recorder, or legacy Selenium web and preserve that framework. For an Outlook source, it must also classify it as Classic Outlook or New Outlook. Merely changing `TARGET` or an executable is not a valid conversion; changing Outlook flavors is a substantive adaptation.
 
 An agent can accelerate adaptation, but its output is not automatically correct or supported. Review the generated workload and validate it in the intended Login Enterprise scenario before relying on it.
 
@@ -32,6 +32,10 @@ Lifecycle classification for each source:
 
 Application and expected process/window:
 <APPLICATION, TARGET, PROCESS, WINDOW TITLE/CLASS IF KNOWN>
+
+Automation framework and browser magic comments:
+<DESKTOP/WINAPP-LIKE | PLAYWRIGHT WEB | LEGACY SELENIUM WEB>
+<COPY // BROWSER, // URL, AND RELATED EXISTING COMMENTS, OR NOT APPLICABLE>
 
 Source scenario settings and relationships:
 - Run once: <ON/OFF/NOT APPLICABLE>
@@ -70,46 +74,64 @@ Before editing:
    records, and every complete source workload.
 2. Verify protected reference and preserved-evidence hashes before and after the
    implementation pass. Never edit protected originals or proven evidence.
-3. Classify every workload as Prepare, Start/Open, Run, Close, or single-file
-   lifecycle. Trace process handoff, existing-instance ambiguity, application
-   interactions, timer boundaries, scenario order, cleanup, and persistence.
+3. Classify every workload both by lifecycle and as desktop/WinApp-like,
+   Playwright WebScriptBase, or legacy Selenium ScriptBase. Preserve the existing
+   automation framework; never convert or mix Playwright, Selenium, and WinApps.
+   Trace process handoff, existing-instance ambiguity, application interactions,
+   timer boundaries, scenario order, cleanup, and persistence.
 4. Identify the durable/base application window. Do not assume the spawned PID owns
    the durable UI. Document the title/class/process/HWND strategy and any replacement
    or self-repositioning behavior.
 
 Implementation requirements:
 1. Preserve TARGET, the primary script class, launch intent, original interactions,
-   content, and URLs except for explicitly approved substitutions.
+   content, URLs, browser magic comments, and automation framework except for
+   explicitly approved substitutions.
 2. Preserve timer names, timer order, EUX/application-response measurement boundaries,
    cadence, scenario sequencing, Run once, Leave application running, and cleanup
    intent. Keep placement outside measured boundaries wherever practical.
 3. Use the staged DLL at
    %TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll and the current repository
    reflection API. Do not invent a different placement or distribution implementation.
-4. PlaceNext exactly once in Start/Open, and only after the durable/base window is
+4. For Playwright WebScriptBase, preserve async Execute, await StartBrowser(), the
+   existing recorded Playwright actions, and await StopBrowser(). Snapshot existing
+   top-level HWNDs for the configured browser before startup, then use process/window
+   correlation to accept one newly appearing non-zero MainWindowHandle. Do not assume
+   MainWindow or FindWindows exists in WebScriptBase, select the newest process, or
+   invent selectors. Abort when browser-window ownership is absent or ambiguous.
+5. For legacy Selenium ScriptBase, preserve synchronous StartBrowser()/StopBrowser()
+   and existing Selenium actions. Resolve the attributable browser IWindow through
+   supported Login Enterprise FindWindows/window APIs where available. Browser and
+   WebDriver version compatibility stays an environment prerequisite.
+6. PlaceNext exactly once in Start/Open, and only after the durable/base window is
    known. Treat verified success as consuming the allocation.
    Placement determines where the application window is located. Focus determines
-   which application the workload is actively using. After successful placement,
-   use IWindow.Focus() on that already-resolved durable/main window when the next
-   interaction requires it in the foreground or foreground visibility is intentional.
+   which application the workload is actively using. When the framework provides an
+   already-resolved durable/main IWindow, use IWindow.Focus() after placement only
+   when the next interaction requires it in the foreground or foreground visibility
+   is intentional. Do not invent IWindow.Focus() in Playwright WebScriptBase when no
+   IWindow is available.
    Prefer this Login Enterprise method over custom Win32 foreground-management code.
    Focus is optional workload behavior, not a DLL responsibility or a condition of
    placement success. Do not treat focus failure/absence as placement failure or add
    focus after every placement. Preserve original focus/lifecycle/interaction semantics.
-5. Keep splash screens, first-run/setup UI, dialogs, popups, compose/read/reminder
+7. Keep splash screens, first-run/setup UI, dialogs, popups, compose/read/reminder
    windows, child windows, and other secondary/transient windows non-allocating.
-6. For Run or later maintenance, reacquire the durable/base window and use
+8. For Run or later maintenance, reacquire the durable/base window and use
    PlaceLastUsed or PlaceOnMonitor. Never call PlaceNext for maintenance.
-7. Prepare only stages prerequisites. Close performs bounded cleanup and must not
+9. Prepare only stages prerequisites. Close performs bounded cleanup and must not
    allocate, reset, or alter placement state.
-8. Distinguish Classic Outlook from New Outlook before editing. Do not convert one by
+10. Distinguish Classic Outlook from New Outlook before editing. Do not convert one by
    changing only TARGET or the executable. Preserve the matching profile, control,
    window, and interaction lifecycle, or report the unsupported gap.
-9. Handle Edge/Chromium process handoff and existing-window ambiguity explicitly.
-10. Log and evaluate the structured placement result, including Success,
+11. Handle Edge/Chromium process handoff and existing-window ambiguity explicitly.
+    Never move an arbitrary pre-existing browser window. Do not add process-killing
+    cleanup or custom foreground Win32 calls.
+12. Log and evaluate the structured placement result, including Success,
     MonitorCount, TargetMonitorIndex, VerifiedMonitorIndex, StateAdvanced, and Message.
     Fail clearly rather than silently claiming placement.
-11. Create or update a source-to-adaptation mapping/delta record with lifecycle,
+13. Create or update a source-to-adaptation mapping/delta record with framework,
+    browser ownership strategy, lifecycle,
     durable-window method, allocation behavior, content changes, timer impact,
     scenario settings, cleanup, and runtime status.
 

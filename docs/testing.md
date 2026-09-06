@@ -44,6 +44,8 @@ CI deliberately does not fake Login Enterprise end-to-end testing.
 - **Classic Outlook:** verify configured profile/import lifecycle, durable Inbox Explorer, and non-allocating compose/read/reminder windows. Keep it distinct from New Outlook.
 - **New Outlook:** local evidence covers `TARGET:olk` launch/find/place only. Interaction automation needs its own controls and runtime evidence.
 - **Edge/Chromium:** do not assume the spawned PID owns the durable UI. Test zero, one, and multiple existing windows, Start/Run identity, and later self-repositioning.
+- **Playwright Web Recorder:** preserve `WebScriptBase` and async browser ownership. Snapshot existing browser top-level HWNDs before `await StartBrowser()`, require one new non-zero HWND, then verify that recorded Playwright interaction and `await StopBrowser()` still succeed after placement. Test no-window and multiple-new-window failure paths without terminating processes.
+- **Legacy Selenium:** preserve synchronous `StartBrowser()`/`StopBrowser()`, resolve the attributable `IWindow` through Login Enterprise window APIs where available, and verify optional `IWindow.Focus()` independently from placement. Confirm the installed browser and WebDriver are compatible before diagnosing placement.
 - **Word/Excel/PowerPoint:** allocate the durable document window after the source open timer and use non-allocating maintenance after later state changes.
 - **Prepare/Close:** verify they leave allocation state untouched and cleanup remains bounded.
 

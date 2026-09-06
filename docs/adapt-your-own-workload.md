@@ -1,12 +1,22 @@
 # Adapt your own workload manually
 
-This guide is for a technical Login Enterprise user who wants to add Multi-Monitor Preview placement without using an AI coding agent. Keep the source workload unchanged and create the adaptation as a new file under `workloads/`.
+This guide is for a technical Login Enterprise user who wants to add Multi-Monitor Preview placement without using an AI coding agent. Login Enterprise Script Editor supports Desktop Application and Browser Application workload types; current Web Recorder browser workloads use Playwright, while older Selenium web workloads remain available for backward compatibility. Keep the source workload unchanged and create the adaptation as a new file under `workloads/`.
 
 ## 1. Understand the source before editing
 
 Classify each file as Prepare, Start/Open, Run, Close, or a single-file lifecycle. Trace its `TARGET`, launch method, application interactions, URLs/content, timers and EUX measurements, cadence, cleanup, `Run once`, and `Leave application running` intent.
 
 Identify the long-lived durable/base application window. The process returned at launch may be a short-lived bootstrapper, especially for Edge and other Chromium applications. A splash screen, first-run/setup UI, open/save dialog, popup, child window, or Outlook compose/read/reminder window is not the base window.
+
+Classify the automation framework before choosing a window-resolution pattern:
+
+- **Desktop or WinApp-style:** a `ScriptBase` workload normally launches or resolves the durable `IWindow` with supported Login Enterprise window APIs. Pass its `NativeWindowHandle` to the Preview helper. Call `IWindow.Focus()` only when the next foreground interaction needs it.
+- **Playwright Web Recorder:** preserve `WebScriptBase`, async `Execute`, browser magic comments, `await StartBrowser()`, recorded Playwright actions, and `await StopBrowser()`. In the environment validated by this Preview, `WebScriptBase` did not expose the desktop helpers `FindWindows` or `MainWindow`. The proven workload-side pattern snapshots existing top-level browser HWNDs, starts the browser, polls the configured browser processes for a non-zero `MainWindowHandle`, and accepts only one newly appearing handle. This is a tested Preview pattern, not a claim about every Login Enterprise release.
+- **Legacy Selenium:** preserve the synchronous `ScriptBase` browser lifecycle and use Login Enterprise `FindWindows()`/`IWindow` APIs where available to identify the new native browser window after `StartBrowser()`. Selenium remains supported by Login Enterprise for backward compatibility. Browser and matching WebDriver management remain normal Selenium prerequisites, outside this Preview.
+
+Do not convert one framework to another or mix Playwright, Selenium, and WinApp automation in a workload. Login Enterprise documents that mixing Playwright scripts with Selenium or WinApps scripts is unsupported. Current Playwright Web Recorder documentation lists Microsoft Edge and Chrome; do not infer other browser support. See the [Playwright and legacy Selenium examples](../workloads/web-preview/README.md), [Web Recorder overview](https://docs.loginvsi.com/login-enterprise/6.8/web-recorder), and [Playwright function reference](https://docs.loginvsi.com/login-enterprise/6.8/web-recorder-functions-playwright).
+
+Browser automation and window placement remain separate concerns. Playwright or Selenium starts and controls the browser. The adapted workload resolves the browser's native top-level Windows window after startup and passes that HWND to the same helper used for desktop applications. Never choose the newest `chrome.exe` or `msedge.exe` process, move an arbitrary existing browser window, or treat process start time as proof of ownership. Snapshot pre-existing top-level HWNDs and fail safely if no single new window can be attributed to the workload.
 
 For Outlook, determine the flavor first. Classic Outlook and New Outlook use different executable, window, control, and lifecycle models. Classic Outlook uses `outlook.exe`, process `OUTLOOK`, and Classic controls such as `rctrl_renwnd32`. New Outlook uses `olk` and a different UI/lifecycle model. Do not silently substitute one for the other. Remember that launch success does not prove interaction compatibility, and changing only `TARGET` or the executable is not an adaptation.
 

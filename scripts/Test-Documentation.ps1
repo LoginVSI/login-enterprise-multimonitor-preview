@@ -29,6 +29,9 @@ $criticalPaths = @(
     'dist\SHA256SUMS.txt',
     'workloads\dll-backed\00-Prepare-MultiMonitor.cs',
     'workloads\office-preview\01-Reset-Placement-State.cs',
+    'workloads\web-preview\README.md',
+    'workloads\web-preview\10-Place-Playwright-Chrome.cs',
+    'workloads\web-preview\20-Place-Legacy-Selenium-Edge.cs',
     'docs\evidence-status.md',
     'docs\adapt-your-own-workload.md',
     'docs\agentic-workload-adaptation.md',
@@ -47,7 +50,8 @@ foreach ($required in @(
     'docs/test-lab-quickstart.md',
     'docs/adapt-your-own-workload.md',
     'docs/agentic-workload-adaptation.md',
-    'docs/evidence-status.md'
+    'docs/evidence-status.md',
+    'workloads/web-preview/README.md'
 )) {
     if (-not $readme.Contains($required)) { throw "README lacks required customer path: $required" }
 }
@@ -72,6 +76,11 @@ foreach ($required in @(
     if (-not $agentGuide.Contains($required)) { throw "Agentic adaptation prompt lacks required contract: $required" }
 }
 
+foreach ($required in @('PLAYWRIGHT WEB', 'LEGACY SELENIUM WEB', 'Preserve the existing',
+    'await StartBrowser()', 'StartBrowser()/StopBrowser()', 'browser magic comments')) {
+    if (-not $agentGuide.Contains($required)) { throw "Agentic adaptation prompt lacks web framework guidance: $required" }
+}
+
 foreach ($relativePath in @('README.md', 'docs\getting-started.md', 'docs\test-lab-quickstart.md', 'docs\architecture.md', 'skills\login-enterprise-multimonitor\SKILL.md', 'workloads\README.md', 'workloads\knowledge-worker-multimonitor\README.md')) {
     $content = [System.IO.File]::ReadAllText((Join-Path $repoRoot $relativePath))
     if ($content -match 'Knowledge Worker.{0,80}partner-lab (runtime validation )?pending') {
@@ -81,7 +90,7 @@ foreach ($relativePath in @('README.md', 'docs\getting-started.md', 'docs\test-l
 
 $skillPath = Join-Path $repoRoot 'skills\login-enterprise-multimonitor\SKILL.md'
 $skill = [System.IO.File]::ReadAllText($skillPath)
-foreach ($required in @('Classify every supplied file', 'PlaceNext', 'PlaceLastUsed', 'mapping/delta record', 'scripts/Test-Repository.ps1', 'not runtime-proven')) {
+foreach ($required in @('Classify every supplied file', 'Playwright web', 'Legacy Selenium web', 'PlaceNext', 'PlaceLastUsed', 'mapping/delta record', 'scripts/Test-Repository.ps1', 'not runtime-proven')) {
     if (-not $skill.Contains($required)) { throw "Repository adaptation skill lacks required guidance: $required" }
 }
 

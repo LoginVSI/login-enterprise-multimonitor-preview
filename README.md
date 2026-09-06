@@ -8,7 +8,7 @@ The Preview discovers monitors, selects the next target, moves and optionally ma
 >
 > During the Preview, please share product feedback and feature requests on the [public multi-monitor feature request](https://feedback.loginvsi.com/618). For discussion or troubleshooting, you can also reach the Login VSI product team in the [Login VSI Customer Slack](https://join.slack.com/t/lvsi-customers/shared_invite/zt-3acoc4xmq-NcLJT33APZwrZrcppl8YQw). There is currently no committed date for this capability to become a supported native Login Enterprise feature.
 
-It is useful when a multi-display Login Enterprise session should exercise Word, Excel, PowerPoint, Outlook, Edge, or another compatible application on more than the primary display. It does not configure Windows displays, create application profiles, automate first-run setup, guarantee every application/version/session combination, or provide a supported DLL distribution channel.
+It is useful when a multi-display Login Enterprise session should exercise desktop applications or browser applications on more than the primary display. The Preview includes validated adaptation patterns for desktop/WinApp-style workloads, current Playwright Web Recorder workloads, and backward-compatible legacy Selenium workloads. It does not configure Windows displays, create application profiles, automate first-run setup, guarantee every application, browser, version, or session combination, or provide a supported DLL distribution channel.
 
 ## Choose your path
 
@@ -18,11 +18,11 @@ It is useful when a multi-display Login Enterprise session should exercise Word,
 - **AI-assisted adaptation:** [copy/paste agent prompt and guide](docs/agentic-workload-adaptation.md)
 - **Implementation and architecture:** [architecture](docs/architecture.md)
 - **Testing and current evidence:** [evidence status](docs/evidence-status.md) and [validation method](docs/testing.md)
-- **Examples:** [Script Editor visual demo](workloads/script-editor-visual-demo/README.md), [Office Preview](workloads/office-preview/README.md), and [representative Knowledge Worker adaptations](workloads/knowledge-worker-multimonitor/README.md)
+- **Examples:** [Playwright and legacy Selenium web workloads](workloads/web-preview/README.md), [Script Editor visual demo](workloads/script-editor-visual-demo/README.md), [Office Preview](workloads/office-preview/README.md), and [representative Knowledge Worker adaptations](workloads/knowledge-worker-multimonitor/README.md)
 
 ## Runtime evidence at a glance
 
-Local Login Enterprise 6.8.6 testing proved DLL staging/loading, two-monitor placement and state, the canonical Prepare -> Open/Place -> Close lifecycle, Word/Excel/PowerPoint, corrected Edge, and New Outlook launch/find/place.
+Local Login Enterprise 6.8.6 testing proved DLL staging/loading, two-monitor placement and state, the canonical Prepare -> Open/Place -> Close lifecycle, Word/Excel/PowerPoint, corrected Edge, New Outlook launch/find/place, and bounded browser adaptation patterns for Playwright with Chrome and legacy Selenium with Edge Chromium. In both browser variants, a reset two-monitor sequence placed the browser on monitor `0` and Paint on monitor `1`.
 
 In an external partner lab, the representative two-monitor Knowledge Worker Application Test passed 7/7 actions with zero failures. Its allocating sequence was Classic Outlook `0`, Edge `1`, Excel `0`, PowerPoint `1`, and Word `0`; Edge Run maintained the existing Edge target. Partner testing also demonstrated Word `0`, Excel `1`, and PowerPoint `2` across three monitors. Multi-loop Load/Continuous resilience and the external session-metrics comparison remain in progress.
 

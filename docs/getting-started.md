@@ -19,7 +19,7 @@ The recorded local baseline is Login Enterprise 6.8.6. External partner evidence
 2. Locate [`dist/LoginVSI.MultiMonitor.dll`](../dist/LoginVSI.MultiMonitor.dll). Optionally compare its SHA-256 hash with [`dist/SHA256SUMS.txt`](../dist/SHA256SUMS.txt).
 3. Connect to the Login Enterprise appliance over SFTP using its local admin account, with a client such as WinSCP, and upload the DLL to `/loginvsi/content/scriptcontent/LoginVSI.MultiMonitor.dll`. This uses Login Enterprise ScriptContent. It is not a new Preview or product distribution service.
 4. Import and run [`workloads/dll-backed/00-Prepare-MultiMonitor.cs`](../workloads/dll-backed/00-Prepare-MultiMonitor.cs). Prepare copies the appliance ScriptContent file to `%TEMP%\LoginPI\MultiMonitor\LoginVSI.MultiMonitor.dll` in the target session.
-5. Choose a workload path: [small Office examples](../workloads/office-preview/README.md), [representative Knowledge Worker adaptations](../workloads/knowledge-worker-multimonitor/README.md), or [your own manual adaptation](adapt-your-own-workload.md).
+5. Choose a workload path: [small Office examples](../workloads/office-preview/README.md), [Playwright or legacy Selenium web examples](../workloads/web-preview/README.md), [representative Knowledge Worker adaptations](../workloads/knowledge-worker-multimonitor/README.md), or [your own manual adaptation](adapt-your-own-workload.md).
 6. Configure the scenario lifecycle, run it, and inspect the structured placement result. The [test-lab quickstart](test-lab-quickstart.md) gives exact settings and expected sequences.
 
 ## Staging and refresh behavior

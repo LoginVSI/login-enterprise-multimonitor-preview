@@ -100,6 +100,46 @@ foreach ($required in @('Choose one Outlook flavor', 'Microsoft Outlook (Classic
     Assert-True $officeReadme.Contains($required) "Office README does not distinguish Outlook flavors: $required"
 }
 
+$webRoot = Join-Path $workloadsRoot 'web-preview'
+$playwrightPath = Join-Path $webRoot '10-Place-Playwright-Chrome.cs'
+$seleniumPath = Join-Path $webRoot '20-Place-Legacy-Selenium-Edge.cs'
+foreach ($path in @($playwrightPath, $seleniumPath)) {
+    Assert-True (Test-Path -LiteralPath $path -PathType Leaf) "Web Preview workload is missing: $path"
+    $text = Get-Text $path
+    Assert-True ((Get-MatchesCount $text 'GetMethod\(\s*"PlaceNext"') -eq 1) "Web Preview workload must allocate exactly once: $path"
+    foreach ($required in @('LoginVSI.MultiMonitor.dll', 'Assembly.LoadFrom', 'state.txt', 'StateAdvanced')) {
+        Assert-True $text.Contains($required) "Web Preview workload lacks '$required': $path"
+    }
+}
+
+$playwright = Get-Text $playwrightPath
+foreach ($required in @('// BROWSER:Chrome', ': WebScriptBase', 'async Task Execute()', 'await StartBrowser();',
+    'Process.GetProcessesByName(processName)', 'MainWindowHandle', 'process.Dispose()', 'existingChromeHandles',
+    'currentHandles.ExceptWith(existingHandles)', 'currentHandles.Count > 1', 'await NavigateAsync(',
+    'await TypeAsync(', 'await StopBrowser();')) {
+    Assert-True $playwright.Contains($required) "Playwright web ownership/lifecycle contract lacks '$required'."
+}
+foreach ($forbidden in @('FindWindows(', 'IWindow', '.Focus()', 'StartTime', 'Kill(')) {
+    Assert-True (-not $playwright.Contains($forbidden)) "Playwright web workload contains unsupported/unsafe token '$forbidden'."
+}
+Assert-True ($playwright.IndexOf('CaptureTopLevelWindowHandles("chrome")') -lt $playwright.IndexOf('await StartBrowser();')) 'Playwright workload does not snapshot HWNDs before browser startup.'
+
+$selenium = Get-Text $seleniumPath
+foreach ($required in @('// BROWSER:EdgeChromium', ': ScriptBase', 'StartBrowser();', 'StopBrowser();',
+    'FindWindows(', 'className: "Win32 Window:Chrome_WidgetWin_1"', 'processName: "msedge"',
+    'existingEdgeHandles', 'browserWindow.NativeWindowHandle', 'browserWindow.Focus();', 'Navigate(')) {
+    Assert-True $selenium.Contains($required) "Legacy Selenium ownership/lifecycle contract lacks '$required'."
+}
+foreach ($forbidden in @(': WebScriptBase', 'await StartBrowser', 'await StopBrowser', 'Process.GetProcessesByName', 'Kill(')) {
+    Assert-True (-not $selenium.Contains($forbidden)) "Legacy Selenium workload contains conflicting/unsafe token '$forbidden'."
+}
+Assert-True ($selenium.IndexOf('CaptureEdgeWindowHandles()') -lt $selenium.IndexOf('StartBrowser();')) 'Legacy Selenium workload does not snapshot HWNDs before browser startup.'
+
+$webReadme = Get-Text (Join-Path $webRoot 'README.md')
+foreach ($required in @('Playwright', 'legacy Selenium', 'backward-compatible', 'ownership', 'WebDriver')) {
+    Assert-True $webReadme.Contains($required) "Web Preview README lacks '$required'."
+}
+
 $adaptationSkill = Get-Text (Join-Path $repoRoot 'skills\login-enterprise-multimonitor\SKILL.md')
 foreach ($required in @('Classic Outlook and New Outlook', 'Do not silently substitute', 'substantive workload adaptation', 'launch success does not prove interaction compatibility')) {
     Assert-True $adaptationSkill.Contains($required) "Repository skill lacks Outlook flavor guidance: $required"
