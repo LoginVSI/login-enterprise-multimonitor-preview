@@ -1,0 +1,175 @@
+{
+  "status": "Generated; not Script Editor or runtime validated",
+  "workloads": [
+    {
+      "file": "KW25 Edge Run.cs",
+      "sourceSha256": "d14affae7627b596c835c59c6b89e79498978e6dd9626acc49913eb2dbd15c9c",
+      "adaptedSha256": "5b4a1e50bfa7c65927ce9147ee6be32f79c3829a0da69e966c45259d645523d7",
+      "status": "adapted",
+      "target": "// TARGET:msedge",
+      "class": "Edge_Run",
+      "timers": [],
+      "canonicalSourceSha256": "176a553e0016c2ac51cb0242f3ae2f610ed090477abab99032988275f4f9c5ff"
+    },
+    {
+      "file": "KW25 Edge Start.cs",
+      "sourceSha256": "bcafde5bfb5ac6e0bcff71808ae2d35ee08f12e81b55b1c907d2031322b5242a",
+      "adaptedSha256": "218f268ca9d993bb95715484138b733f797b39824df13fe5f632fa783ef5d8ca",
+      "status": "adapted",
+      "target": "// TARGET:msedge ",
+      "class": "Edge_Start",
+      "timers": [
+        "StartTimer(\"Browser_Start\");",
+        "StopTimer(\"Browser_Start\");"
+      ],
+      "canonicalSourceSha256": "10651231251feeb7f6ea2c0bcaeff7f549675cd402d579c9243b2ca87c693795"
+    },
+    {
+      "file": "KW25 Excel Run.cs",
+      "sourceSha256": "66bd47cb8347cf8771b045c1e99e49cb26c7ab2c3c6761a36124a3c3a0e2a55d",
+      "adaptedSha256": "dea9027e8f75f222947de64ffd60101b81b825bf8fe237038be0aa78d28144dd",
+      "status": "adapted",
+      "target": "// TARGET:excel.exe /s",
+      "class": "Excel_Run",
+      "timers": [
+        "StartTimer(\"Open_Window\");",
+        "StopTimer(\"Open_Window\");",
+        "StartTimer(\"Open_Excel_Document\");",
+        "StopTimer(\"Open_Excel_Document\");",
+        "StartTimer(\"Saving_file\");",
+        "StopTimer(\"Saving_file\");"
+      ],
+      "canonicalSourceSha256": "0aa6d07baf0a00ed6d067958dfd1591d74d1f8aff1e1eb8ca6fd7296b441d4ec"
+    },
+    {
+      "file": "KW25 Excel Start.cs",
+      "sourceSha256": "7c500461eed58dd405d34a04872fa2140c320dd45d9a25e51e34980918217087",
+      "adaptedSha256": "9cf2c2d4757dba03fcc363ca52a33c839a42bbc04c6c3353714c48e5b958b35b",
+      "status": "adapted",
+      "target": "// TARGET:excel.exe %temp%\\LoginEnterprise\\loginvsi.xlsx",
+      "class": "Excel_Start",
+      "timers": [],
+      "canonicalSourceSha256": "45c16ea6e7c58084adae6dfd5d9e2ef8c63d807554e5c507c286ce9fd71e96b8"
+    },
+    {
+      "file": "KW25 Outlook Run.cs",
+      "sourceSha256": "79ea7e1853b933d6eb360ccf0d48a6aa21f0458ecbcf66b82240543a2b9ea5f8",
+      "adaptedSha256": "3f8183a7a26113ddb0c32bb69162094cc272825a2187999fe94f0f1d83e5d2d3",
+      "status": "adapted",
+      "target": "// TARGET:outlook.exe /importprf %TEMP%\\LoginPI\\Outlook.prf",
+      "class": "Run_Outlook",
+      "timers": [
+        "StartTimer(\"Open_Existing_Email\");",
+        "StopTimer(\"Open_Existing_Email\");",
+        "StartTimer(\"New_Email_Open\");",
+        "StopTimer(\"New_Email_Open\");",
+        "StartTimer(\"Insert_Picture_Dialog\");",
+        "StopTimer(\"Insert_Picture_Dialog\");",
+        "StartTimer(\"Add_Attachment_Dialog\");",
+        "StopTimer(\"Add_Attachment_Dialog\");"
+      ],
+      "canonicalSourceSha256": "51fec9ee80cd0d9ddbb4a64377972de93bfba44f5e70fb39335fa8ad1bd5ee9b"
+    },
+    {
+      "file": "KW25 Outlook Start.cs",
+      "sourceSha256": "6b1b681c50219f86c44d2caf074d7e414e49dbb99637ed9f31d51b8464f2084d",
+      "adaptedSha256": "bfa50543f33a4d02042db9a514d7483e2df7ae3536dad007d270dd2abe036461",
+      "status": "adapted",
+      "target": "// TARGET:outlook.exe /importprf %TEMP%\\LoginPI\\Outlook.prf",
+      "class": "Outlook_Start",
+      "timers": [],
+      "canonicalSourceSha256": "d376dbca434067f7299949a69ef76711972eb9ca8162d8c7bda422312841491d"
+    },
+    {
+      "file": "KW25 PowerPoint Run.cs",
+      "sourceSha256": "cf168540a5745be82a9ac7421bf12767f69b5369f41f3c2aefb7b23b73c5826e",
+      "adaptedSha256": "973254b16ff07f37262f8aab50c06356dd0d0959ef2d6d2caad5f6c7a2e0808a",
+      "status": "adapted",
+      "target": "// TARGET:powerpnt.exe /n",
+      "class": "PowerPoint_Run",
+      "timers": [
+        "StartTimer(\"Open_Window\");",
+        "StopTimer(\"Open_Window\");",
+        "StartTimer(\"Open_Powerpoint_Document\");",
+        "StopTimer(\"Open_Powerpoint_Document\");",
+        "StartTimer(\"Insert_Picture_Dialog\");",
+        "StopTimer(\"Insert_Picture_Dialog\");",
+        "StartTimer(\"Save_As_Dialog\");",
+        "StopTimer(\"Save_As_Dialog\");",
+        "StartTimer(\"Saving_file\");",
+        "StopTimer(\"Saving_file\");"
+      ],
+      "canonicalSourceSha256": "21e2a8b8d7e540d195056176d55a8e649c02f53ca8f629f0dd636c64a24e9118"
+    },
+    {
+      "file": "KW25 PowerPoint Start.cs",
+      "sourceSha256": "742152c3fc54a0978e94735da9adf8ae0183946f7268c9b96e8d1a663f29780a",
+      "adaptedSha256": "136851f3b240113afc739e4fbfbbc2a50d25077ad1a12731a57ccc725ed11358",
+      "status": "adapted",
+      "target": "// TARGET:powerpnt.exe %temp%\\LoginEnterprise\\loginvsi.pptx",
+      "class": "PowerPoint_Start",
+      "timers": [],
+      "canonicalSourceSha256": "a9b2f8d5af8b77f5bda4da26d5e0bb1b49bf6adbba10407a601ff750b9a1a293"
+    },
+    {
+      "file": "KW25 Prep 2019 Office.cs",
+      "sourceSha256": "ad6daf073116ec56be94892ada0186be816bea04a811ff5b27f2dcfece036140",
+      "adaptedSha256": "ad6daf073116ec56be94892ada0186be816bea04a811ff5b27f2dcfece036140",
+      "status": "unchanged",
+      "target": "// TARGET:winword.exe /t",
+      "class": "Office_2019_Prepare",
+      "timers": [],
+      "canonicalSourceSha256": "538d7df0b827659feaf75026b2aefdcc8812e73148e2dd696372d748f7e0f310"
+    },
+    {
+      "file": "KW25 Prep 365 Microsoft Office.cs",
+      "sourceSha256": "d14119b9ab9ad8430c4a0b1789a8f44d8c5475e17d467285e70778dd8fb9561d",
+      "adaptedSha256": "d14119b9ab9ad8430c4a0b1789a8f44d8c5475e17d467285e70778dd8fb9561d",
+      "status": "unchanged",
+      "target": "// TARGET:winword.exe /t",
+      "class": "M365_Prepare",
+      "timers": [],
+      "canonicalSourceSha256": "e956953bfaaea7ea8f00f1e3587cb90e53fa2e5279683ba7188fa99c6ed7918e"
+    },
+    {
+      "file": "KW25 Word Run.cs",
+      "sourceSha256": "4a8ccfb5aaccf23db254a52f5e5a4d6bd98490689c2d46415cee9b2eb2453488",
+      "adaptedSha256": "c513bdb65a4cfa7e2fcc3620f34b7e1cf5913066306264e42ac341154900abc9",
+      "status": "adapted",
+      "target": "// TARGET:winword.exe /t",
+      "class": "Word_Run",
+      "timers": [
+        "StartTimer(\"Open_Window\");",
+        "StopTimer(\"Open_Window\");",
+        "StartTimer(\"Open_Word_Document\");",
+        "StopTimer(\"Open_Word_Document\");",
+        "StartTimer(\"Insert_Picture_Dialog\");",
+        "StopTimer(\"Insert_Picture_Dialog\");",
+        "StartTimer(\"Save_As_Dialog\");",
+        "StopTimer(\"Save_As_Dialog\");",
+        "StartTimer(\"Saving_file\");",
+        "StopTimer(\"Saving_file\");"
+      ],
+      "canonicalSourceSha256": "fcb14adefd1ce03f782c14dbc50d2991b9917b230b8dd8fe6ecbae497e63c686"
+    },
+    {
+      "file": "KW25 Word Start.cs",
+      "sourceSha256": "72ab232eef8bc6fba2583e36eb6660ecbb7b211db25e4c4d6a59228e86009cec",
+      "adaptedSha256": "fad1966b482db08298c5ce977be9948c35d738f6661e6f8fdd9c2795776640a8",
+      "status": "adapted",
+      "target": "// TARGET:winword.exe %temp%\\LoginEnterprise\\loginvsi.docx",
+      "class": "Word_Start",
+      "timers": [],
+      "canonicalSourceSha256": "8b6ec90d200dfa643cc77063185a3d44da10c79acf147f93bcf4b319dcf79db9"
+    }
+  ],
+  "publicationStatus": "Publication directed by repository owner; factual licensing notices retained in PUBLICATION.md",
+  "assignmentFormat": "Two lines: MonitorCount then TargetMonitorIndex; recreate all assignments by rerunning Starts in a fresh scenario",
+  "content": [
+    {
+      "file": "LoginVSI_BattlingRobots.bmp",
+      "sha256": "56e45d3a017a5c5b32f7615628f3f443c4be67d9e3fc6ff36700b5afba6659f3",
+      "redistribution": "Included under repository owner publication direction; no new license grant asserted"
+    }
+  ]
+}

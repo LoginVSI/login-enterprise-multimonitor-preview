@@ -1,0 +1,5 @@
+# Keep manifest-verified adapted source bytes stable on every checkout.
+*.cs text eol=lf
+# Preserve the two unchanged source copies byte-for-byte, including source whitespace.
+"KW25 Prep 2019 Office.cs" -text -eol -diff
+"KW25 Prep 365 Microsoft Office.cs" -text -eol -diff

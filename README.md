@@ -20,6 +20,8 @@ It is useful when a multi-display Login Enterprise session should exercise deskt
 - **Testing and current evidence:** [evidence status](docs/evidence-status.md) and [validation method](docs/testing.md)
 - **Examples:** [Playwright and legacy Selenium web workloads](workloads/web-preview/README.md), [Script Editor visual demo](workloads/script-editor-visual-demo/README.md), [Office Preview](workloads/office-preview/README.md), and [representative Knowledge Worker adaptations](workloads/knowledge-worker-multimonitor/README.md)
 
+- **Knowledge Worker 2025:** [complete KW25 Prepare/Start/Run adaptation](workloads/knowledge-worker-2025-multimonitor/README.md), generated and statically validated, with customer runtime validation pending. This is separate from the older representative KW22-based examples.
+
 ## Runtime evidence at a glance
 
 Local Login Enterprise 6.8.6 testing proved DLL staging/loading, two-monitor placement and state, the canonical Prepare -> Open/Place -> Close lifecycle, Word/Excel/PowerPoint, corrected Edge, New Outlook launch/find/place, and bounded browser adaptation patterns for Playwright with Chrome and legacy Selenium with Edge Chromium. In both browser variants, a reset two-monitor sequence placed the browser on monitor `0` and Paint on monitor `1`.

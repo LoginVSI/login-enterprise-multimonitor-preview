@@ -273,4 +273,5 @@ $trackedArtifacts = @(git -C $repoRoot ls-files -- 'artifacts/*' '*.log')
 $unexpectedArtifacts = @($trackedArtifacts | Where-Object { $_ -ne 'artifacts/.gitkeep' })
 Assert-True ($unexpectedArtifacts.Count -eq 0) ('Tracked raw artifact/log paths found: ' + ($unexpectedArtifacts -join ', '))
 
+& (Join-Path $PSScriptRoot 'Test-KW25Contracts.ps1')
 Write-Host "Workload/source contracts passed for $($allWorkloadFiles.Count) workload files and $($manifest.workloads.Count) preserved-workload adaptations." -ForegroundColor Green
